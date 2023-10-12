@@ -511,8 +511,27 @@ export default {
 
     async imporExcelData(data) {
       console.log(data);
-      const res = await Api.post("/examLocation/import", FileDropZone.file());
-      console.log(FileDropZone.file());
+      let file = FileDropZone.file();
+      console.log(file);
+      // Crie um objeto de arquivo simulado
+      // const simulatedFile = new File([file.upload], file.upload.filename, {
+      //   type: file.type,
+      // });
+      // console.log(simulatedFile);
+
+      // Crie um formulário virtual
+      const virtualForm = new FormData();
+
+      // Adicione o arquivo simulado ao formulário virtual
+      virtualForm.append("excel_file", file, file.name);
+
+      // //Imprima o conteúdo do FormData
+      // for (const pair of virtualForm.entries()) {
+      //   console.log(pair[0], pair[1]);
+      // }
+
+      const res = await Api.postFile("/examLocation/import", virtualForm);
+      console.log(res);
     },
   },
 

@@ -13,16 +13,17 @@ export default {
     return response.json();
   },
 
-  async postFile(url = "", data = {}) {
+  async postFile(url = "", data = "") {
+    // console.log(`POST ${data.entries()}`);
     const response = await fetch(`${BASE_API}` + url, {
       method: "POST",
       headers: {
-        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
       },
-      body: JSON.stringify(data),
+      body: data,
     });
 
-    return response.json();
+    return response;
   },
 
   async put(url = "", data = {}) {
