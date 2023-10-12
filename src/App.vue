@@ -1,19 +1,17 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from "vue-router";
 // import HelloWorld from './components/HelloWorld.vue'
-import LayOut from './components/shared/LayOut.vue'
+import LayOut from "./components/shared/LayOut.vue";
 </script>
 
 <template>
+  <!-- Start preloader -->
+  <div class="loader-bg">
+    <div class="loader-p"></div>
+  </div>
+  <!-- End preloader -->
 
-<!-- Start preloader -->
-<div class="loader-bg">
-        <div class="loader-p"></div>
-    </div>
-    <!-- End preloader --> 
-    
-
-<!-- <header>
+  <!-- <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
@@ -25,7 +23,15 @@ import LayOut from './components/shared/LayOut.vue'
       </nav>
     </div>
   </header> -->
-  <LayOut/>
-  
+
+  <LayOut />
 </template>
 
+<script>
+import Utilits from "./Utilits.js";
+export default {
+  created() {
+    Utilits.hideLoader();
+  },
+};
+</script>

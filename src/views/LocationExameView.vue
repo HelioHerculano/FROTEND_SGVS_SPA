@@ -16,7 +16,7 @@
         <h1
           class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
         >
-          Gestão de bancos
+          Locais de exames
         </h1>
         <!--end::Title-->
 
@@ -109,20 +109,99 @@
         <!--end::Col-->
       </div>
       <!--end::Row-->
+      <form @submit.prevent="getBanks">
+        <!--begin::Tables Widget 13-->
+        <div class="card mb-5 mb-xl-8">
+          <!--begin::Header-->
+          <div class="card-header border-0 pt-5">
+            <h3 class="card-title align-items-start flex-column">
+              <span class="card-label fw-bold fs-3 mb-1">Filtros</span>
+            </h3>
+          </div>
 
-      <!-- Filtros -->
-      <Filters
-        @getBanks="getBanks"
-        v-model:descriptionFilter="this.descriptionFilter"
-        v-model:abbreviationFilter="this.abbreviationFilter"
-      />
-      <!-- End-FIlters -->
+          <!--begin::Body-->
+          <div class="card-body py-3">
+            <div class="row">
+              <div class="col-4">
+                <!--begin::Input group-->
+                <div class="d-flex flex-column mb-8 fv-row">
+                  <label class="form-label fw-bold fs-6 text-gray-700"
+                    >Nome</label
+                  >
+
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Nome do banco..."
+                    name="description"
+                    v-model="this.descriptionFilter"
+                  />
+                </div>
+                <!--end::Input group-->
+              </div>
+
+              <div class="col-4">
+                <!--begin::Input group-->
+                <div class="d-flex flex-column mb-8 fv-row">
+                  <label class="form-label fw-bold fs-6 text-gray-700"
+                    >Sigla</label
+                  >
+
+                  <input
+                    type="text"
+                    class="form-control form-control-solid"
+                    placeholder="Sigla do banco..."
+                    name="description"
+                    v-model="this.abbreviationFilter"
+                  />
+                </div>
+                <!--end::Input group-->
+              </div>
+
+              <div class="col-4">
+                <div class="mb-10">
+                  <!--begin::Label-->
+                  <label class="form-label fw-bold fs-6 text-gray-700"
+                    >Estado</label
+                  >
+                  <!--end::Label-->
+
+                  <!--begin::Select-->
+                  <select
+                    id="statusFilter"
+                    v-model="this.statusFilter"
+                    name="currnecy"
+                    aria-label="Select a Timezone"
+                    data-control="select2"
+                    data-placeholder="---Selecione aqui---"
+                    class="form-select form-select-solid"
+                  >
+                    <!-- <option value=""></option> -->
+
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                  </select>
+                  <!--end::Select-->
+                </div>
+                <!--end::Input group-->
+              </div>
+            </div>
+
+            <div class="col-md-12 mb-5" style="text-align: right">
+              <button type="submit" class="btn btn-sm fw-bold btn-dark">
+                Pesquisar
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
 
       <DataTable
         :dataLenght="this.dataLength"
         :banks="this.banks"
         :dataFetched="this.dataFetched"
-        tableTitle="Listagem de bancos"
+        :isLocationExam="true"
+        tableTitle="Lista de locais"
         @enableUpdate="enableUpdate"
         @deleteBank="deleteBank"
         @activeBank="activeBank"
@@ -133,18 +212,7 @@
         Nenhum registo encontrado.
       </div>
 
-      <ModalBanks
-        @registerBank="registerBank"
-        @updateBank="updateBank"
-        @enableStore="enableStore"
-        :title="this.title"
-        :btnText="this.btnText"
-        :isUpdate="this.isUpdate"
-        :indicatorProps="this.indicator"
-        v-model:description="this.description"
-        v-model:abbreviation="this.abbreviation"
-        :errors="this.errors"
-      />
+      <UploadLocationModal @imporExcelData="imporExcelData" />
 
       <Bootstrap5Pagination
         :data="this.banks"
@@ -165,21 +233,20 @@
 
 <script>
 import DataTable from "../components/DataTables/Banks/DataTable.vue";
-import ModalBanks from "../components/Modals/Banks/ModalBanks.vue";
-import Filters from "../components/FiltersComponent.vue";
+import UploadLocationModal from "../components/Modals/LocationExam/UploadLocationModal.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
 import SweetAlert from "../dist-assets/assets/js/custom/SweetAlert/SweetAlert.js";
 import Select2 from "../dist-assets/assets/js/select2.js";
+import FileDropZone from "../dist-assets/assets/js/fileDropZone.js";
 import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
 
 export default {
   components: {
     DataTable,
-    ModalBanks,
+    UploadLocationModal,
     Bootstrap5Pagination,
-    Filters,
   },
 
   data() {
@@ -314,12 +381,11 @@ export default {
       }
     },
 
-    async getBanks(page = 1, statusFilter) {
-      if (typeof statusFilter == "undefined") {
-        this.statusFilter = 1;
-      } else {
-        this.statusFilter = statusFilter;
-      }
+    async getBanks(page = 1) {
+      this.statusFilter =
+        $("#statusFilter").val() == null ? "" : $("#statusFilter").val();
+
+      // alert(this.statusFilter)
 
       Utilits.showLoader();
       const res = await Api.get(
@@ -442,6 +508,12 @@ export default {
       this.description = null;
       this.abbreviation = null;
     },
+
+    async imporExcelData(data) {
+      console.log(data);
+      const res = await Api.post("/examLocation/import", FileDropZone.file());
+      console.log(FileDropZone.file());
+    },
   },
 
   computed: {
@@ -459,6 +531,7 @@ export default {
   },
   mounted() {
     Select2.createSelect2();
+    FileDropZone.initDropzone();
   },
 };
 </script>
