@@ -55,7 +55,7 @@
           href="#"
           class="btn btn-sm fw-bold btn-primary"
           data-bs-toggle="modal"
-          data-bs-target="#kt_modal_new_bank"
+          data-bs-target="#kt_modal_new_location"
           v-on:click="enableStore"
         >
           Registar
@@ -109,7 +109,7 @@
         <!--end::Col-->
       </div>
       <!--end::Row-->
-      <form @submit.prevent="getBanks">
+      <form @submit.prevent="getLocationExam">
         <!--begin::Tables Widget 13-->
         <div class="card mb-5 mb-xl-8">
           <!--begin::Header-->
@@ -133,8 +133,8 @@
                     type="text"
                     class="form-control form-control-solid"
                     placeholder="Nome do banco..."
-                    name="description"
-                    v-model="this.descriptionFilter"
+                    name="designation"
+                    v-model="this.designationFilter"
                   />
                 </div>
                 <!--end::Input group-->
@@ -151,7 +151,7 @@
                     type="text"
                     class="form-control form-control-solid"
                     placeholder="Sigla do banco..."
-                    name="description"
+                    name="designation"
                     v-model="this.abbreviationFilter"
                   />
                 </div>
@@ -198,13 +198,13 @@
 
       <DataTable
         :dataLenght="this.dataLength"
-        :banks="this.banks"
+        :locations="this.locations"
         :dataFetched="this.dataFetched"
         :isLocationExam="true"
         tableTitle="Lista de locais"
         @enableUpdate="enableUpdate"
-        @deleteBank="deleteBank"
-        @activeBank="activeBank"
+        @deletelocation="deletelocation"
+        @activelocation="activelocation"
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -218,8 +218,8 @@
       />
 
       <Bootstrap5Pagination
-        :data="this.banks"
-        @pagination-change-page="getBanks"
+        :data="this.locations"
+        @pagination-change-page="getLocationExam"
         limit="2"
         show-disabled
       >
@@ -257,14 +257,14 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      description: "",
+      designation: "",
       abbreviation: "",
-      descriptionFilter: "",
+      designationFilter: "",
       abbreviationFilter: "",
       statusFilter: "",
       indicator: "",
-      banks: ref([]),
-      bank: ref([]),
+      locations: ref([]),
+      location: ref([]),
       dataFetched: false,
       errors: ref([]),
     };
@@ -276,20 +276,20 @@ export default {
     //     this.btnText = btnText
     //   },
 
-    async registerBank() {
+    async registerlocation() {
       this.indicator = "on";
       document
-        .getElementById("kt_modal_new_bank_submit")
+        .getElementById("kt_modal_new_location_submit")
         .setAttribute("disabled", "true");
 
       let data = {
-        description: this.description,
+        designation: this.designation,
         abbreviation: this.abbreviation,
       };
 
       console.log(data);
 
-      const res = await Api.post("/bank", data);
+      const res = await Api.post("/location", data);
 
       if (res.code == 422) {
         this.errors = res.message;
@@ -297,7 +297,7 @@ export default {
         this.indicator = "";
         SweetAlert.Alert("Erro", "Preecha os campos obrigatorios", "error", "");
         document
-          .getElementById("kt_modal_new_bank_submit")
+          .getElementById("kt_modal_new_location_submit")
           .removeAttribute("disabled");
       }
 
@@ -306,34 +306,34 @@ export default {
           "Sucesso",
           "Banco registado com sucesso",
           "success",
-          "#kt_modal_new_bank",
-          "kt_modal_new_bank_form"
+          "#kt_modal_new_location",
+          "kt_modal_new_location_form"
         );
         this.indicator = "";
         document
-          .getElementById("kt_modal_new_bank_submit")
+          .getElementById("kt_modal_new_location_submit")
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
-        this.description = "";
+        this.designation = "";
         this.errors = [];
-        this.getBanks();
+        this.getLocationExam();
       }
     },
-    async updateBank() {
-      // console.log(this.bank.data.id)
+    async updatelocation() {
+      // console.log(this.location.data.id)
       this.indicator = "on";
       document
-        .getElementById("kt_modal_new_bank_submit")
+        .getElementById("kt_modal_new_location_submit")
         .setAttribute("disabled", "true");
 
       let data = {
-        description: this.description,
+        designation: this.designation,
         abbreviation: this.abbreviation,
       };
 
       console.log(data);
-      const res = await Api.put(`/bank/${this.bank.data.id}`, data);
+      const res = await Api.put(`/location/${this.location.data.id}`, data);
 
       console.log(res);
       if (res.code == 422) {
@@ -355,12 +355,12 @@ export default {
             ""
           );
           document
-            .getElementById("kt_modal_new_bank_submit")
+            .getElementById("kt_modal_new_location_submit")
             .removeAttribute("disabled");
         }
 
         document
-          .getElementById("kt_modal_new_bank_submit")
+          .getElementById("kt_modal_new_location_submit")
           .removeAttribute("disabled");
       }
 
@@ -369,22 +369,22 @@ export default {
           "Sucesso",
           "Banco actualizado com sucesso",
           "success",
-          "#kt_modal_new_bank",
-          "kt_modal_new_bank_form"
+          "#kt_modal_new_location",
+          "kt_modal_new_location_form"
         );
         this.indicator = "";
         document
-          .getElementById("kt_modal_new_bank_submit")
+          .getElementById("kt_modal_new_location_submit")
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
-        this.description = "";
+        this.designation = "";
         this.errors = [];
-        this.getBanks();
+        this.getLocationExam();
       }
     },
 
-    async getBanks(page = 1) {
+    async getLocationExam(page = 1) {
       this.statusFilter =
         $("#statusFilter").val() == null ? "" : $("#statusFilter").val();
 
@@ -392,52 +392,52 @@ export default {
 
       Utilits.showLoader();
       const res = await Api.get(
-        `/bank?page=${page}&description=${this.descriptionFilter}&abbreviation=${this.abbreviationFilter}&status=${this.statusFilter}`
+        `/examLocation?page=${page}&designation=${this.designationFilter}&abbreviation=${this.abbreviationFilter}&status=${this.statusFilter}`
       );
 
-      this.banks = await res;
+      this.locations = await res;
 
       this.dataFetched = true;
 
-      console.log(this.banks.data.length);
+      console.log(this.locations.data.length);
 
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
     },
 
-    // async getBanks(page = 1){
+    // async getLocationExam(page = 1){
     //         Utilits.showLoader()
-    //         const res = await Api.get(`/bank?page=${page}`);
+    //         const res = await Api.get(`/location?page=${page}`);
 
-    //         this.banks = await res
+    //         this.locations = await res
 
     //         this.dataFetched = true
 
-    //         console.log(this.banks.data.length)
+    //         console.log(this.locations.data.length)
 
     //         if(this.dataFetched){
     //             Utilits.hideLoader()
     //         }
     // },
 
-    async getOneBank(id) {
+    async getOnelocation(id) {
       Utilits.showLoader();
 
-      const res = await Api.getOne(`/bank/${id}`);
+      const res = await Api.getOne(`/location/${id}`);
 
-      this.bank = await res;
-      console.log(this.bank);
+      this.location = await res;
+      console.log(this.location);
 
       this.dataFetched = true;
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
-      this.description = res.data.description;
+      this.designation = res.data.designation;
       this.abbreviation = res.data.abbreviation;
     },
 
-    async deleteBank(id) {
+    async deletelocation(id) {
       let res;
 
       await Swal.fire({
@@ -454,17 +454,17 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.delete(`/bank/${id}`);
+          res = await Api.delete(`/location/${id}`);
         }
       });
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getBanks();
+        this.getLocationExam();
       }
     },
 
-    async activeBank(id) {
+    async activelocation(id) {
       let res;
 
       await Swal.fire({
@@ -481,25 +481,25 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.active(`/bank/${id}/active`);
+          res = await Api.active(`/location/${id}/active`);
         }
       });
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getBanks();
+        this.getLocationExam();
       }
     },
 
     enableUpdate(id) {
       // alert(id)
-      this.getOneBank(id);
+      this.getOnelocation(id);
 
       this.title = "Actualizar Banco";
       this.btnText = "Actualizar";
       this.isUpdate = true;
       this.errors = [];
-      this.description = null;
+      this.designation = null;
       this.abbreviation = null;
     },
 
@@ -508,7 +508,7 @@ export default {
       this.btnText = "Registar";
       this.isUpdate = false;
       this.errors = [];
-      this.description = null;
+      this.designation = null;
       this.abbreviation = null;
     },
 
@@ -564,15 +564,15 @@ export default {
 
   computed: {
     dataLength() {
-      if (this.banks.data == undefined) {
+      if (this.locations.data == undefined) {
         return 0;
       }
-      return this.banks.data.length;
+      return this.locations.data.length;
     },
   },
 
   created() {
-    this.getBanks();
+    this.getLocationExam();
     // $(document).ready(function() {
   },
   mounted() {

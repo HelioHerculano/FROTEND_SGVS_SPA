@@ -95,7 +95,7 @@
             <tbody>
               <RowTable
                 v-if="this.$props.dataFetched"
-                :data="this.$props.banks"
+                :data="this.$props.locations"
                 @enableUpdate="enableUpdate"
                 @deleteBank="deleteBank"
                 @activeBank="activeBank"
@@ -123,7 +123,7 @@ import jsPDF from "jspdf";
 
 export default {
   props: {
-    banks: {
+    locations: {
       type: Array,
     },
     dataFetched: {
@@ -142,7 +142,7 @@ export default {
 
   data() {
     return {
-      // banks:ref([]),
+      // locations:ref([]),
       // dataFetched: false
     };
   },
