@@ -212,7 +212,10 @@
         Nenhum registo encontrado.
       </div>
 
-      <UploadLocationModal @imporExcelData="imporExcelData" />
+      <UploadLocationModal
+        @imporExcelData="imporExcelData"
+        :indicatorProps="this.indicator"
+      />
 
       <Bootstrap5Pagination
         :data="this.banks"
@@ -509,15 +512,14 @@ export default {
       this.abbreviation = null;
     },
 
-    async imporExcelData(data) {
-      console.log(data);
+    async imporExcelData() {
+      this.indicator = "on";
+      document
+        .getElementById("upload_excel_locais")
+        .setAttribute("disabled", "true");
+
       let file = FileDropZone.file();
-      console.log(file);
-      // Crie um objeto de arquivo simulado
-      // const simulatedFile = new File([file.upload], file.upload.filename, {
-      //   type: file.type,
-      // });
-      // console.log(simulatedFile);
+      // console.log(file);
 
       // Crie um formulário virtual
       const virtualForm = new FormData();
@@ -525,13 +527,38 @@ export default {
       // Adicione o arquivo simulado ao formulário virtual
       virtualForm.append("excel_file", file, file.name);
 
-      // //Imprima o conteúdo do FormData
-      // for (const pair of virtualForm.entries()) {
-      //   console.log(pair[0], pair[1]);
-      // }
+      try {
+        const res = await Api.postFile("/examLocation/import", virtualForm);
+        console.log(res);
+        if (res.success) {
+          // const id = "#kt_modal_upload_dropzone";
+          // const dropzone = document.querySelector(id);
+          // const progressBars = dropzone.querySelectorAll(".dz-complete");
 
-      const res = await Api.postFile("/examLocation/import", virtualForm);
-      console.log(res);
+          // progressBars.forEach((progressBar) => {
+          //   progressBar.querySelector(".progress-bar").style.opacity = "0";
+          //   progressBar.querySelector(".progress").style.opacity = "0";
+          //   progressBar.querySelector(".dropzone-start").style.opacity = "0";
+          // });
+
+          FileDropZone.dropzone().removeAllFiles(true);
+
+          SweetAlert.Alert(
+            "Sucesso",
+            "Banco registado com sucesso",
+            "success",
+            "#kt_modal_upload",
+            "modal_upload_excel"
+          );
+          this.indicator = "";
+          document
+            .getElementById("upload_excel_locais")
+            .removeAttribute("disabled");
+          this.errors = [];
+        }
+      } catch (error) {
+        console.log("Error", error);
+      }
     },
   },
 

@@ -48,8 +48,16 @@
                   <button
                     type="submit"
                     class="dropzone-upload btn btn-sm btn-light-primary me-2"
+                    :data-kt-indicator="this.$props.indicatorProps"
+                    id="upload_excel_locais"
                   >
-                    Upload
+                    <span class="indicator-label"> Upload </span>
+                    <span class="indicator-progress">
+                      Por favor aguader...
+                      <span
+                        class="spinner-border spinner-border-sm align-middle ms-2"
+                      ></span>
+                    </span>
                   </button>
                   <a class="dropzone-remove-all btn btn-sm btn-light-primary"
                     >Remover</a
@@ -138,14 +146,20 @@
 
 <script>
 export default {
+  props: {
+    indicatorProps: {
+      type: String,
+    },
+    errors: {
+      type: Array,
+    },
+  },
   data() {
     return {};
   },
   methods: {
     imporExcelData() {
-      var form = document.getElementById("modal_upload_excel");
-      var data = new FormData(form);
-      this.$emit("imporExcelData", data);
+      this.$emit("imporExcelData");
     },
   },
 };

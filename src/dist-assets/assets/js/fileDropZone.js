@@ -1,7 +1,11 @@
 let uploadedFile;
+let mayDrop;
 export default {
   file() {
     return uploadedFile;
+  },
+  dropzone() {
+    return mayDrop;
   },
   initDropzone() {
     // set the dropzone container id
@@ -25,6 +29,8 @@ export default {
       previewsContainer: id + " .dropzone-items", // Define the container to display the previews
       clickable: id + " .dropzone-select", // Define the element that should be used as click trigger to select files.
     });
+
+    mayDrop = myDropzone;
 
     myDropzone.on("addedfile", function (file) {
       // console.log(file);
@@ -61,18 +67,18 @@ export default {
     });
 
     // Hide the total progress bar when nothing's uploading anymore
-    myDropzone.on("complete", function (file) {
-      // uploadedFile = file;
-      // console.log(uploadedFile);
-      const progressBars = dropzone.querySelectorAll(".dz-complete");
-      setTimeout(function () {
-        progressBars.forEach((progressBar) => {
-          progressBar.querySelector(".progress-bar").style.opacity = "0";
-          progressBar.querySelector(".progress").style.opacity = "0";
-          progressBar.querySelector(".dropzone-start").style.opacity = "0";
-        });
-      }, 300);
-    });
+    // myDropzone.on("complete", function (file) {
+    //   // uploadedFile = file;
+    //   // console.log(uploadedFile);
+    //   const progressBars = dropzone.querySelectorAll(".dz-complete");
+    //   setTimeout(function () {
+    //     progressBars.forEach((progressBar) => {
+    //       progressBar.querySelector(".progress-bar").style.opacity = "0";
+    //       progressBar.querySelector(".progress").style.opacity = "0";
+    //       progressBar.querySelector(".dropzone-start").style.opacity = "0";
+    //     });
+    //   }, 300);
+    // });
 
     // Setup the buttons for all transfers
     dropzone
@@ -104,12 +110,12 @@ export default {
       .querySelector(".dropzone-remove-all")
       .addEventListener("click", function () {
         Swal.fire({
-          text: "Are you sure you would like to remove all files?",
+          text: "Tem certeza que deseja remover os ficheiros?",
           icon: "warning",
           showCancelButton: true,
           buttonsStyling: false,
-          confirmButtonText: "Yes, remove it!",
-          cancelButtonText: "No, return",
+          confirmButtonText: "Sim, tenho!",
+          cancelButtonText: "Não, cancelar",
           customClass: {
             confirmButton: "btn btn-primary",
             cancelButton: "btn btn-active-light",
@@ -121,15 +127,15 @@ export default {
               "none";
             myDropzone.removeAllFiles(true);
           } else if (result.dismiss === "cancel") {
-            Swal.fire({
-              text: "Your files was not removed!.",
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Ok, got it!",
-              customClass: {
-                confirmButton: "btn btn-primary",
-              },
-            });
+            // Swal.fire({
+            //   text: "Your files was not removed!.",
+            //   icon: "error",
+            //   buttonsStyling: false,
+            //   confirmButtonText: "Ok, got it!",
+            //   customClass: {
+            //     confirmButton: "btn btn-primary",
+            //   },
+            // });
           }
         });
       });

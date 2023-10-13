@@ -23,7 +23,7 @@ export default {
       body: data,
     });
 
-    return response;
+    return response.json();
   },
 
   async put(url = "", data = {}) {
