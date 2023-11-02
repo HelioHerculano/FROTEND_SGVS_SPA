@@ -26,7 +26,7 @@
           </button> -->
 
           <button
-            v-show="this.$props.isLocationExam"
+            v-show="this.$props.isLocationExamView"
             type="button"
             class="btn btn-flex btn-light-primary me-3"
             id="kt_file_manager_new_folder"
@@ -83,10 +83,14 @@
                   </div>
                 </th>
                 <th class="min-w-100px">#</th>
-                <th class="min-w-100px">Nome</th>
-                <th class="min-w-100px">Sigla</th>
-                <th class="min-w-100px">Estado</th>
-                <th class="min-w-100px text-end">Acções</th>
+                <th
+                  class="min-w-100px"
+                  v-for="(column, index) in columns"
+                  :key="index"
+                >
+                  {{ column.name }}
+                </th>
+                <th class="text-center">Acções</th>
               </tr>
             </thead>
             <!--end::Table head-->
@@ -95,10 +99,13 @@
             <tbody>
               <RowTable
                 v-if="this.$props.dataFetched"
-                :data="this.$props.locations"
+                :data="this.$props.data"
+                :columns="this.$props.columns"
                 @enableUpdate="enableUpdate"
-                @deleteBank="deleteBank"
-                @activeBank="activeBank"
+                @remove="remove"
+                @active="active"
+                :isLocationExamView="this.$props.isLocationExamView"
+                :isBankView="this.$props.isBankView"
               />
             </tbody>
             <!--end::Table body-->
@@ -123,7 +130,7 @@ import jsPDF from "jspdf";
 
 export default {
   props: {
-    locations: {
+    data: {
       type: Array,
     },
     dataFetched: {
@@ -132,17 +139,23 @@ export default {
     dataLenght: {
       type: null,
     },
-    isLocationExam: {
+    isLocationExamView: {
+      type: Boolean,
+    },
+    isBankView: {
       type: Boolean,
     },
     tableTitle: {
       type: String,
     },
+    columns: {
+      type: Array,
+    },
   },
 
   data() {
     return {
-      // locations:ref([]),
+      // data:ref([]),
       // dataFetched: false
     };
   },
@@ -156,12 +169,12 @@ export default {
       this.$emit("enableUpdate", id);
     },
 
-    async deleteBank(id) {
-      this.$emit("deleteBank", id);
+    async remove(id) {
+      this.$emit("remove", id);
     },
 
-    async activeBank(id) {
-      this.$emit("activeBank", id);
+    async active(id) {
+      this.$emit("active", id);
     },
 
     printPDF() {
@@ -199,7 +212,7 @@ export default {
   },
 
   created() {
-    // alert(this.$props.isLocationExam);
+    // alert(this.$props.isLocationExamView);
   },
 };
 </script>

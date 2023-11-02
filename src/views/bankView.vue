@@ -55,7 +55,7 @@
           href="#"
           class="btn btn-sm fw-bold btn-primary"
           data-bs-toggle="modal"
-          data-bs-target="#kt_modal_new_bank"
+          data-bs-target="#kt_modal_new_data"
           v-on:click="enableStore"
         >
           Registar
@@ -112,20 +112,23 @@
 
       <!-- Filtros -->
       <Filters
-        @getBanks="getBanks"
+        @getData="getData"
         v-model:descriptionFilter="this.descriptionFilter"
         v-model:abbreviationFilter="this.abbreviationFilter"
+        :isBankView="true"
       />
       <!-- End-FIlters -->
 
       <DataTable
         :dataLenght="this.dataLength"
-        :banks="this.banks"
+        :columns="this.columns"
+        :data="this.banks"
         :dataFetched="this.dataFetched"
         tableTitle="Listagem de bancos"
         @enableUpdate="enableUpdate"
-        @deleteBank="deleteBank"
-        @activeBank="activeBank"
+        @remove="remove"
+        @active="active"
+        :isBankView="true"
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -134,8 +137,8 @@
       </div>
 
       <ModalBanks
-        @registerBank="registerBank"
-        @updateBank="updateBank"
+        @register="registerBank"
+        @update="updateBank"
         @enableStore="enableStore"
         :title="this.title"
         :btnText="this.btnText"
@@ -144,11 +147,14 @@
         v-model:description="this.description"
         v-model:abbreviation="this.abbreviation"
         :errors="this.errors"
+        placeholderOne="Nome do banco..."
+        placeholderTwo="Sigla do banco..."
+        :isBankView="true"
       />
 
       <Bootstrap5Pagination
         :data="this.banks"
-        @pagination-change-page="getBanks"
+        @pagination-change-page="getData"
         limit="2"
         show-disabled
       >
@@ -164,8 +170,8 @@
 <!-- ../ApiRest.js -->
 
 <script>
-import DataTable from "../components/DataTables/Banks/DataTable.vue";
-import ModalBanks from "../components/Modals/Banks/ModalBanks.vue";
+import DataTable from "../components/DataTables/DataTable.vue";
+import ModalBanks from "../components/Modals/Bank/ModalBank.vue";
 import Filters from "../components/FiltersComponent.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
@@ -197,6 +203,11 @@ export default {
       bank: ref([]),
       dataFetched: false,
       errors: ref([]),
+      columns: [
+        { name: "Nome", key: "description" },
+        { name: "Sigla", key: "abbreviation" },
+        { name: "Estado", key: "status" },
+      ],
     };
   },
 
@@ -209,7 +220,7 @@ export default {
     async registerBank() {
       this.indicator = "on";
       document
-        .getElementById("kt_modal_new_bank_submit")
+        .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
       let data = {
@@ -227,7 +238,7 @@ export default {
         this.indicator = "";
         SweetAlert.Alert("Erro", "Preecha os campos obrigatorios", "error", "");
         document
-          .getElementById("kt_modal_new_bank_submit")
+          .getElementById("kt_modal_new_data_submit")
           .removeAttribute("disabled");
       }
 
@@ -236,25 +247,25 @@ export default {
           "Sucesso",
           "Banco registado com sucesso",
           "success",
-          "#kt_modal_new_bank",
-          "kt_modal_new_bank_form"
+          "#kt_modal_new_data",
+          "kt_modal_new_data"
         );
         this.indicator = "";
         document
-          .getElementById("kt_modal_new_bank_submit")
+          .getElementById("kt_modal_new_data_submit")
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
         this.description = "";
         this.errors = [];
-        this.getBanks();
+        this.getData();
       }
     },
     async updateBank() {
       // console.log(this.bank.data.id)
       this.indicator = "on";
       document
-        .getElementById("kt_modal_new_bank_submit")
+        .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
       let data = {
@@ -285,12 +296,12 @@ export default {
             ""
           );
           document
-            .getElementById("kt_modal_new_bank_submit")
+            .getElementById("kt_modal_new_data_submit")
             .removeAttribute("disabled");
         }
 
         document
-          .getElementById("kt_modal_new_bank_submit")
+          .getElementById("kt_modal_new_data_submit")
           .removeAttribute("disabled");
       }
 
@@ -299,22 +310,22 @@ export default {
           "Sucesso",
           "Banco actualizado com sucesso",
           "success",
-          "#kt_modal_new_bank",
-          "kt_modal_new_bank_form"
+          "#kt_modal_new_data",
+          "kt_modal_new_data"
         );
         this.indicator = "";
         document
-          .getElementById("kt_modal_new_bank_submit")
+          .getElementById("kt_modal_new_data_submit")
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
         this.description = "";
         this.errors = [];
-        this.getBanks();
+        this.getData();
       }
     },
 
-    async getBanks(page = 1, statusFilter) {
+    async getData(page = 1, statusFilter) {
       if (typeof statusFilter == "undefined") {
         this.statusFilter = 1;
       } else {
@@ -337,7 +348,7 @@ export default {
       }
     },
 
-    // async getBanks(page = 1){
+    // async getData(page = 1){
     //         Utilits.showLoader()
     //         const res = await Api.get(`/bank?page=${page}`);
 
@@ -368,7 +379,7 @@ export default {
       this.abbreviation = res.data.abbreviation;
     },
 
-    async deleteBank(id) {
+    async remove(id) {
       let res;
 
       await Swal.fire({
@@ -391,11 +402,11 @@ export default {
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getBanks();
+        this.getData();
       }
     },
 
-    async activeBank(id) {
+    async active(id) {
       let res;
 
       await Swal.fire({
@@ -418,7 +429,7 @@ export default {
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getBanks();
+        this.getData();
       }
     },
 
@@ -454,7 +465,7 @@ export default {
   },
 
   created() {
-    this.getBanks();
+    this.getData();
     // $(document).ready(function() {
   },
   mounted() {

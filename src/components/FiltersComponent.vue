@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="getBanks">
+  <form @submit.prevent="getData">
     <!--begin::Tables Widget 13-->
     <div class="card mb-5 mb-xl-8">
       <!--begin::Header-->
@@ -18,11 +18,21 @@
               <label class="form-label fw-bold fs-6 text-gray-700">Nome</label>
 
               <input
+                v-show="this.$props.isBankView"
                 type="text"
                 class="form-control form-control-solid"
-                placeholder="Nome do banco..."
+                placeholder="Pesquise pelo nome..."
                 name="description"
                 @input="$emit('update:descriptionFilter', $event.target.value)"
+              />
+
+              <input
+                v-show="this.$props.isLocationExamView"
+                type="text"
+                class="form-control form-control-solid"
+                placeholder="Pesquise pelo nome..."
+                name="designation"
+                @input="$emit('update:designationFilter', $event.target.value)"
               />
             </div>
             <!--end::Input group-->
@@ -36,7 +46,7 @@
               <input
                 type="text"
                 class="form-control form-control-solid"
-                placeholder="Sigla do banco..."
+                placeholder="Pesquise pela sigla..."
                 name="abbreviation"
                 @input="$emit('update:abbreviationFilter', $event.target.value)"
               />
@@ -84,6 +94,14 @@
 
 <script>
 export default {
+  props: {
+    isBankView: {
+      type: Boolean,
+    },
+    isLocationExamView: {
+      type: Boolean,
+    },
+  },
   data() {
     return {
       // statusFilter: "",
@@ -93,11 +111,11 @@ export default {
   },
 
   methods: {
-    async getBanks() {
+    async getData() {
       var statusFilter =
         $("#statusFilter").val() == null ? "" : $("#statusFilter").val();
       var page = 1;
-      this.$emit("getBanks", page, statusFilter);
+      this.$emit("getData", page, statusFilter);
     },
   },
 };

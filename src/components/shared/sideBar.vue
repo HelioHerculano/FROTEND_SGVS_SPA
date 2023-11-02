@@ -240,12 +240,10 @@
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
-                <!--begin:Menu link--><a
-                  class="menu-link"
-                  href="account/settings.html"
+                <!--begin:Menu link--><RouterLink class="menu-link" to="/salas"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Salas</span></a
+                  ><span class="menu-title">Salas</span></RouterLink
                 ><!--end:Menu link-->
               </div>
             </div>

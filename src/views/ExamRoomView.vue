@@ -16,7 +16,7 @@
         <h1
           class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
         >
-          Locais de exames
+          Salas de exames
         </h1>
         <!--end::Title-->
 
@@ -111,7 +111,7 @@
       <!--end::Row-->
       <!-- Filtros -->
       <Filters
-        @getData="getLocationExam"
+        @getData="getExamRoom"
         v-model:designationFilter="this.designationFilter"
         v-model:abbreviationFilter="this.abbreviationFilter"
         :isLocationExamView="true"
@@ -124,7 +124,7 @@
         :data="this.locations"
         :dataFetched="this.dataFetched"
         :isLocationExamView="true"
-        tableTitle="Listagem de locais"
+        tableTitle="Listagem de salas"
         @enableUpdate="enableUpdate"
         @remove="remove"
         @active="active"
@@ -160,7 +160,7 @@
 
       <Bootstrap5Pagination
         :data="this.locations"
-        @pagination-change-page="getLocationExam"
+        @pagination-change-page="getExamRoom"
         limit="2"
         show-disabled
       >
@@ -205,8 +205,11 @@ export default {
       designation: "",
       abbreviation: "",
       address: "",
-      designationFilter: "",
-      abbreviationFilter: "",
+      blocoFilter: "",
+      numberRoomFilter: "",
+      capacityFilter: "",
+      availableFilter: "",
+      examLocationFilter: "",
       statusFilter: "",
       indicator: "",
       locations: ref([]),
@@ -214,9 +217,11 @@ export default {
       dataFetched: false,
       errors: ref([]),
       columns: [
-        { name: "Nome", key: "designation" },
-        { name: "Sigla", key: "abbreviation" },
-        { name: "Endereço", key: "address" },
+        { name: "Local", key: "local" },
+        { name: "Bloco", key: "bloco" },
+        { name: "Sala Número", key: "number_room" },
+        { name: "Capacidade", key: "capacity" },
+        { name: "Disponibilidade", key: "available" },
         { name: "Estado", key: "status" },
       ],
     };
@@ -270,7 +275,7 @@ export default {
         this.abbreviation = "";
         this.designation = "";
         this.errors = [];
-        this.getLocationExam();
+        this.getExamRoom();
       }
     },
     async updateLocation() {
@@ -335,11 +340,11 @@ export default {
         this.designation = "";
         this.address = "";
         this.errors = [];
-        this.getLocationExam();
+        this.getExamRoom();
       }
     },
 
-    async getLocationExam(page = 1) {
+    async getExamRoom(page = 1) {
       this.statusFilter =
         $("#statusFilter").val() == null ? "" : $("#statusFilter").val();
 
@@ -347,10 +352,20 @@ export default {
 
       Utilits.showLoader();
       const res = await Api.get(
-        `/examLocation?page=${page}&designation=${this.designationFilter}&abbreviation=${this.abbreviationFilter}&status=${this.statusFilter}`
+        `/examRoom?page=${page}&bloco=${this.blocoFilter}
+          &number_room=${this.numberRoomFilter}
+          &capacity=${this.capacityFilter}
+          &available=${this.availableFilter}
+          &exam_location_id=${this.examLocationFilter}
+          &status=${this.statusFilter}`
       );
 
       this.locations = await res;
+
+      this.locations.data.forEach(function (item) {
+        item.local = item.exam_location.designation;
+      });
+      // console.log(this.locations);
 
       this.dataFetched = true;
 
@@ -361,7 +376,7 @@ export default {
       }
     },
 
-    // async getLocationExam(page = 1){
+    // async getExamRoom(page = 1){
     //         Utilits.showLoader()
     //         const res = await Api.get(`/location?page=${page}`);
 
@@ -416,7 +431,7 @@ export default {
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getLocationExam();
+        this.getExamRoom();
       }
     },
 
@@ -443,7 +458,7 @@ export default {
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getLocationExam();
+        this.getExamRoom();
       }
     },
 
@@ -529,7 +544,7 @@ export default {
   },
 
   created() {
-    this.getLocationExam();
+    this.getExamRoom();
     // $(document).ready(function() {
   },
   mounted() {
