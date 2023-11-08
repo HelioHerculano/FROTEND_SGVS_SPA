@@ -112,9 +112,11 @@
       <!-- Filtros -->
       <Filters
         @getData="getExamRoom"
-        v-model:designationFilter="this.designationFilter"
-        v-model:abbreviationFilter="this.abbreviationFilter"
-        :isLocationExamView="true"
+        v-model:blocoFilter="this.blocoFilter"
+        v-model:capacityFilter="this.capacityFilter"
+        v-model:numberRoomFilter="this.numberRoomFilter"
+        :isExamRoomView="true"
+        :locations="this.getAllLocation()"
       />
       <!-- End-FIlters -->
 
@@ -347,8 +349,9 @@ export default {
     async getExamRoom(page = 1) {
       this.statusFilter =
         $("#statusFilter").val() == null ? "" : $("#statusFilter").val();
-
-      // alert(this.statusFilter);
+      this.availableFilter =
+        $("#availableFilter").val() == null ? "" : $("#availableFilter").val();
+      // alert(this.examLocationFilter);
 
       Utilits.showLoader();
       const res = await Api.get(
@@ -376,20 +379,23 @@ export default {
       }
     },
 
-    // async getExamRoom(page = 1){
-    //         Utilits.showLoader()
-    //         const res = await Api.get(`/location?page=${page}`);
+    async getAllLocation() {
+      let data = ref([]);
+      Utilits.showLoader();
+      const res = await Api.get(`/examLocations/all`);
 
-    //         this.locations = await res
+      this.dataFetched = true;
 
-    //         this.dataFetched = true
+      if (this.dataFetched) {
+        Utilits.hideLoader();
+      }
 
-    //         console.log(this.locations.data.length)
+      data.value = await res.data;
 
-    //         if(this.dataFetched){
-    //             Utilits.hideLoader()
-    //         }
-    // },
+      // console.log(data.value);
+
+      return data.value;
+    },
 
     async getOneLocation(id) {
       Utilits.showLoader();
@@ -485,6 +491,7 @@ export default {
     },
 
     async imporExcelData() {
+      console.log("uehrheirieu");
       this.indicator = "on";
       document
         .getElementById("upload_excel_locais")
@@ -499,8 +506,10 @@ export default {
       // Adicione o arquivo simulado ao formulário virtual
       virtualForm.append("excel_file", file, file.name);
 
+      // console.log(file);
+
       try {
-        const res = await Api.postFile("/examLocation/import", virtualForm);
+        const res = await Api.postFile("/examRoom/import", virtualForm);
         console.log(res);
         if (res.success) {
           // const id = "#kt_modal_upload_dropzone";
@@ -545,6 +554,7 @@ export default {
 
   created() {
     this.getExamRoom();
+    // this.getAllLocation();
     // $(document).ready(function() {
   },
   mounted() {

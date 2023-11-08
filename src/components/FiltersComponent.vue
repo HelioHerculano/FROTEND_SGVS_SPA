@@ -12,7 +12,10 @@
       <!--begin::Body-->
       <div class="card-body py-3">
         <div class="row">
-          <div class="col-4">
+          <div
+            class="col-4"
+            v-show="this.$props.isLocationExamView || this.$props.isBankView"
+          >
             <!--begin::Input group-->
             <div class="d-flex flex-column mb-8 fv-row">
               <label class="form-label fw-bold fs-6 text-gray-700">Nome</label>
@@ -38,7 +41,94 @@
             <!--end::Input group-->
           </div>
 
-          <div class="col-4">
+          <div class="col-4" v-show="this.$props.isExamRoomView">
+            <div class="mb-10">
+              <!--begin::Label-->
+              <label class="form-label fw-bold fs-6 text-gray-700"
+                >Locais</label
+              >
+              <!--end::Label-->
+
+              <!--begin::Select-->
+              <select
+                id="examLocationFilter"
+                name="currnecy"
+                aria-label="Select a Timezone"
+                data-control="select2"
+                data-placeholder="---Selecione aqui---"
+                class="form-select form-select-solid"
+              >
+                <option value=""></option>
+
+                <option
+                  v-for="(local, index) in this.comboxLocations"
+                  :key="index"
+                  value="{{ local.id }}"
+                >
+                  {{ local.designation }}
+                </option>
+
+                <!-- <option value="1">Disponivel</option> -->
+                <!-- <option value="0">Indisponivel</option> -->
+              </select>
+              <!--end::Select-->
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isExamRoomView">
+            <!--begin::Input group-->
+            <div class="d-flex flex-column mb-8 fv-row">
+              <label class="form-label fw-bold fs-6 text-gray-700">Bloco</label>
+
+              <input
+                type="text"
+                class="form-control form-control-solid"
+                placeholder="Pesquise pelo bloco..."
+                name="bloco"
+                @input="$emit('update:blocoFilter', $event.target.value)"
+              />
+              <!--end::Input group-->
+            </div>
+          </div>
+
+          <div class="col-4" v-show="this.$props.isExamRoomView">
+            <!--begin::Input group-->
+            <div class="d-flex flex-column mb-8 fv-row">
+              <label class="form-label fw-bold fs-6 text-gray-700"
+                >Capacidade</label
+              >
+
+              <input
+                type="text"
+                class="form-control form-control-solid"
+                placeholder="Pesquise pela capacidade..."
+                name="capacity"
+                @input="$emit('update:capacityFilter', $event.target.value)"
+              />
+              <!--end::Input group-->
+            </div>
+          </div>
+
+          <div class="col-4" v-show="this.$props.isExamRoomView">
+            <!--begin::Input group-->
+            <div class="d-flex flex-column mb-8 fv-row">
+              <label class="form-label fw-bold fs-6 text-gray-700"
+                >Número da sala</label
+              >
+
+              <input
+                type="text"
+                class="form-control form-control-solid"
+                placeholder="Pesquise pelo número da sala..."
+                name="numberRoom"
+                @input="$emit('update:numberRoomFilter', $event.target.value)"
+              />
+              <!--end::Input group-->
+            </div>
+          </div>
+
+          <div class="col-4" v-show="!this.$props.isExamRoomView">
             <!--begin::Input group-->
             <div class="d-flex flex-column mb-8 fv-row">
               <label class="form-label fw-bold fs-6 text-gray-700">Sigla</label>
@@ -50,6 +140,33 @@
                 name="abbreviation"
                 @input="$emit('update:abbreviationFilter', $event.target.value)"
               />
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isExamRoomView">
+            <div class="mb-10">
+              <!--begin::Label-->
+              <label class="form-label fw-bold fs-6 text-gray-700"
+                >Disponibilidade</label
+              >
+              <!--end::Label-->
+
+              <!--begin::Select-->
+              <select
+                id="availableFilter"
+                name="currnecy"
+                aria-label="Select a Timezone"
+                data-control="select2"
+                data-placeholder="---Selecione aqui---"
+                class="form-select form-select-solid"
+              >
+                <!-- <option value=""></option> -->
+
+                <option value="1">Disponivel</option>
+                <option value="0">Indisponivel</option>
+              </select>
+              <!--end::Select-->
             </div>
             <!--end::Input group-->
           </div>
@@ -101,9 +218,17 @@ export default {
     isLocationExamView: {
       type: Boolean,
     },
+    isExamRoomView: {
+      type: Boolean,
+    },
+
+    locations: {
+      type: Array,
+    },
   },
   data() {
     return {
+      comboxLocations: "",
       // statusFilter: "",
       // descriptionFilter: "",
       // abbreviationFilter: "",
@@ -117,6 +242,18 @@ export default {
       var page = 1;
       this.$emit("getData", page, statusFilter);
     },
+  },
+
+  created() {
+    if (this.$props.isExamRoomView) {
+      this.$props.locations
+        .then((valor) => {
+          this.comboxLocations = valor;
+        })
+        .catch((erro) => {
+          console.error(erro);
+        });
+    }
   },
 };
 </script>

@@ -304,6 +304,8 @@ var KTApp = (function () {
       )
     );
 
+    console.log(elements);
+
     elements.map(function (element) {
       if (element.getAttribute("data-kt-initialized") === "1") {
         return;
