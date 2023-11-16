@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="getData">
     <!--begin::Tables Widget 13-->
-    <div class="card mb-5 mb-xl-8">
+    <div class="card mb-5 mb-xl-12">
       <!--begin::Header-->
       <div class="card-header border-0 pt-5">
         <h3 class="card-title align-items-start flex-column">
@@ -201,6 +201,12 @@
 
         <div class="col-md-12 mb-5" style="text-align: right">
           <button type="submit" class="btn btn-sm fw-bold btn-dark">
+
+            <i class="ki-duotone ki-magnifier fs-2">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+
             Pesquisar
           </button>
         </div>

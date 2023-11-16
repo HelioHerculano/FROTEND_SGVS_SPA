@@ -2,7 +2,7 @@
   <!--begin::Sidebar-->
   <div
     id="kt_app_sidebar"
-    class="app-sidebar flex-column"
+    class="app-sidebar flex-column bg-sidebar"
     data-kt-drawer="true"
     data-kt-drawer-name="app-sidebar"
     data-kt-drawer-activate="{default: true, lg: false}"
@@ -97,7 +97,11 @@
               <!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link active" href="index.html"
+                <a
+                  @click="activeMenu(isExames=true)"
+                  class="menu-link"
+                  :class="{ active: isExames }"
+                  href="index.html"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
                   ><span class="menu-title">Exames</span>
@@ -164,7 +168,9 @@
               <!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link-->
-                <RouterLink class="menu-link" to="/bancos">
+                <RouterLink  @click="activeMenu(isExames=false,isBanks=true)"
+                  class="menu-link"
+                  :class="{ active: isBanks }" to="/bancos">
                   <span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
                   ><span class="menu-title">Bancos </span>
@@ -231,7 +237,7 @@
               <!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link-->
-                <RouterLink class="menu-link" to="/LocaisExames"
+                <RouterLink class="menu-link" @click="activeMenu(isExames=false,isBanks=false,isLocations=true)" :class="{ active: isLocations }" to="/LocaisExames"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
                   ><span class="menu-title">Escolas</span>
@@ -240,7 +246,7 @@
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
-                <!--begin:Menu link--><RouterLink class="menu-link" to="/salas"
+                <!--begin:Menu link--><RouterLink class="menu-link" @click="activeMenu(isExames=false,isBanks=false,isLocations=false,isExamRooms=true)" :class="{ active: isExamRooms }" to="/salas"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
                   ><span class="menu-title">Salas</span></RouterLink
@@ -426,3 +432,24 @@
   </div>
   <!--end::Sidebar-->
 </template>
+<script>
+export default {
+  data() {
+    return {
+      isExames: false,
+      isBanks: false,
+      isLocations: false,
+      isExamRooms:false,
+    };
+  },
+
+  methods: {
+       activeMenu(isExames=false, isBanks=false, isLocations = false, isExamRooms=false) {
+        this.isExames = isExames;
+        this.isBanks = isBanks;
+        this.isLocations = isLocations;
+        this.isExamRooms = isExamRooms;
+      }
+  }
+};
+</script>

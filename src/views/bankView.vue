@@ -51,15 +51,23 @@
         <!--end::Secondary button-->
 
         <!--begin::Primary button-->
-        <a
+        <PrimaryButton
+          v-on:click="enableStore"
+          textButton="Registar"
+        ></PrimaryButton>
+        <!-- <a
           href="#"
-          class="btn btn-sm fw-bold btn-primary"
+          class="btn btn-flex btn-sm fw-bold btn-light-primary btn-border"
           data-bs-toggle="modal"
           data-bs-target="#kt_modal_new_data"
           v-on:click="enableStore"
         >
+          <i class="ki-duotone ki-archive-tick fs-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
           Registar
-        </a>
+        </a> -->
         <!--end::Primary button-->
       </div>
       <!--end::Actions-->
@@ -172,6 +180,7 @@
 <script>
 import DataTable from "../components/DataTables/DataTable.vue";
 import ModalBanks from "../components/Modals/Bank/ModalBank.vue";
+import PrimaryButton from "../components/shared/primaryButton.vue";
 import Filters from "../components/FiltersComponent.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
@@ -186,6 +195,7 @@ export default {
     ModalBanks,
     Bootstrap5Pagination,
     Filters,
+    PrimaryButton,
   },
 
   data() {

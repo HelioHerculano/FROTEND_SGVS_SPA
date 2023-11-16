@@ -51,7 +51,12 @@
         <!--end::Secondary button-->
 
         <!--begin::Primary button-->
-        <a
+        <PrimaryButton
+          v-on:click="enableStore"
+          textButton="Registar"
+        ></PrimaryButton>
+
+        <!-- <a
           href="#"
           class="btn btn-sm fw-bold btn-primary"
           data-bs-toggle="modal"
@@ -59,7 +64,7 @@
           v-on:click="enableStore"
         >
           Registar
-        </a>
+        </a> -->
         <!--end::Primary button-->
       </div>
       <!--end::Actions-->
@@ -181,6 +186,7 @@
 import DataTable from "../components/DataTables/DataTable.vue";
 import UploadLocationModal from "../components/Modals/LocationExam/UploadLocationModal.vue";
 import ModalLocations from "../components/Modals/LocationExam/ModalFormLocation.vue";
+import PrimaryButton from "../components/shared/primaryButton.vue";
 import Filters from "../components/FiltersComponent.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
@@ -197,6 +203,7 @@ export default {
     Filters,
     Bootstrap5Pagination,
     ModalLocations,
+    PrimaryButton
   },
 
   data() {
