@@ -61,9 +61,9 @@
                 <option value=""></option>
 
                 <option
-                  v-for="(local, index) in this.comboxLocations"
+                  v-for="(local, index) in this.comboBoxLocations"
                   :key="index"
-                  value="{{ local.id }}"
+                  :value="local.id"
                 >
                   {{ local.designation }}
                 </option>
@@ -164,7 +164,7 @@
                 <!-- <option value=""></option> -->
 
                 <option value="1">Disponivel</option>
-                <option value="0">Indisponivel</option>
+                <option value="2">Indisponivel</option>
               </select>
               <!--end::Select-->
             </div>
@@ -191,7 +191,7 @@
                 <!-- <option value=""></option> -->
 
                 <option value="1">Activo</option>
-                <option value="0">Inactivo</option>
+                <option value="2">Inactivo</option>
               </select>
               <!--end::Select-->
             </div>
@@ -234,7 +234,7 @@ export default {
   },
   data() {
     return {
-      comboxLocations: "",
+      comboBoxLocations: "",
       // statusFilter: "",
       // descriptionFilter: "",
       // abbreviationFilter: "",
@@ -248,18 +248,22 @@ export default {
       var page = 1;
       this.$emit("getData", page, statusFilter);
     },
+
+    async getLocationsData() {
+      if (this.$props.isExamRoomView) {
+        this.$props.locations
+          .then((data) => {
+            this.comboBoxLocations = data;
+          })
+          .catch((erro) => {
+            console.error(erro);
+          });
+      }
+    },
   },
 
   created() {
-    if (this.$props.isExamRoomView) {
-      this.$props.locations
-        .then((valor) => {
-          this.comboxLocations = valor;
-        })
-        .catch((erro) => {
-          console.error(erro);
-        });
-    }
+    this.getLocationsData();
   },
 };
 </script>

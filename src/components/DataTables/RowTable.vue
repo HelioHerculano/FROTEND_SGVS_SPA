@@ -40,7 +40,7 @@
         >Activo</span
       >
       <span
-        v-if="column.key == 'status' && item.status == 0"
+        v-if="column.key == 'status' && item.status == 2"
         class="badge badge-light-danger"
         >Inactivo</span
       >
@@ -67,7 +67,7 @@
 
     <td class="text-center">
       <button
-        v-if="item.status == 0"
+        v-if="item.status == 2"
         href="#"
         class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
         @click="active(item.id)"

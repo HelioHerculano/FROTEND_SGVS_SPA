@@ -137,7 +137,7 @@
         @active="active"
       />
 
-      <ModalLocations
+      <ModalLocationsRoom
         @register="registerLocation"
         @update="updateLocation"
         @enableStore="enableStore"
@@ -145,14 +145,15 @@
         :btnText="this.btnText"
         :isUpdate="this.isUpdate"
         :indicatorProps="this.indicator"
-        v-model:designation="this.designation"
-        v-model:abbreviation="this.abbreviation"
-        v-model:address="this.address"
+        v-model:bloco="this.bloco"
+        v-model:capacity="this.capacity"
+        v-model:number_room="this.number_room"
         :errors="this.errors"
-        placeholderOne="Nome do local..."
-        placeholderTwo="Sigla do local..."
-        placeholderThree="Endereço do local..."
-        :isLocationExamView="true"
+        placeholderOne="Bloco da sala..."
+        placeholderTwo="Número da sala..."
+        placeholderThree="Capacidade da sala..."
+        :isExamRoomView="true"
+        :locations="this.getAllLocation()"
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -187,6 +188,7 @@ import DataTable from "../components/DataTables/DataTable.vue";
 import UploadLocationModal from "../components/Modals/LocationExam/UploadLocationModal.vue";
 import ModalLocations from "../components/Modals/LocationExam/ModalFormLocation.vue";
 import PrimaryButton from "../components/shared/primaryButton.vue";
+import ModalLocationsRoom from "../components/Modals/RoomExam/ModalFormRoom.vue";
 import Filters from "../components/FiltersComponent.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
@@ -203,6 +205,7 @@ export default {
     Filters,
     Bootstrap5Pagination,
     ModalLocations,
+    ModalLocationsRoom,
     PrimaryButton
   },
 
@@ -211,9 +214,10 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      designation: "",
-      abbreviation: "",
-      address: "",
+      capacity: "",
+      bloco: "",
+      number_room: "",
+      location_id: "",
       blocoFilter: "",
       numberRoomFilter: "",
       capacityFilter: "",
@@ -248,10 +252,19 @@ export default {
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
+      this.location_id =
+        $("#location_id").val() == null ? "" : $("#location_id").val();
+
+      alert(this.location_id);
+      alert(this.bloco);
+      alert(this.capacity);
+      alert(this.number_room);
+
       let data = {
-        designation: this.designation,
-        abbreviation: this.abbreviation,
-        address: this.address,
+        bloco: this.bloco,
+        capacity: this.capacity,
+        number_room: this.number_room,
+        location: this.location_id,
       };
 
       console.log(data);
@@ -358,7 +371,12 @@ export default {
         $("#statusFilter").val() == null ? "" : $("#statusFilter").val();
       this.availableFilter =
         $("#availableFilter").val() == null ? "" : $("#availableFilter").val();
-      // alert(this.examLocationFilter);
+
+      this.examLocationFilter =
+        $("#examLocationFilter").val() == null
+          ? ""
+          : $("#examLocationFilter").val();
+      // alert(this.statusFilter);
 
       Utilits.showLoader();
       const res = await Api.get(
@@ -479,7 +497,7 @@ export default {
       // alert(id);
       this.getOneLocation(id);
 
-      this.title = "Actualizar Local";
+      this.title = "Actualizar Sala";
       this.btnText = "Actualizar";
       this.isUpdate = true;
       this.errors = [];
@@ -489,7 +507,7 @@ export default {
     },
 
     enableStore() {
-      this.title = "Registar Local";
+      this.title = "Registar Sala";
       this.btnText = "Registar";
       this.isUpdate = false;
       this.errors = [];
