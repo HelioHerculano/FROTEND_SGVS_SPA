@@ -16,7 +16,7 @@
         <h1
           class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
         >
-          Locais de exames
+          Gestão de horários
         </h1>
         <!--end::Title-->
 
@@ -51,18 +51,22 @@
         <!--end::Secondary button-->
 
         <!--begin::Primary button-->
-          <PrimaryButton
-            v-on:click="enableStore"
-            textButton="Registar"
-            datatarget="kt_modal_location"
+        <PrimaryButton
+          v-on:click="enableStore"
+          textButton="Registar"
+          datatarget="kt_modal_new_data"
         ></PrimaryButton>
         <!-- <a
           href="#"
-          class="btn btn-sm fw-bold btn-primary"
+          class="btn btn-flex btn-sm fw-bold btn-light-primary btn-border"
           data-bs-toggle="modal"
-          data-bs-target="#kt_modal_location"
+          data-bs-target="#kt_modal_new_data"
           v-on:click="enableStore"
         >
+          <i class="ki-duotone ki-archive-tick fs-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
           Registar
         </a> -->
         <!--end::Primary button-->
@@ -114,44 +118,26 @@
         <!--end::Col-->
       </div>
       <!--end::Row-->
+
       <!-- Filtros -->
       <Filters
-        @getData="getLocationExam"
-        v-model:designationFilter="this.designationFilter"
+        @getData="getData"
+        v-model:descriptionFilter="this.descriptionFilter"
         v-model:abbreviationFilter="this.abbreviationFilter"
-        :isLocationExamView="true"
+        :isBankView="true"
       />
       <!-- End-FIlters -->
 
       <DataTable
         :dataLenght="this.dataLength"
         :columns="this.columns"
-        :data="this.locations"
+        :data="this.banks"
         :dataFetched="this.dataFetched"
-        :isLocationExamView="true"
-        buttonText="Upload De Locais"
-        tableTitle="Listagem de locais"
+        tableTitle="Listagem de bancos"
         @enableUpdate="enableUpdate"
         @remove="remove"
         @active="active"
-      />
-
-      <ModalLocations
-        @register="registerLocation"
-        @update="updateLocation"
-        @enableStore="enableStore"
-        :title="this.title"
-        :btnText="this.btnText"
-        :isUpdate="this.isUpdate"
-        :indicatorProps="this.indicator"
-        v-model:designation="this.designation"
-        v-model:abbreviation="this.abbreviation"
-        v-model:address="this.address"
-        :errors="this.errors"
-        placeholderOne="Nome do local..."
-        placeholderTwo="Sigla do local..."
-        placeholderThree="Endereço do local..."
-        :isLocationExamView="true"
+        :isBankView="true"
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -159,15 +145,25 @@
         Nenhum registo encontrado.
       </div>
 
-      <UploadLocationModal
-        @imporExcelData="imporExcelData"
-        title="Upload de locais"
+      <ModalTimeTable
+        @register="registerBank"
+        @update="updateBank"
+        @enableStore="enableStore"
+        :title="this.title"
+        :btnText="this.btnText"
+        :isUpdate="this.isUpdate"
         :indicatorProps="this.indicator"
+        v-model:description="this.description"
+        v-model:abbreviation="this.abbreviation"
+        :errors="this.errors"
+        placeholderOne="Nome do banco..."
+        placeholderTwo="Sigla do banco..."
+        :isBankView="true"
       />
 
       <Bootstrap5Pagination
-        :data="this.locations"
-        @pagination-change-page="getLocationExam"
+        :data="this.banks"
+        @pagination-change-page="getData"
         limit="2"
         show-disabled
       >
@@ -184,26 +180,23 @@
 
 <script>
 import DataTable from "../components/DataTables/DataTable.vue";
-import UploadLocationModal from "../components/Modals/UploadModal.vue";
-import ModalLocations from "../components/Modals/LocationExam/ModalFormLocation.vue";
+import ModalTimeTable from "../components/Modals/TimeTable/ModalTimeTable.vue";
 import PrimaryButton from "../components/shared/primaryButton.vue";
 import Filters from "../components/FiltersComponent.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
 import SweetAlert from "../dist-assets/assets/js/custom/SweetAlert/SweetAlert.js";
 import Select2 from "../dist-assets/assets/js/select2.js";
-import FileDropZone from "../dist-assets/assets/js/fileDropZone.js";
 import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
 
 export default {
   components: {
     DataTable,
-    UploadLocationModal,
-    Filters,
+    ModalTimeTable,
     Bootstrap5Pagination,
-    ModalLocations,
-    PrimaryButton
+    Filters,
+    PrimaryButton,
   },
 
   data() {
@@ -211,22 +204,19 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      designation: "",
+      description: "",
       abbreviation: "",
-      address: "",
-      designationFilter: "",
+      descriptionFilter: "",
       abbreviationFilter: "",
       statusFilter: "",
       indicator: "",
-      locations: ref([]),
-      location: ref([]),
+      banks: ref([]),
+      bank: ref([]),
       dataFetched: false,
       errors: ref([]),
       columns: [
-        { name: "Nome", key: "designation" },
+        { name: "Nome", key: "description" },
         { name: "Sigla", key: "abbreviation" },
-        { name: "Endereço", key: "address" },
-        { name: "Número de salas", key: "exam_room_count" },
         { name: "Estado", key: "status" },
       ],
     };
@@ -238,21 +228,20 @@ export default {
     //     this.btnText = btnText
     //   },
 
-    async registerLocation() {
+    async registerBank() {
       this.indicator = "on";
       document
-        .getElementById("kt_modal_data_submit")
+        .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
       let data = {
-        designation: this.designation,
+        description: this.description,
         abbreviation: this.abbreviation,
-        address: this.address,
       };
 
       console.log(data);
 
-      const res = await Api.post("/examLocation", data);
+      const res = await Api.post("/bank", data);
 
       if (res.code == 422) {
         this.errors = res.message;
@@ -260,7 +249,7 @@ export default {
         this.indicator = "";
         SweetAlert.Alert("Erro", "Preecha os campos obrigatorios", "error", "");
         document
-          .getElementById("kt_modal_data_submit")
+          .getElementById("kt_modal_new_data_submit")
           .removeAttribute("disabled");
       }
 
@@ -269,35 +258,34 @@ export default {
           "Sucesso",
           "Banco registado com sucesso",
           "success",
-          "#kt_modal_location",
-          "kt_modal_location_form"
+          "#kt_modal_new_data",
+          "kt_modal_new_data"
         );
         this.indicator = "";
         document
-          .getElementById("kt_modal_data_submit")
+          .getElementById("kt_modal_new_data_submit")
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
-        this.designation = "";
+        this.description = "";
         this.errors = [];
-        this.getLocationExam();
+        this.getData();
       }
     },
-    async updateLocation() {
-      // console.log(this.location.data.id)
+    async updateBank() {
+      // console.log(this.bank.data.id)
       this.indicator = "on";
       document
-        .getElementById("kt_modal_data_submit")
+        .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
       let data = {
-        designation: this.designation,
+        description: this.description,
         abbreviation: this.abbreviation,
-        address: this.address,
       };
 
       console.log(data);
-      const res = await Api.put(`/examLocation/${this.location.data.id}`, data);
+      const res = await Api.put(`/bank/${this.bank.data.id}`, data);
 
       console.log(res);
       if (res.code == 422) {
@@ -319,12 +307,12 @@ export default {
             ""
           );
           document
-            .getElementById("kt_modal_data_submit")
+            .getElementById("kt_modal_new_data_submit")
             .removeAttribute("disabled");
         }
 
         document
-          .getElementById("kt_modal_data_submit")
+          .getElementById("kt_modal_new_data_submit")
           .removeAttribute("disabled");
       }
 
@@ -333,74 +321,73 @@ export default {
           "Sucesso",
           "Banco actualizado com sucesso",
           "success",
-          "#kt_modal_location",
-          "kt_modal_location_form"
+          "#kt_modal_new_data",
+          "kt_modal_new_data"
         );
         this.indicator = "";
         document
-          .getElementById("kt_modal_data_submit")
+          .getElementById("kt_modal_new_data_submit")
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
-        this.designation = "";
-        this.address = "";
+        this.description = "";
         this.errors = [];
-        this.getLocationExam();
+        this.getData();
       }
     },
 
-    async getLocationExam(page = 1) {
-      this.statusFilter =
-        $("#statusFilter").val() == null ? "" : $("#statusFilter").val();
-
-      // alert(this.statusFilter);
+    async getData(page = 1, statusFilter) {
+      if (typeof statusFilter == "undefined") {
+        this.statusFilter = 1;
+      } else {
+        this.statusFilter = statusFilter;
+      }
 
       Utilits.showLoader();
       const res = await Api.get(
-        `/examLocation?page=${page}&designation=${this.designationFilter}&abbreviation=${this.abbreviationFilter}&status=${this.statusFilter}`
+        `/bank?page=${page}&description=${this.descriptionFilter}&abbreviation=${this.abbreviationFilter}&status=${this.statusFilter}`
       );
 
-      this.locations = await res;
+      this.banks = await res;
 
       this.dataFetched = true;
 
-      console.log(this.locations.data.length);
+      console.log(this.banks.data.length);
 
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
     },
 
-    // async getLocationExam(page = 1){
+    // async getData(page = 1){
     //         Utilits.showLoader()
-    //         const res = await Api.get(`/location?page=${page}`);
+    //         const res = await Api.get(`/bank?page=${page}`);
 
-    //         this.locations = await res
+    //         this.banks = await res
 
     //         this.dataFetched = true
 
-    //         console.log(this.locations.data.length)
+    //         console.log(this.banks.data.length)
 
     //         if(this.dataFetched){
     //             Utilits.hideLoader()
     //         }
     // },
 
-    async getOneLocation(id) {
+    async getOneBank(id) {
       Utilits.showLoader();
 
-      const res = await Api.getOne(`/examLocation/${id}`);
+      const res = await Api.getOne(`/bank/${id}`);
 
-      this.location = await res;
-      console.log(this.location);
+      this.bank = await res;
+      console.log(this.bank);
 
       this.dataFetched = true;
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
-      this.designation = res.data.designation;
+      this.description = res.data.description;
       this.abbreviation = res.data.abbreviation;
-      this.address = res.data.address;
     },
 
     async remove(id) {
@@ -408,7 +395,7 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende eliminar o local?",
+        title: "Pretende eliminar o banco?",
         showCancelButton: true,
         // confirmButtonColor: '#0CC27E',
         // cancelButtonColor: '#FF586B',
@@ -420,13 +407,13 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.delete(`/examLocation/${id}`);
+          res = await Api.delete(`/bank/${id}`);
         }
       });
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getLocationExam();
+        this.getData();
       }
     },
 
@@ -435,7 +422,7 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende activar o Local?",
+        title: "Pretende activar o banco?",
         showCancelButton: true,
         // confirmButtonColor: '#0CC27E',
         // cancelButtonColor: '#FF586B',
@@ -447,105 +434,54 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.active(`/examLocation/${id}/active`);
+          res = await Api.active(`/bank/${id}/active`);
         }
       });
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getLocationExam();
+        this.getData();
       }
     },
 
     enableUpdate(id) {
-      // alert(id);
-      this.getOneLocation(id);
+      // alert(id)
+      this.getOneBank(id);
 
-      this.title = "Actualizar Local";
+      this.title = "Actualizar Banco";
       this.btnText = "Actualizar";
       this.isUpdate = true;
       this.errors = [];
-      this.designation = null;
+      this.description = null;
       this.abbreviation = null;
-      this.address = null;
     },
 
     enableStore() {
-      this.title = "Registar Local";
+      this.title = "Registar Banco";
       this.btnText = "Registar";
       this.isUpdate = false;
       this.errors = [];
-      this.designation = null;
+      this.description = null;
       this.abbreviation = null;
-    },
-
-    async imporExcelData() {
-      this.indicator = "on";
-      document
-        .getElementById("upload_excel_locais")
-        .setAttribute("disabled", "true");
-
-      let file = FileDropZone.file();
-      // console.log(file);
-
-      // Crie um formulário virtual
-      const virtualForm = new FormData();
-
-      // Adicione o arquivo simulado ao formulário virtual
-      virtualForm.append("excel_file", file, file.name);
-
-      try {
-        const res = await Api.postFile("/examLocation/import", virtualForm);
-        console.log(res);
-        if (res.success) {
-          // const id = "#kt_modal_upload_dropzone";
-          // const dropzone = document.querySelector(id);
-          // const progressBars = dropzone.querySelectorAll(".dz-complete");
-
-          // progressBars.forEach((progressBar) => {
-          //   progressBar.querySelector(".progress-bar").style.opacity = "0";
-          //   progressBar.querySelector(".progress").style.opacity = "0";
-          //   progressBar.querySelector(".dropzone-start").style.opacity = "0";
-          // });
-
-          FileDropZone.dropzone().removeAllFiles(true);
-
-          SweetAlert.Alert(
-            "Sucesso",
-            "Banco registado com sucesso",
-            "success",
-            "#kt_modal_upload",
-            "modal_upload_excel"
-          );
-          this.indicator = "";
-          document
-            .getElementById("upload_excel_locais")
-            .removeAttribute("disabled");
-          this.errors = [];
-          this.getLocationExam()
-        }
-      } catch (error) {
-        console.log("Error", error);
-      }
     },
   },
 
   computed: {
     dataLength() {
-      if (this.locations.data == undefined) {
+      if (this.banks.data == undefined) {
         return 0;
       }
-      return this.locations.data.length;
+      return this.banks.data.length;
     },
   },
 
   created() {
-    this.getLocationExam();
+    this.getData();
     // $(document).ready(function() {
   },
   mounted() {
     Select2.createSelect2();
-    FileDropZone.initDropzone();
+    Utilits.initDate()
   },
 };
 </script>

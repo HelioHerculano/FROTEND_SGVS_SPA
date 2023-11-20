@@ -54,6 +54,7 @@
         <PrimaryButton
           v-on:click="enableStore"
           textButton="Registar"
+          datatarget="kt_modal_location"
         ></PrimaryButton>
 
         <!-- <a
@@ -121,7 +122,7 @@
         v-model:capacityFilter="this.capacityFilter"
         v-model:numberRoomFilter="this.numberRoomFilter"
         :isExamRoomView="true"
-        :locations="this.getAllLocation()"
+        :locations="this.comboBoxLocations.value"
       />
       <!-- End-FIlters -->
 
@@ -131,6 +132,7 @@
         :data="this.locations"
         :dataFetched="this.dataFetched"
         :isLocationExamView="true"
+        buttonText="Upload De Salas"
         tableTitle="Listagem de salas"
         @enableUpdate="enableUpdate"
         @remove="remove"
@@ -138,8 +140,8 @@
       />
 
       <ModalLocationsRoom
-        @register="registerLocation"
-        @update="updateLocation"
+        @register="registerExamRoom"
+        @update="updateExamRoom"
         @enableStore="enableStore"
         :title="this.title"
         :btnText="this.btnText"
@@ -153,7 +155,7 @@
         placeholderTwo="Número da sala..."
         placeholderThree="Capacidade da sala..."
         :isExamRoomView="true"
-        :locations="this.getAllLocation()"
+        :locations="this.comboBoxLocations.value"
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -163,6 +165,7 @@
 
       <UploadLocationModal
         @imporExcelData="imporExcelData"
+        title="Upload de salas"
         :indicatorProps="this.indicator"
       />
 
@@ -185,7 +188,7 @@
 
 <script>
 import DataTable from "../components/DataTables/DataTable.vue";
-import UploadLocationModal from "../components/Modals/LocationExam/UploadLocationModal.vue";
+import UploadLocationModal from "../components/Modals/UploadModal.vue";
 import ModalLocations from "../components/Modals/LocationExam/ModalFormLocation.vue";
 import PrimaryButton from "../components/shared/primaryButton.vue";
 import ModalLocationsRoom from "../components/Modals/RoomExam/ModalFormRoom.vue";
@@ -206,7 +209,7 @@ export default {
     Bootstrap5Pagination,
     ModalLocations,
     ModalLocationsRoom,
-    PrimaryButton
+    PrimaryButton,
   },
 
   data() {
@@ -225,8 +228,10 @@ export default {
       examLocationFilter: "",
       statusFilter: "",
       indicator: "",
+      comboBoxLocations: ref([]),
       locations: ref([]),
       location: ref([]),
+      examRoom: null,
       dataFetched: false,
       errors: ref([]),
       columns: [
@@ -246,7 +251,7 @@ export default {
     //     this.btnText = btnText
     //   },
 
-    async registerLocation() {
+    async registerExamRoom() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_data_submit")
@@ -255,21 +260,17 @@ export default {
       this.location_id =
         $("#location_id").val() == null ? "" : $("#location_id").val();
 
-      alert(this.location_id);
-      alert(this.bloco);
-      alert(this.capacity);
-      alert(this.number_room);
-
       let data = {
         bloco: this.bloco,
         capacity: this.capacity,
         number_room: this.number_room,
-        location: this.location_id,
+        exam_location_id: this.location_id,
       };
 
       console.log(data);
 
-      const res = await Api.post("/examLocation", data);
+      const res = await Api.post("/examRoom", data);
+      console.log(res);
 
       if (res.code == 422) {
         this.errors = res.message;
@@ -300,21 +301,27 @@ export default {
         this.getExamRoom();
       }
     },
-    async updateLocation() {
+    async updateExamRoom() {
       // console.log(this.location.data.id)
       this.indicator = "on";
       document
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
+            this.location_id =
+        $("#location_id").val() == null ? "" : $("#location_id").val();
+
       let data = {
-        designation: this.designation,
-        abbreviation: this.abbreviation,
-        address: this.address,
+        bloco: this.bloco,
+        capacity: this.capacity,
+        number_room: this.number_room,
+        exam_location_id: this.location_id,
       };
 
+      console.log(this.examRoom.data)
+
       console.log(data);
-      const res = await Api.put(`/examLocation/${this.location.data.id}`, data);
+      const res = await Api.put(`/examRoom/${this.examRoom.data.id}`, data);
 
       console.log(res);
       if (res.code == 422) {
@@ -376,7 +383,9 @@ export default {
         $("#examLocationFilter").val() == null
           ? ""
           : $("#examLocationFilter").val();
-      // alert(this.statusFilter);
+      this.statusFilter = this.statusFilter == "" ? 1 : this.statusFilter;
+
+      // alert(this.statusFilter)
 
       Utilits.showLoader();
       const res = await Api.get(
@@ -415,28 +424,27 @@ export default {
         Utilits.hideLoader();
       }
 
-      data.value = await res.data;
-
-      // console.log(data.value);
-
-      return data.value;
+      this.comboBoxLocations.value = await res.data;
     },
 
     async getOneLocation(id) {
       Utilits.showLoader();
 
-      const res = await Api.getOne(`/examLocation/${id}`);
+      const res = await Api.getOne(`/examRoom/${id}`);
 
-      this.location = await res;
-      console.log(this.location);
+      this.examRoom = await res;
+      console.log(this.examRoom.value);
 
       this.dataFetched = true;
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
-      this.designation = res.data.designation;
-      this.abbreviation = res.data.abbreviation;
-      this.address = res.data.address;
+      this.capacity = res.data.capacity;
+      this.number_room = res.data.number_room;
+      this.bloco = res.data.bloco;
+      $(`#location_id`).val(res.data.exam_location_id).trigger("change");
+      // this.abbreviation = res.data.abbreviation;
+      // this.address = res.data.address;
     },
 
     async remove(id) {
@@ -444,7 +452,7 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende eliminar o local?",
+        title: "Pretende eliminar a sala?",
         showCancelButton: true,
         // confirmButtonColor: '#0CC27E',
         // cancelButtonColor: '#FF586B',
@@ -456,7 +464,7 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.delete(`/examLocation/${id}`);
+          res = await Api.delete(`/examRoom/${id}`);
         }
       });
 
@@ -471,7 +479,7 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende activar o Local?",
+        title: "Pretende activar a sala?",
         showCancelButton: true,
         // confirmButtonColor: '#0CC27E',
         // cancelButtonColor: '#FF586B',
@@ -483,7 +491,7 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.active(`/examLocation/${id}/active`);
+          res = await Api.active(`/examRoom/${id}/active`);
         }
       });
 
@@ -501,18 +509,21 @@ export default {
       this.btnText = "Actualizar";
       this.isUpdate = true;
       this.errors = [];
-      this.designation = null;
-      this.abbreviation = null;
-      this.address = null;
+      this.capacity = null;
+      this.number_room = null;
+      this.bloco = null;
     },
 
     enableStore() {
+      this.getAllLocation();
       this.title = "Registar Sala";
       this.btnText = "Registar";
       this.isUpdate = false;
       this.errors = [];
-      this.designation = null;
-      this.abbreviation = null;
+      this.capacity = null;
+      this.number_room = null;
+      this.bloco = null;
+      $(`#location_id`).val("").trigger("change");
     },
 
     async imporExcelData() {
@@ -551,7 +562,7 @@ export default {
 
           SweetAlert.Alert(
             "Sucesso",
-            "Banco registado com sucesso",
+            "Carregamento feito com sucesso",
             "success",
             "#kt_modal_upload",
             "modal_upload_excel"
@@ -561,6 +572,7 @@ export default {
             .getElementById("upload_excel_locais")
             .removeAttribute("disabled");
           this.errors = [];
+          this.getExamRoom()
         }
       } catch (error) {
         console.log("Error", error);
@@ -579,6 +591,7 @@ export default {
 
   created() {
     this.getExamRoom();
+    this.getAllLocation();
     // this.getAllLocation();
     // $(document).ready(function() {
   },

@@ -61,7 +61,7 @@
                 <option value=""></option>
 
                 <option
-                  v-for="(local, index) in this.comboBoxLocations"
+                  v-for="(local, index) in this.$props.locations"
                   :key="index"
                   :value="local.id"
                 >
@@ -161,10 +161,15 @@
                 data-placeholder="---Selecione aqui---"
                 class="form-select form-select-solid"
               >
-                <!-- <option value=""></option> -->
-
-                <option value="1">Disponivel</option>
-                <option value="2">Indisponivel</option>
+                <option value=""></option>
+                <option
+                  v-for="(available, index) in this.available"
+                  :key="index"
+                  :value="available.key"
+                  :selected="available.key == 1"
+                >
+                  {{ available.description }}
+                </option>
               </select>
               <!--end::Select-->
             </div>
@@ -190,8 +195,15 @@
               >
                 <!-- <option value=""></option> -->
 
-                <option value="1">Activo</option>
-                <option value="2">Inactivo</option>
+                <option
+                  v-for="(status, index) in this.status"
+                  :key="index"
+                  :value="status.key"
+                  :selected="status.key == 1"
+                >
+                  {{ status.description }}
+                </option>
+
               </select>
               <!--end::Select-->
             </div>
@@ -201,7 +213,6 @@
 
         <div class="col-md-12 mb-5" style="text-align: right">
           <button type="submit" class="btn btn-sm fw-bold btn-dark">
-
             <i class="ki-duotone ki-magnifier fs-2">
               <span class="path1"></span>
               <span class="path2"></span>
@@ -235,9 +246,14 @@ export default {
   data() {
     return {
       comboBoxLocations: "",
-      // statusFilter: "",
-      // descriptionFilter: "",
-      // abbreviationFilter: "",
+      available: [
+        { key: 1, description: "Disponivel" },
+        { key: 2, description: "Indisponivel" },
+      ],
+      status: [
+        { key: 1, description: "Activo" },
+        { key: 2, description: "Inactivo" },
+      ],
     };
   },
 
@@ -248,22 +264,6 @@ export default {
       var page = 1;
       this.$emit("getData", page, statusFilter);
     },
-
-    async getLocationsData() {
-      if (this.$props.isExamRoomView) {
-        this.$props.locations
-          .then((data) => {
-            this.comboBoxLocations = data;
-          })
-          .catch((erro) => {
-            console.error(erro);
-          });
-      }
-    },
-  },
-
-  created() {
-    this.getLocationsData();
   },
 };
 </script>

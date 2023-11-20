@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import bankView from "../views/BankView.vue";
+import ExamTimeTableView from "../views/ExamTimeTableView.vue";
 import LocationExameView from "../views/LocationExameView.vue";
 import ExamRoomView from "../views/ExamRoomView.vue";
 
@@ -16,6 +17,11 @@ const router = createRouter({
       path: "/bancos",
       name: "bank",
       component: bankView,
+    },
+    {
+      path: "/horarios",
+      name: "ExamTimeTableView",
+      component: ExamTimeTableView,
     },
     {
       path: "/LocaisExames",

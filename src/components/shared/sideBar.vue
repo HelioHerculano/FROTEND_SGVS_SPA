@@ -98,7 +98,7 @@
               <div class="menu-item">
                 <!--begin:Menu link-->
                 <a
-                  @click="activeMenu(isExames=true)"
+                  @click="activeMenu((isExames = true))"
                   class="menu-link"
                   :class="{ active: isExames }"
                   href="index.html"
@@ -122,7 +122,7 @@
               <div class="menu-item">
                 <div class="menu-content">
                   <a
-                    class="btn btn-flex btn-color-primary d-flex flex-stack fs-base p-0 ms-2 mb-2 toggle collapsible collapsed"
+                    class="btn btn-flex btn-color-white d-flex flex-stack fs-base p-0 ms-2 mb-2 toggle collapsible collapsed"
                     data-bs-toggle="collapse"
                     href="#kt_app_sidebar_menu_dashboards_collapse"
                     data-kt-toggle-text="Mostrar alguns"
@@ -168,9 +168,12 @@
               <!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link-->
-                <RouterLink  @click="activeMenu(isExames=false,isBanks=true)"
-                  class="menu-link"
-                  :class="{ active: isBanks }" to="/bancos">
+                <RouterLink
+                  @click="activeMenu((isExames = false), (isBanks = true))"
+                  class="menu-link menu-link-bank"
+                  :class="{ active: isBanks }"
+                  to="/bancos"
+                >
                   <span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
                   ><span class="menu-title">Bancos </span>
@@ -179,12 +182,15 @@
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
-                <!--begin:Menu link--><a
+                <!--begin:Menu link-->
+                <RouterLink
+                  @click="activeMenu(false,false,false,false,true)"
                   class="menu-link"
-                  href="pages/user-profile/projects.html"
+                  :class="{ active: isTimeTable }"
+                  to="/horarios"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Horários</span></a
+                  ><span class="menu-title">Horários</span></RouterLink
                 ><!--end:Menu link-->
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
@@ -237,7 +243,17 @@
               <!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link-->
-                <RouterLink class="menu-link" @click="activeMenu(isExames=false,isBanks=false,isLocations=true)" :class="{ active: isLocations }" to="/LocaisExames"
+                <RouterLink
+                  class="menu-link"
+                  @click="
+                    activeMenu(
+                      (isExames = false),
+                      (isBanks = false),
+                      (isLocations = true)
+                    )
+                  "
+                  :class="{ active: isLocations }"
+                  to="/LocaisExames"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
                   ><span class="menu-title">Escolas</span>
@@ -246,7 +262,18 @@
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
-                <!--begin:Menu link--><RouterLink class="menu-link" @click="activeMenu(isExames=false,isBanks=false,isLocations=false,isExamRooms=true)" :class="{ active: isExamRooms }" to="/salas"
+                <!--begin:Menu link--><RouterLink
+                  class="menu-link"
+                  @click="
+                    activeMenu(
+                      (isExames = false),
+                      (isBanks = false),
+                      (isLocations = false),
+                      (isExamRooms = true)
+                    )
+                  "
+                  :class="{ active: isExamRooms }"
+                  to="/salas"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
                   ><span class="menu-title">Salas</span></RouterLink
@@ -439,17 +466,32 @@ export default {
       isExames: false,
       isBanks: false,
       isLocations: false,
-      isExamRooms:false,
+      isExamRooms: false,
+      isTimeTable: false
     };
   },
 
   methods: {
-       activeMenu(isExames=false, isBanks=false, isLocations = false, isExamRooms=false) {
-        this.isExames = isExames;
-        this.isBanks = isBanks;
-        this.isLocations = isLocations;
-        this.isExamRooms = isExamRooms;
-      }
-  }
+    activeMenu(
+      isExames = false,
+      isBanks = false,
+      isLocations = false,
+      isExamRooms = false,
+      isTimeTable = false
+    ) {
+      alert(isTimeTable)
+      this.isExames = isExames;
+      this.isBanks = isBanks;
+      this.isLocations = isLocations;
+      this.isExamRooms = isExamRooms;
+      this.isTimeTable = isTimeTable;
+    },
+    isActive(route) {
+      this.isBanks = window.location.pathname === route;
+    },
+  },
+  created() {
+    this.isActive("/bancos");
+  },
 };
 </script>

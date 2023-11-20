@@ -86,7 +86,7 @@
                       <option value=""></option>
 
                         <option
-                          v-for="(local, index) in this.comboBoxLocations"
+                          v-for="(local, index) in this.$props.locations"
                           :key="index"
                           :value="local.id"
                         >
@@ -97,11 +97,11 @@
 
                     <div class="fv-plugins-message-container invalid-feedback">
                       <div
-                        v-show="this.$props.errors.abbreviation"
+                        v-show="this.$props.errors.exam_location_id"
                         data-field="name"
                         data-validator="notEmpty"
                       >
-                        {{ this.errorMessageAbbreviation }}
+                        {{ this.errorMessageLocation }}
                       </div>
                     </div>
                   </div>
@@ -143,11 +143,11 @@
 
                     <div class="fv-plugins-message-container invalid-feedback">
                       <div
-                        v-show="this.$props.errors.address"
+                        v-show="this.$props.errors.bloco"
                         data-field="name"
                         data-validator="notEmpty"
                       >
-                        {{ this.errorMessageAddress }}
+                        {{ this.errorMessageBloco }}
                       </div>
                     </div>
                   </div>
@@ -188,16 +188,16 @@
                       :placeholder="this.$props.placeholderTwo"
                       name="abbreviation"
                       :value="this.number_room"
-                      @input="$emit('update:abbreviation', $event.target.value)"
+                      @input="$emit('update:number_room', $event.target.value)"
                     />
 
                     <div class="fv-plugins-message-container invalid-feedback">
                       <div
-                        v-show="this.$props.errors.abbreviation"
+                        v-show="this.$props.errors.number_room"
                         data-field="name"
                         data-validator="notEmpty"
                       >
-                        {{ this.errorMessageAbbreviation }}
+                        {{ this.errorMessageNumber_room }}
                       </div>
                     </div>
                   </div>
@@ -239,11 +239,11 @@
 
                     <div class="fv-plugins-message-container invalid-feedback">
                       <div
-                        v-show="this.$props.errors.address"
+                        v-show="this.$props.errors.capacity"
                         data-field="name"
                         data-validator="notEmpty"
                       >
-                        {{ this.errorMessageAddress }}
+                        {{ this.errorMessageCapacity }}
                       </div>
                     </div>
                   </div>
@@ -368,36 +368,26 @@ export default {
         this.$emit("update");
       }
     },
-
-    async getLocationsData() {
-      if (this.$props.isExamRoomView) {
-        this.$props.locations
-          .then((data) => {
-            this.comboBoxLocations = data;
-          })
-          .catch((erro) => {
-            console.error(erro);
-          });
-      }
-    },
-  },
-  created() {
-    this.getLocationsData();
   },
   computed: {
-    errorMessageAbbreviation() {
-      if (this.$props.errors.abbreviation)
-        return this.$props.errors.abbreviation[0];
+    errorMessageLocation() {
+      if (this.$props.errors.exam_location_id)
+        return this.$props.errors.exam_location_id[0];
+      return "";
+    },
+    errorMessageBloco() {
+      if (this.$props.errors.bloco)
+        return this.$props.errors.bloco[0];
       return "";
     },
 
-    errorMessageDesignation() {
-      if (this.$props.errors.designation)
-        return this.$props.errors.designation[0];
+    errorMessageNumber_room() {
+      if (this.$props.errors.number_room)
+        return this.$props.errors.number_room[0];
       return "";
     },
-    errorMessageAddress() {
-      if (this.$props.errors.address) return this.$props.errors.address[0];
+    errorMessageCapacity() {
+      if (this.$props.errors.capacity) return this.$props.errors.capacity[0];
       return "";
     },
   },

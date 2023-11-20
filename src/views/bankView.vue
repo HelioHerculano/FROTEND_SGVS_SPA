@@ -54,6 +54,7 @@
         <PrimaryButton
           v-on:click="enableStore"
           textButton="Registar"
+          datatarget="kt_modal_new_data"
         ></PrimaryButton>
         <!-- <a
           href="#"

@@ -36,7 +36,7 @@
             <i class="ki-duotone ki-folder-up fs-2">
               <span class="path1"></span><span class="path2"></span>
             </i>
-            Upload Locais
+            {{ this.buttonText }}
           </button>
 
           <button
@@ -151,6 +151,9 @@ export default {
     columns: {
       type: Array,
     },
+    buttonText:{
+      type: String
+    }
   },
 
   data() {

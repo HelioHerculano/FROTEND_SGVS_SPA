@@ -15,7 +15,7 @@
           <!--begin::Modal header-->
           <div class="modal-header">
             <!--begin::Modal title-->
-            <h2 class="fw-bold">Upload locais</h2>
+            <h2 class="fw-bold">{{ this.title }}</h2>
             <!--end::Modal title-->
 
             <!--begin::Close-->
@@ -153,6 +153,9 @@ export default {
     errors: {
       type: Array,
     },
+    title:{
+      type: String
+    }
   },
   data() {
     return {};
