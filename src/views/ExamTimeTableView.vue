@@ -457,7 +457,7 @@ export default {
     },
 
     enableStore() {
-      this.title = "Registar Banco";
+      this.title = "Registar Horário";
       this.btnText = "Registar";
       this.isUpdate = false;
       this.errors = [];
@@ -481,6 +481,7 @@ export default {
   },
   mounted() {
     Select2.createSelect2();
+    Utilits.initTime()
     Utilits.initDate()
   },
 };

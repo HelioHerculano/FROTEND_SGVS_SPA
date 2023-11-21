@@ -19,6 +19,14 @@ export default {
             altFormat: "d F, Y",
             dateFormat: "Y-m-d",
         });
+        },
+
+        initTime(){
+            $('#init_time').flatpickr({
+              enableTime: true,
+              noCalendar:true,
+              dateFormat: "H:i",
+            });
         }
 
 

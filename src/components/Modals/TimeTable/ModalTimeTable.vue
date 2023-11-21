@@ -48,9 +48,9 @@
                 <!--end::Description-->
               </div>
               <!--end::Heading-->
-
+              <div class="row">
               <!--begin::Input group-->
-              <div class="d-flex flex-column mb-8 fv-row">
+              <div class="col">
                 <!--begin::Label-->
                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                   <span class="required">Data</span>
@@ -67,16 +67,24 @@
                 </label>
                 <!--end::Label-->
 
-                  <!--begin::Input-->
-                    <div class="position-relative d-flex align-items-center">
-                        <!--begin::Icon-->
-                        <i class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>                                <!--end::Icon-->
+                <!--begin::Input-->
+                <div class="position-relative d-flex align-items-center">
+                  <!--begin::Icon-->
+                  <i
+                    class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
+                    ><span class="path1"></span><span class="path2"></span
+                    ><span class="path3"></span><span class="path4"></span
+                    ><span class="path5"></span><span class="path6"></span
+                  ></i>
+                  <!--end::Icon-->
 
-                         <input id="init_date" name="order_date" placeholder="Select a date" class="form-control form-control-solid ps-12" :value="this.description"
-                  @input="$emit('update:description', $event.target.value)"/>
-                      
-                    </div>
-                    <!--end::Input-->
+                  <input
+                    id="init_date"
+                    placeholder="Select a date"
+                    class="form-control form-control-solid ps-12"
+                  />
+                </div>
+                <!--end::Input-->
 
                 <div class="fv-plugins-message-container invalid-feedback">
                   <div
@@ -84,17 +92,31 @@
                     data-field="name"
                     data-validator="notEmpty"
                   >
-                    {{ this.errorMessageDescription }}
+                    
                   </div>
                 </div>
               </div>
               <!--end::Input group-->
 
+              <!-- <div class="form-group row">
+                  <label class="col-form-label text-right col-lg-3 col-sm-12">Current Time</label>
+                  <div class="col-lg-4 col-md-9 col-sm-12">
+                    <div class="input-group timepicker">
+                      <input class="form-control" id="kt_timepicker_2" readonly placeholder="Select time" type="text"/>
+                      <div class="input-group-append">
+                        <span class="input-group-text">
+                          <i class="la la-clock-o"></i>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div> -->
+
               <!--begin::Input group-->
-              <div class="d-flex flex-column mb-8 fv-row">
+              <div class="col">
                 <!--begin::Label-->
                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                  <span class="required">Sigla</span>
+                  <span class="required">Hora</span>
 
                   <span
                     class="ms-1"
@@ -108,18 +130,24 @@
                 </label>
                 <!--end::Label-->
 
-                <input
-                  type="text"
-                  class="form-control form-control-solid"
-                  :placeholder="this.$props.placeholderTwo"
-                  name="abbreviation"
-                  :value="this.abbreviation"
-                  @input="$emit('update:abbreviation', $event.target.value)"
-                />
+                <div class="position-relative d-flex align-items-center">
+                  <i
+                    class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
+                    ><span class="path1"></span><span class="path2"></span
+                    ><span class="path3"></span><span class="path4"></span
+                    ><span class="path5"></span><span class="path6"></span
+                  ></i>
+                  <!--end::Icon-->
 
+                  <input
+                    class="form-control form-control-solid ps-12"
+                    placeholder="Pick date range"
+                    id="init_time"
+                  />
+                  <!--end::Datepicker-->
+                </div>
                 <div class="fv-plugins-message-container invalid-feedback">
                   <div
-                    v-show="this.$props.errors.abbreviation"
                     data-field="name"
                     data-validator="notEmpty"
                   >
@@ -128,6 +156,8 @@
                 </div>
               </div>
               <!--end::Input group-->
+
+              </div>
 
               <!--begin::Actions-->
               <div class="text-center">
