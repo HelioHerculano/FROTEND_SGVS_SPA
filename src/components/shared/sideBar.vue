@@ -479,7 +479,6 @@ export default {
       isExamRooms = false,
       isTimeTable = false
     ) {
-      alert(isTimeTable)
       this.isExames = isExames;
       this.isBanks = isBanks;
       this.isLocations = isLocations;

@@ -14,20 +14,20 @@ export default {
         },
 
         initDate(){
-        $('#init_date').flatpickr({
-            altInput: true,
-            altFormat: "d F, Y",
-            dateFormat: "Y-m-d",
+        $("#init_date").flatpickr({
+          enableTime: true,
+          altFormat: "d F, Y",
+          dateFormat: "Y-m-d H:i",
+          locale: "pt"
         });
         },
 
-        initTime(){
-            $('#init_time').flatpickr({
-              enableTime: true,
-              noCalendar:true,
-              dateFormat: "H:i",
-            });
-        }
+        // initTime(){
+        //     $('#init_time').flatpickr({
+        //       enableTime: true,
+        //       dateFormat: "H:i",
+        //     });
+        // }
 
 
 }

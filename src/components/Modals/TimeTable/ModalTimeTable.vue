@@ -1,19 +1,20 @@
 <template>
   <main>
-    <!--begin::Modal - New Target-->
-    <div
-      class="modal fade"
-      id="kt_modal_new_data"
-      tabindex="-1"
-      aria-hidden="true"
-    >
-      <!--begin::Modal dialog-->
-      <div class="modal-dialog modal-dialog-centered mw-650px">
+
+
+    <!--begin::Modal - Add task-->
+<div class="modal fade" id="kt_modal_new_data" tabindex="-1" aria-hidden="true">
+    <!--begin::Modal dialog-->
+    <div class="modal-dialog modal-dialog-centered mw-650px">
         <!--begin::Modal content-->
-        <div class="modal-content rounded">
-          <!--begin::Modal header-->
-          <div class="modal-header pb-0 border-0 justify-content-end">
-            <!--begin::Close-->
+        <div class="modal-content">
+            <!--begin::Modal header-->
+            <div class="modal-header" id="kt_modal_add_user_header">
+                <!--begin::Modal title-->
+                <h2 class="fw-bold">{{ this.$props.title }}</h2>
+                <!--end::Modal title-->
+
+                <!--begin::Close-->
             <div
               class="btn btn-sm btn-icon btn-active-color-primary"
               data-bs-dismiss="modal"
@@ -23,37 +24,27 @@
               ></i>
             </div>
             <!--end::Close-->
-          </div>
-          <!--begin::Modal header-->
+            </div>
+            <!--end::Modal header-->
 
-          <!--begin::Modal body-->
-          <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
-            <!--begin:Form-->
+            <!--begin::Modal body-->
+            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                <!--begin::Form-->
+                              <!--begin:Form-->
             <form
               id="kt_modal_new_bank_form"
               class="form"
               action="#"
               @submit.prevent="registerOrUpdate"
             >
-              <!--begin::Heading-->
-              <div class="mb-13 text-center">
-                <!--begin::Title-->
-                <h1 class="mb-3">{{ this.$props.title }}</h1>
-                <!--end::Title-->
 
-                <!--begin::Description-->
-                <!-- <div class="text-muted fw-semibold fs-5">
-                                        If you need more info, please check <a href="#" class="fw-bold link-primary">Project Guidelines</a>.
-                                    </div> -->
-                <!--end::Description-->
-              </div>
               <!--end::Heading-->
-              <div class="row">
+              <div class="row mb-5">
               <!--begin::Input group-->
               <div class="col">
                 <!--begin::Label-->
                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                  <span class="required">Data</span>
+                  <span class="required">Data e Hora</span>
 
                   <span
                     class="ms-1"
@@ -80,7 +71,7 @@
 
                   <input
                     id="init_date"
-                    placeholder="Select a date"
+                    placeholder="Selecione a data e hora"
                     class="form-control form-control-solid ps-12"
                   />
                 </div>
@@ -93,65 +84,6 @@
                     data-validator="notEmpty"
                   >
                     
-                  </div>
-                </div>
-              </div>
-              <!--end::Input group-->
-
-              <!-- <div class="form-group row">
-                  <label class="col-form-label text-right col-lg-3 col-sm-12">Current Time</label>
-                  <div class="col-lg-4 col-md-9 col-sm-12">
-                    <div class="input-group timepicker">
-                      <input class="form-control" id="kt_timepicker_2" readonly placeholder="Select time" type="text"/>
-                      <div class="input-group-append">
-                        <span class="input-group-text">
-                          <i class="la la-clock-o"></i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
-
-              <!--begin::Input group-->
-              <div class="col">
-                <!--begin::Label-->
-                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                  <span class="required">Hora</span>
-
-                  <span
-                    class="ms-1"
-                    data-bs-toggle="tooltip"
-                    title="Specify a target name for future usage and reference"
-                  >
-                    <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
-                      ><span class="path1"></span><span class="path2"></span
-                      ><span class="path3"></span></i
-                  ></span>
-                </label>
-                <!--end::Label-->
-
-                <div class="position-relative d-flex align-items-center">
-                  <i
-                    class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
-                    ><span class="path1"></span><span class="path2"></span
-                    ><span class="path3"></span><span class="path4"></span
-                    ><span class="path5"></span><span class="path6"></span
-                  ></i>
-                  <!--end::Icon-->
-
-                  <input
-                    class="form-control form-control-solid ps-12"
-                    placeholder="Pick date range"
-                    id="init_time"
-                  />
-                  <!--end::Datepicker-->
-                </div>
-                <div class="fv-plugins-message-container invalid-feedback">
-                  <div
-                    data-field="name"
-                    data-validator="notEmpty"
-                  >
-                    {{ this.errorMessageAbbreviation }}
                   </div>
                 </div>
               </div>
@@ -191,14 +123,16 @@
               <!--end::Actions-->
             </form>
             <!--end:Form-->
-          </div>
-          <!--end::Modal body-->
+                <!--end::Form-->
+            </div>
+            <!--end::Modal body-->
         </div>
         <!--end::Modal content-->
-      </div>
-      <!--end::Modal dialog-->
     </div>
-    <!--end::Modal - New Target-->
+    <!--end::Modal dialog-->
+</div>
+<!--end::Modal - Add task-->
+
   </main>
 </template>
 

@@ -481,7 +481,7 @@ export default {
   },
   mounted() {
     Select2.createSelect2();
-    Utilits.initTime()
+    // Utilits.initTime()
     Utilits.initDate()
   },
 };
