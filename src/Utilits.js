@@ -15,19 +15,28 @@ export default {
 
         initDate(){
         $("#init_date").flatpickr({
-          enableTime: true,
+          enableTime: false,
           altFormat: "d F, Y",
-          dateFormat: "Y-m-d H:i",
+          dateFormat: "Y-m-d",
           locale: "pt"
         });
         },
 
-        // initTime(){
-        //     $('#init_time').flatpickr({
-        //       enableTime: true,
-        //       dateFormat: "H:i",
-        //     });
-        // }
+        initTime(){
+            $("#init_time").flatpickr({
+              enableTime: true,
+              noCalendar: true,
+              dateFormat: "H:i",
+              time_24hr: true,
+            });
+
+            $("#init_time2").flatpickr({
+              enableTime: true,
+              noCalendar: true,
+              dateFormat: "H:i",
+              time_24hr: true,
+            });
+        }
 
 
 }

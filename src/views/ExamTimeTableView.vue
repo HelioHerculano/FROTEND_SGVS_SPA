@@ -146,18 +146,19 @@
       </div>
 
       <ModalTimeTable
-        @register="registerBank"
-        @update="updateBank"
+        @register="registerTimeTable"
+        @update="updateTimeTable"
         @enableStore="enableStore"
         :title="this.title"
         :btnText="this.btnText"
         :isUpdate="this.isUpdate"
         :indicatorProps="this.indicator"
-        v-model:description="this.description"
-        v-model:abbreviation="this.abbreviation"
+        v-model:date="this.date"
+        v-model:start_time="this.start_time"
+        v-model:end_time="this.end_time"
         :errors="this.errors"
-        placeholderOne="Nome do banco..."
-        placeholderTwo="Sigla do banco..."
+        placeholderOne="Selecione a data..."
+        placeholderTwo="Selecione a hora..."
         :isBankView="true"
       />
 
@@ -204,10 +205,10 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      description: "",
-      abbreviation: "",
-      descriptionFilter: "",
-      abbreviationFilter: "",
+      date: "",
+      start_time: "",
+      end_time: "",
+      dateFilter: "",
       statusFilter: "",
       indicator: "",
       banks: ref([]),
@@ -215,8 +216,9 @@ export default {
       dataFetched: false,
       errors: ref([]),
       columns: [
-        { name: "Nome", key: "description" },
-        { name: "Sigla", key: "abbreviation" },
+        { name: "Data", key: "date" },
+        { name: "Hora de Inicio", key: "start_time" },
+        { name: "Hora do fim", key: "end_time" },
         { name: "Estado", key: "status" },
       ],
     };
@@ -228,20 +230,21 @@ export default {
     //     this.btnText = btnText
     //   },
 
-    async registerBank() {
+    async registerTimeTable() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
       let data = {
-        description: this.description,
-        abbreviation: this.abbreviation,
+        date: this.date,
+        start_time: this.start_time,
+        end_time: this.end_time
       };
 
       console.log(data);
 
-      const res = await Api.post("/bank", data);
+      const res = await Api.post("/timetable", data);
 
       if (res.code == 422) {
         this.errors = res.message;
@@ -272,7 +275,7 @@ export default {
         this.getData();
       }
     },
-    async updateBank() {
+    async updateTimeTable() {
       // console.log(this.bank.data.id)
       this.indicator = "on";
       document
@@ -345,7 +348,7 @@ export default {
 
       Utilits.showLoader();
       const res = await Api.get(
-        `/bank?page=${page}&description=${this.descriptionFilter}&abbreviation=${this.abbreviationFilter}&status=${this.statusFilter}`
+        `/timetable?page=${page}&date=${this.dateFilter}&status=${this.statusFilter}`
       );
 
       this.banks = await res;
@@ -481,8 +484,8 @@ export default {
   },
   mounted() {
     Select2.createSelect2();
-    // Utilits.initTime()
     Utilits.initDate()
+    Utilits.initTime()
   },
 };
 </script>

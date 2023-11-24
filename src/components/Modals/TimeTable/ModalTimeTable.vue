@@ -5,7 +5,7 @@
     <!--begin::Modal - Add task-->
 <div class="modal fade" id="kt_modal_new_data" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
-    <div class="modal-dialog modal-dialog-centered mw-650px">
+    <div class="modal-dialog modal-dialog mw-650px">
         <!--begin::Modal content-->
         <div class="modal-content">
             <!--begin::Modal header-->
@@ -44,7 +44,7 @@
               <div class="col">
                 <!--begin::Label-->
                 <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                  <span class="required">Data e Hora</span>
+                  <span class="required">Data</span>
 
                   <span
                     class="ms-1"
@@ -71,19 +71,131 @@
 
                   <input
                     id="init_date"
-                    placeholder="Selecione a data e hora"
+                    :placeholder="this.$props.placeholderOne"
                     class="form-control form-control-solid ps-12"
+                    name="date"
+                    :value="this.date"
+                    @input="$emit('update:date', $event.target.value)"
                   />
                 </div>
                 <!--end::Input-->
 
                 <div class="fv-plugins-message-container invalid-feedback">
                   <div
-                    v-show="this.$props.errors.description"
+                    v-show="this.$props.errors.date"
                     data-field="name"
                     data-validator="notEmpty"
                   >
+                    {{ this.errorMessageDate }}  
                     
+                  </div>
+                </div>
+              </div>
+              <!--end::Input group-->
+
+              </div>
+
+              <div class="row mb-5">
+              <!--begin::Input group-->
+              <div class="col">
+                <!--begin::Label-->
+                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                  <span class="required">Hora de inicio</span>
+
+                  <span
+                    class="ms-1"
+                    data-bs-toggle="tooltip"
+                    title="Specify a target name for future usage and reference"
+                  >
+                    <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                      ><span class="path1"></span><span class="path2"></span
+                      ><span class="path3"></span></i
+                  ></span>
+                </label>
+                <!--end::Label-->
+
+                <!--begin::Input-->
+                <div class="position-relative d-flex align-items-center">
+                  <!--begin::Icon-->
+                  <i
+                    class="ki-duotone ki-time fs-2 position-absolute mx-4"
+                    ><span class="path1"></span><span class="path2"></span
+                    ><span class="path3"></span><span class="path4"></span
+                    ><span class="path5"></span><span class="path6"></span
+                  ></i>
+                  <!--end::Icon-->
+
+                  <input
+                    id="init_time"
+                    :placeholder="this.$props.placeholderOne"
+                    class="form-control form-control-solid ps-12"
+                    name="start_time"
+                    :value="this.start_time"
+                    @input="$emit('update:start_time', $event.target.value)"
+                  />
+                </div>
+                <!--end::Input-->
+
+                <div class="fv-plugins-message-container invalid-feedback">
+                  <div
+                    v-show="this.$props.errors.start_time"
+                    data-field="name"
+                    data-validator="notEmpty"
+                  >
+                    {{ this.errorMessageStartTime }}  
+                    
+                  </div>
+                </div>
+              </div>
+              <!--end::Input group-->
+
+              <!--begin::Input group-->
+              <div class="col">
+                <!--begin::Label-->
+                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+                  <span class="required">Hora do fim</span>
+
+                  <span
+                    class="ms-1"
+                    data-bs-toggle="tooltip"
+                    title="Specify a target name for future usage and reference"
+                  >
+                    <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                      ><span class="path1"></span><span class="path2"></span
+                      ><span class="path3"></span></i
+                  ></span>
+                </label>
+                <!--end::Label-->
+
+                <!--begin::Input-->
+                <div class="position-relative d-flex align-items-center">
+                  <!--begin::Icon-->
+                  <i
+                    class="ki-duotone ki-time fs-2 position-absolute mx-4"
+                    ><span class="path1"></span><span class="path2"></span
+                    ><span class="path3"></span><span class="path4"></span
+                    ><span class="path5"></span><span class="path6"></span
+                  ></i>
+                  <!--end::Icon-->
+
+                  <input
+                    id="init_time2"
+                    :placeholder="this.$props.placeholderTwo"
+                    class="form-control form-control-solid ps-12"
+                    name="end_time"
+                    :value="this.end_time"
+                    @input="$emit('update:end_time', $event.target.value)"
+                  />
+                </div>
+                <!--end::Input-->
+
+                <div class="fv-plugins-message-container invalid-feedback">
+                  <div
+                    v-show="this.$props.errors.end_time"
+                    data-field="name"
+                    data-validator="notEmpty"
+                  >
+                    {{ this.errorMessageEndTime }}  
                   </div>
                 </div>
               </div>
@@ -153,15 +265,16 @@ export default {
     isUpdate: {
       type: Boolean,
     },
-    description: {
+    date: {
       type: String,
     },
-    designation: {
+    start_time: {
       type: String,
     },
-    abbreviation: {
+    end_time: {
       type: String,
     },
+    
     indicatorProps: {
       type: String,
     },
@@ -173,12 +286,6 @@ export default {
     },
     placeholderTwo: {
       type: String,
-    },
-    isLocationExamView: {
-      type: Boolean,
-    },
-    isBankView: {
-      type: Boolean,
     },
   },
 
@@ -200,15 +307,21 @@ export default {
     },
   },
   computed: {
-    errorMessageAbbreviation() {
-      if (this.$props.errors.abbreviation)
-        return this.$props.errors.abbreviation[0];
+    errorMessageStartTime() {
+      if (this.$props.errors.start_time)
+        return this.$props.errors.start_time[0];
       return "";
     },
 
-    errorMessageDescription() {
-      if (this.$props.errors.description)
-        return this.$props.errors.description[0];
+    errorMessageEndTime() {
+      if (this.$props.errors.end_time)
+        return this.$props.errors.end_time[0];
+      return "";
+    },
+
+    errorMessageDate() {
+      if (this.$props.errors.date)
+        return this.$props.errors.date[0];
       return "";
     },
   },
