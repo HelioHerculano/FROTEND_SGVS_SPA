@@ -1,20 +1,23 @@
 <template>
   <main>
-
-
     <!--begin::Modal - Add task-->
-<div class="modal fade" id="kt_modal_new_data" tabindex="-1" aria-hidden="true">
-    <!--begin::Modal dialog-->
-    <div class="modal-dialog modal-dialog mw-650px">
+    <div
+      class="modal fade"
+      id="kt_modal_new_data"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <!--begin::Modal dialog-->
+      <div class="modal-dialog modal-dialog mw-650px">
         <!--begin::Modal content-->
         <div class="modal-content">
-            <!--begin::Modal header-->
-            <div class="modal-header" id="kt_modal_add_user_header">
-                <!--begin::Modal title-->
-                <h2 class="fw-bold">{{ this.$props.title }}</h2>
-                <!--end::Modal title-->
+          <!--begin::Modal header-->
+          <div class="modal-header" id="kt_modal_add_user_header">
+            <!--begin::Modal title-->
+            <h2 class="fw-bold">{{ this.$props.title }}</h2>
+            <!--end::Modal title-->
 
-                <!--begin::Close-->
+            <!--begin::Close-->
             <div
               class="btn btn-sm btn-icon btn-active-color-primary"
               data-bs-dismiss="modal"
@@ -24,183 +27,194 @@
               ></i>
             </div>
             <!--end::Close-->
-            </div>
-            <!--end::Modal header-->
+          </div>
+          <!--end::Modal header-->
 
-            <!--begin::Modal body-->
-            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-                <!--begin::Form-->
-                              <!--begin:Form-->
+          <!--begin::Modal body-->
+          <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+            <!--begin::Form-->
+            <!--begin:Form-->
             <form
               id="kt_modal_new_bank_form"
               class="form"
               action="#"
               @submit.prevent="registerOrUpdate"
             >
-
               <!--end::Heading-->
               <div class="row mb-5">
-              <!--begin::Input group-->
-              <div class="col">
-                <!--begin::Label-->
-                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                  <span class="required">Data</span>
-
-                  <span
-                    class="ms-1"
-                    data-bs-toggle="tooltip"
-                    title="Specify a target name for future usage and reference"
+                <!--begin::Input group-->
+                <div class="col">
+                  <!--begin::Label-->
+                  <label
+                    class="d-flex align-items-center fs-6 fw-semibold mb-2"
                   >
-                    <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                    <span class="required">Data</span>
+
+                    <span
+                      class="ms-1"
+                      data-bs-toggle="tooltip"
+                      title="Specify a target name for future usage and reference"
+                    >
+                      <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                        ><span class="path1"></span><span class="path2"></span
+                        ><span class="path3"></span></i
+                    ></span>
+                  </label>
+                  <!--end::Label-->
+
+                  <!--begin::Input-->
+                  <div class="position-relative d-flex align-items-center">
+                    <!--begin::Icon-->
+                    <i
+                      class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
                       ><span class="path1"></span><span class="path2"></span
-                      ><span class="path3"></span></i
-                  ></span>
-                </label>
-                <!--end::Label-->
+                      ><span class="path3"></span><span class="path4"></span
+                      ><span class="path5"></span><span class="path6"></span
+                    ></i>
+                    <!--end::Icon-->
 
-                <!--begin::Input-->
-                <div class="position-relative d-flex align-items-center">
-                  <!--begin::Icon-->
-                  <i
-                    class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
-                    ><span class="path1"></span><span class="path2"></span
-                    ><span class="path3"></span><span class="path4"></span
-                    ><span class="path5"></span><span class="path6"></span
-                  ></i>
-                  <!--end::Icon-->
+                    <input
+                      id="init_date"
+                      :placeholder="this.$props.placeholderOne"
+                      class="form-control form-control-solid ps-12"
+                      :class="{
+                        'is-invalid': this.$props.isInvalidDate,
+                        'is-valid': this.$props.isValidDate,
+                      }"
+                      name="date"
+                      :value="this.date"
+                      @input="$emit('update:date', $event.target.value)"
+                    />
+                  </div>
+                  <!--end::Input-->
 
-                  <input
-                    id="init_date"
-                    :placeholder="this.$props.placeholderOne"
-                    class="form-control form-control-solid ps-12"
-                    name="date"
-                    :value="this.date"
-                    @input="$emit('update:date', $event.target.value)"
-                  />
-                </div>
-                <!--end::Input-->
-
-                <div class="fv-plugins-message-container invalid-feedback">
-                  <div
-                    v-show="this.$props.errors.date"
-                    data-field="name"
-                    data-validator="notEmpty"
-                  >
-                    {{ this.errorMessageDate }}  
-                    
+                  <div class="fv-plugins-message-container invalid-feedback">
+                    <div
+                      v-show="this.$props.errors.date"
+                      data-field="name"
+                      data-validator="notEmpty"
+                    >
+                      {{ this.errorMessageDate }}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--end::Input group-->
-
+                <!--end::Input group-->
               </div>
 
               <div class="row mb-5">
-              <!--begin::Input group-->
-              <div class="col">
-                <!--begin::Label-->
-                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                  <span class="required">Hora de inicio</span>
-
-                  <span
-                    class="ms-1"
-                    data-bs-toggle="tooltip"
-                    title="Specify a target name for future usage and reference"
+                <!--begin::Input group-->
+                <div class="col">
+                  <!--begin::Label-->
+                  <label
+                    class="d-flex align-items-center fs-6 fw-semibold mb-2"
                   >
-                    <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                    <span class="required">Hora de inicio</span>
+
+                    <span
+                      class="ms-1"
+                      data-bs-toggle="tooltip"
+                      title="Specify a target name for future usage and reference"
+                    >
+                      <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                        ><span class="path1"></span><span class="path2"></span
+                        ><span class="path3"></span></i
+                    ></span>
+                  </label>
+                  <!--end::Label-->
+
+                  <!--begin::Input-->
+                  <div class="position-relative d-flex align-items-center">
+                    <!--begin::Icon-->
+                    <i class="ki-duotone ki-time fs-2 position-absolute mx-4"
                       ><span class="path1"></span><span class="path2"></span
-                      ><span class="path3"></span></i
-                  ></span>
-                </label>
-                <!--end::Label-->
+                      ><span class="path3"></span><span class="path4"></span
+                      ><span class="path5"></span><span class="path6"></span
+                    ></i>
+                    <!--end::Icon-->
 
-                <!--begin::Input-->
-                <div class="position-relative d-flex align-items-center">
-                  <!--begin::Icon-->
-                  <i
-                    class="ki-duotone ki-time fs-2 position-absolute mx-4"
-                    ><span class="path1"></span><span class="path2"></span
-                    ><span class="path3"></span><span class="path4"></span
-                    ><span class="path5"></span><span class="path6"></span
-                  ></i>
-                  <!--end::Icon-->
+                    <input
+                      id="init_time"
+                      :placeholder="this.$props.placeholderOne"
+                      class="form-control form-control-solid ps-12"
+                      :class="{
+                        'is-invalid': this.$props.isInvalidStartTime,
+                        'is-valid': this.$props.isValidStartTime,
+                      }"
+                      name="start_time"
+                      :value="this.start_time"
+                      @input="$emit('update:start_time', $event.target.value)"
+                    />
+                  </div>
+                  <!--end::Input-->
 
-                  <input
-                    id="init_time"
-                    :placeholder="this.$props.placeholderOne"
-                    class="form-control form-control-solid ps-12"
-                    name="start_time"
-                    :value="this.start_time"
-                    @input="$emit('update:start_time', $event.target.value)"
-                  />
-                </div>
-                <!--end::Input-->
-
-                <div class="fv-plugins-message-container invalid-feedback">
-                  <div
-                    v-show="this.$props.errors.start_time"
-                    data-field="name"
-                    data-validator="notEmpty"
-                  >
-                    {{ this.errorMessageStartTime }}  
-                    
+                  <div class="fv-plugins-message-container invalid-feedback">
+                    <div
+                      v-show="this.$props.errors.start_time"
+                      data-field="name"
+                      data-validator="notEmpty"
+                    >
+                      {{ this.errorMessageStartTime }}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--end::Input group-->
+                <!--end::Input group-->
 
-              <!--begin::Input group-->
-              <div class="col">
-                <!--begin::Label-->
-                <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                  <span class="required">Hora do fim</span>
-
-                  <span
-                    class="ms-1"
-                    data-bs-toggle="tooltip"
-                    title="Specify a target name for future usage and reference"
+                <!--begin::Input group-->
+                <div class="col">
+                  <!--begin::Label-->
+                  <label
+                    class="d-flex align-items-center fs-6 fw-semibold mb-2"
                   >
-                    <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                    <span class="required">Hora do fim</span>
+
+                    <span
+                      class="ms-1"
+                      data-bs-toggle="tooltip"
+                      title="Specify a target name for future usage and reference"
+                    >
+                      <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                        ><span class="path1"></span><span class="path2"></span
+                        ><span class="path3"></span></i
+                    ></span>
+                  </label>
+                  <!--end::Label-->
+
+                  <!--begin::Input-->
+                  <div class="position-relative d-flex align-items-center">
+                    <!--begin::Icon-->
+                    <i class="ki-duotone ki-time fs-2 position-absolute mx-4"
                       ><span class="path1"></span><span class="path2"></span
-                      ><span class="path3"></span></i
-                  ></span>
-                </label>
-                <!--end::Label-->
+                      ><span class="path3"></span><span class="path4"></span
+                      ><span class="path5"></span><span class="path6"></span
+                    ></i>
+                    <!--end::Icon-->
 
-                <!--begin::Input-->
-                <div class="position-relative d-flex align-items-center">
-                  <!--begin::Icon-->
-                  <i
-                    class="ki-duotone ki-time fs-2 position-absolute mx-4"
-                    ><span class="path1"></span><span class="path2"></span
-                    ><span class="path3"></span><span class="path4"></span
-                    ><span class="path5"></span><span class="path6"></span
-                  ></i>
-                  <!--end::Icon-->
+                    <input
+                      id="init_time2"
+                      :placeholder="this.$props.placeholderTwo"
+                      class="form-control form-control-solid ps-12"
+                      :class="{
+                        'is-invalid': this.$props.isInvalidEndTime,
+                        'is-valid': this.$props.isValidEndTime,
+                      }"
+                      name="end_time"
+                      :value="this.end_time"
+                      @input="$emit('update:end_time', $event.target.value)"
+                    />
+                  </div>
+                  <!--end::Input-->
 
-                  <input
-                    id="init_time2"
-                    :placeholder="this.$props.placeholderTwo"
-                    class="form-control form-control-solid ps-12"
-                    name="end_time"
-                    :value="this.end_time"
-                    @input="$emit('update:end_time', $event.target.value)"
-                  />
-                </div>
-                <!--end::Input-->
-
-                <div class="fv-plugins-message-container invalid-feedback">
-                  <div
-                    v-show="this.$props.errors.end_time"
-                    data-field="name"
-                    data-validator="notEmpty"
-                  >
-                    {{ this.errorMessageEndTime }}  
+                  <div class="fv-plugins-message-container invalid-feedback">
+                    <div
+                      v-show="this.$props.errors.end_time"
+                      data-field="name"
+                      data-validator="notEmpty"
+                    >
+                      {{ this.errorMessageEndTime }}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--end::Input group-->
-
+                <!--end::Input group-->
               </div>
 
               <!--begin::Actions-->
@@ -235,16 +249,15 @@
               <!--end::Actions-->
             </form>
             <!--end:Form-->
-                <!--end::Form-->
-            </div>
-            <!--end::Modal body-->
+            <!--end::Form-->
+          </div>
+          <!--end::Modal body-->
         </div>
         <!--end::Modal content-->
+      </div>
+      <!--end::Modal dialog-->
     </div>
-    <!--end::Modal dialog-->
-</div>
-<!--end::Modal - Add task-->
-
+    <!--end::Modal - Add task-->
   </main>
 </template>
 
@@ -274,7 +287,7 @@ export default {
     end_time: {
       type: String,
     },
-    
+
     indicatorProps: {
       type: String,
     },
@@ -287,13 +300,31 @@ export default {
     placeholderTwo: {
       type: String,
     },
+    isInvalidDate: {
+      type: Boolean,
+    },
+    isValidDate: {
+      type: Boolean,
+    },
+    isInvalidStartTime: {
+      type: Boolean,
+    },
+    isValidStartTime: {
+      type: Boolean,
+    },
+    isInvalidEndTime: {
+      type: Boolean,
+    },
+    isValidEndTime: {
+      type: Boolean,
+    },
   },
 
   data() {
     return {
-      // description: this.$props.descriptionProps,
-      // abbreviation: this.$props.abbreviationProps,
-      // indicator: this.indicatorProps
+      // isInvalidDate: false,
+      // isInvalidStartTime: false,
+      // isInvalidEndTime: false
     };
   },
 
@@ -314,14 +345,14 @@ export default {
     },
 
     errorMessageEndTime() {
-      if (this.$props.errors.end_time)
-        return this.$props.errors.end_time[0];
+      if (this.$props.errors.end_time) return this.$props.errors.end_time[0];
       return "";
     },
 
     errorMessageDate() {
-      if (this.$props.errors.date)
+      if (this.$props.errors.date) {
         return this.$props.errors.date[0];
+      }
       return "";
     },
   },

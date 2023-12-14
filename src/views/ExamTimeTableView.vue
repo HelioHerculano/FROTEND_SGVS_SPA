@@ -122,18 +122,18 @@
       <!-- Filtros -->
       <Filters
         @getData="getData"
-        v-model:descriptionFilter="this.descriptionFilter"
-        v-model:abbreviationFilter="this.abbreviationFilter"
-        :isBankView="true"
+        v-model:dateFilter="this.dateFilter"
+        :isTimeTableView="true"
+        placeholderDate="Pesquise pela data"
       />
       <!-- End-FIlters -->
 
       <DataTable
         :dataLenght="this.dataLength"
         :columns="this.columns"
-        :data="this.banks"
+        :data="this.timetables"
         :dataFetched="this.dataFetched"
-        tableTitle="Listagem de bancos"
+        tableTitle="Listagem de horários"
         @enableUpdate="enableUpdate"
         @remove="remove"
         @active="active"
@@ -153,6 +153,12 @@
         :btnText="this.btnText"
         :isUpdate="this.isUpdate"
         :indicatorProps="this.indicator"
+        :isInvalidDate="this.isInvalidDate"
+        :isValidDate="this.isValidDate"
+        :isInvalidStartTime="this.isInvalidStartTime"
+        :isInvalidEndTime="this.isInvalidEndTime"
+        :isValidStartTime="this.isValidStartTime"
+        :isValidEndTime="this.isValidEndTime"
         v-model:date="this.date"
         v-model:start_time="this.start_time"
         v-model:end_time="this.end_time"
@@ -163,7 +169,7 @@
       />
 
       <Bootstrap5Pagination
-        :data="this.banks"
+        :data="this.timetables"
         @pagination-change-page="getData"
         limit="2"
         show-disabled
@@ -211,10 +217,16 @@ export default {
       dateFilter: "",
       statusFilter: "",
       indicator: "",
-      banks: ref([]),
-      bank: ref([]),
+      timetables: ref([]),
+      timetable: ref([]),
       dataFetched: false,
       errors: ref([]),
+      isInvalidDate: false,
+      isValidDate: false,
+      isInvalidStartTime: false,
+      isValidStartTime: false,
+      isInvalidEndTime: false,
+      isValidEndTime: false,
       columns: [
         { name: "Data", key: "date" },
         { name: "Hora de Inicio", key: "start_time" },
@@ -230,6 +242,29 @@ export default {
     //     this.btnText = btnText
     //   },
 
+    validateInput(errors) {
+      if (errors.date)
+        this.isInvalidDate = errors.date.length > 0 ? true : false;
+      else {
+        this.isInvalidDate = false;
+        this.isValidDate = true;
+      }
+
+      if (errors.start_time)
+        this.isInvalidStartTime = errors.start_time.length > 0 ? true : false;
+      else {
+        this.isInvalidStartTime = false;
+        this.isValidStartTime = true;
+      }
+
+      if (errors.end_time)
+        this.isInvalidEndTime = errors.end_time.length > 0 ? true : false;
+      else {
+        this.isInvalidEndTime = false;
+        this.isValidEndTime = true;
+      }
+    },
+
     async registerTimeTable() {
       this.indicator = "on";
       document
@@ -239,7 +274,7 @@ export default {
       let data = {
         date: this.date,
         start_time: this.start_time,
-        end_time: this.end_time
+        end_time: this.end_time,
       };
 
       console.log(data);
@@ -248,7 +283,7 @@ export default {
 
       if (res.code == 422) {
         this.errors = res.message;
-        console.log(this.errors);
+        this.validateInput(this.errors);
         this.indicator = "";
         SweetAlert.Alert("Erro", "Preecha os campos obrigatorios", "error", "");
         document
@@ -276,19 +311,19 @@ export default {
       }
     },
     async updateTimeTable() {
-      // console.log(this.bank.data.id)
       this.indicator = "on";
       document
         .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
       let data = {
-        description: this.description,
-        abbreviation: this.abbreviation,
+        date: this.date,
+        start_time: this.start_time,
+        end_time: this.end_time,
       };
 
       console.log(data);
-      const res = await Api.put(`/bank/${this.bank.data.id}`, data);
+      const res = await Api.put(`/timetable/${this.timetable.data.id}`, data);
 
       console.log(res);
       if (res.code == 422) {
@@ -351,46 +386,30 @@ export default {
         `/timetable?page=${page}&date=${this.dateFilter}&status=${this.statusFilter}`
       );
 
-      this.banks = await res;
+      this.timetables = await res;
 
       this.dataFetched = true;
-
-      console.log(this.banks.data.length);
 
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
     },
 
-    // async getData(page = 1){
-    //         Utilits.showLoader()
-    //         const res = await Api.get(`/bank?page=${page}`);
-
-    //         this.banks = await res
-
-    //         this.dataFetched = true
-
-    //         console.log(this.banks.data.length)
-
-    //         if(this.dataFetched){
-    //             Utilits.hideLoader()
-    //         }
-    // },
-
-    async getOneBank(id) {
+    async getOneTimeTable(id) {
       Utilits.showLoader();
 
-      const res = await Api.getOne(`/bank/${id}`);
+      const res = await Api.getOne(`/timetable/${id}`);
 
-      this.bank = await res;
+      this.timetable = await res;
       console.log(this.bank);
 
       this.dataFetched = true;
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
-      this.description = res.data.description;
-      this.abbreviation = res.data.abbreviation;
+      this.date = res.data.date;
+      this.start_time = res.data.start_time;
+      this.end_time = res.data.end_time;
     },
 
     async remove(id) {
@@ -398,10 +417,8 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende eliminar o banco?",
+        title: "Pretende eliminar o horário?",
         showCancelButton: true,
-        // confirmButtonColor: '#0CC27E',
-        // cancelButtonColor: '#FF586B',
         confirmButtonText: "Sim, pretendo!",
         cancelButtonText: "Não, cancelar!",
         confirmButtonClass: "btn btn-sm fw-bold btn-primary mr-5",
@@ -410,12 +427,12 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.delete(`/bank/${id}`);
+          res = await Api.delete(`/timetable/${id}`);
         }
       });
 
       if (res != undefined && res.success) {
-        SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
+        SweetAlert.Alert("Sucesso", "Horário eliminado com sucesso", "success");
         this.getData();
       }
     },
@@ -425,10 +442,8 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende activar o banco?",
+        title: "Pretende activar o horário?",
         showCancelButton: true,
-        // confirmButtonColor: '#0CC27E',
-        // cancelButtonColor: '#FF586B',
         confirmButtonText: "Sim, pretendo!",
         cancelButtonText: "Não, cancelar!",
         confirmButtonClass: "btn btn-sm fw-bold btn-primary mr-5",
@@ -437,26 +452,34 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.active(`/bank/${id}/active`);
+          res = await Api.active(`/timetable/${id}/active`);
+          console.log(res)
         }
       });
 
       if (res != undefined && res.success) {
-        SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
+        SweetAlert.Alert("Sucesso", "Horário activado com sucesso", "success");
         this.getData();
       }
     },
 
     enableUpdate(id) {
       // alert(id)
-      this.getOneBank(id);
+      this.getOneTimeTable(id);
 
-      this.title = "Actualizar Banco";
+      this.title = "Actualizar Horário";
       this.btnText = "Actualizar";
       this.isUpdate = true;
       this.errors = [];
-      this.description = null;
-      this.abbreviation = null;
+      this.date = null;
+      this.start_time = null;
+      this.end_time = null;
+      this.isInvalidDate = false;
+      this.isInvalidStartTime = false;
+      this.isInvalidEndTime = false;
+      this.isValidDate = false;
+      this.isValidStartTime = false;
+      this.isValidEndTime = false;
     },
 
     enableStore() {
@@ -464,17 +487,24 @@ export default {
       this.btnText = "Registar";
       this.isUpdate = false;
       this.errors = [];
-      this.description = null;
-      this.abbreviation = null;
+      this.date = null;
+      this.start_time = null;
+      this.end_time = null;
+      this.isInvalidDate = false;
+      this.isInvalidStartTime = false;
+      this.isInvalidEndTime = false;
+      this.isValidDate = false;
+      this.isValidStartTime = false;
+      this.isValidEndTime = false;
     },
   },
 
   computed: {
     dataLength() {
-      if (this.banks.data == undefined) {
+      if (this.timetables.data == undefined) {
         return 0;
       }
-      return this.banks.data.length;
+      return this.timetables.data.length;
     },
   },
 
@@ -484,8 +514,8 @@ export default {
   },
   mounted() {
     Select2.createSelect2();
-    Utilits.initDate()
-    Utilits.initTime()
+    Utilits.initTime();
+    // Utilits.initDate()
   },
 };
 </script>

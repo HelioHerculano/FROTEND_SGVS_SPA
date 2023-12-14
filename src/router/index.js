@@ -4,6 +4,8 @@ import bankView from "../views/BankView.vue";
 import ExamTimeTableView from "../views/ExamTimeTableView.vue";
 import LocationExameView from "../views/LocationExameView.vue";
 import ExamRoomView from "../views/ExamRoomView.vue";
+import EmployeeTypeView from "../views/EmployeeTypeView.vue";
+import EmployeeView from "../views/EmployeeView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +26,11 @@ const router = createRouter({
       component: ExamTimeTableView,
     },
     {
+      path: "/cargos",
+      name: "EmployeeTypeView",
+      component: EmployeeTypeView,
+    },
+    {
       path: "/LocaisExames",
       name: "LocationExameView",
       component: LocationExameView,
@@ -32,6 +39,11 @@ const router = createRouter({
       path: "/salas",
       name: "ExamRoomView",
       component: ExamRoomView,
+    },
+    {
+      path: "/pessoal",
+      name: "EmployeeView",
+      component: EmployeeView,
     },
     {
       path: "/about",

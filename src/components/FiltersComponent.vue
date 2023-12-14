@@ -128,7 +128,7 @@
             </div>
           </div>
 
-          <div class="col-4" v-show="!this.$props.isExamRoomView">
+          <div class="col-4" v-show="!this.$props.isExamRoomView && !this.$props.isTimeTableView">
             <!--begin::Input group-->
             <div class="d-flex flex-column mb-8 fv-row">
               <label class="form-label fw-bold fs-6 text-gray-700">Sigla</label>
@@ -176,7 +176,44 @@
             <!--end::Input group-->
           </div>
 
-          <div class="col-4">
+          <div v-show="this.$props.isTimeTableView" :class="{
+            'col-4' : !isTimeTableView,
+            'col-6' : isTimeTableView,
+            }">
+                  <!--begin::Label-->
+                  <label
+                    class="form-label fw-bold fs-6 text-gray-700"
+                  >
+                    Data
+                  </label>
+                  <!--end::Label-->
+
+                  <!--begin::Input-->
+                  <div class="position-relative d-flex align-items-center">
+                    <!--begin::Icon-->
+                    <i
+                      class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
+                      ><span class="path1"></span><span class="path2"></span
+                      ><span class="path3"></span><span class="path4"></span
+                      ><span class="path5"></span><span class="path6"></span
+                    ></i>
+                    <!--end::Icon-->
+
+                    <input
+                      id="init_date_filter"
+                      :placeholder="this.$props.placeholderDate"
+                      class="form-control form-control-solid ps-12"
+                      name="dateExame"
+                      @input="$emit('update:dateFilter', $event.target.value)"
+                    />
+                  </div>
+                  <!--end::Input-->
+                </div>
+
+          <div :class="{
+            'col-4' : !isTimeTableView,
+            'col-6' : isTimeTableView,
+            }">
             <div class="mb-10">
               <!--begin::Label-->
               <label class="form-label fw-bold fs-6 text-gray-700"
@@ -238,9 +275,14 @@ export default {
     isExamRoomView: {
       type: Boolean,
     },
-
+    isTimeTableView:{
+      type:Boolean,
+    },
     locations: {
       type: Array,
+    },
+    placeholderDate: {
+      type: String,
     },
   },
   data() {

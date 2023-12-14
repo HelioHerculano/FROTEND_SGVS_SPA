@@ -195,12 +195,14 @@
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
-                <!--begin:Menu link--><a
+                <!--begin:Menu link--><RouterLink
+                @click="activeMenu(false,false,false,false,false,true)"
                   class="menu-link"
-                  href="pages/user-profile/campaigns.html"
+                  :class="{ active: isEmployeeType }"
+                  to="/cargos"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Categorias</span></a
+                  ><span class="menu-title">Cargos</span></RouterLink
                 ><!--end:Menu link-->
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
@@ -298,32 +300,34 @@
             <div class="menu-sub menu-sub-accordion">
               <!--begin:Menu item-->
               <div class="menu-item">
-                <!--begin:Menu link--><a
+                <!--begin:Menu link--><RouterLink
                   class="menu-link"
-                  href="account/overview.html"
+                  @click="
+                    activeMenu(
+                      (isExames = false),
+                      (isBanks = false),
+                      (isLocations = false),
+                      (isExamRooms = false),
+                      (isTimeTable = false),
+                      (isEmployeeType = false),
+                      (isEmployee = true)
+                    )
+                  "
+                  :class="{ active: isEmployee }"
+                  to="/pessoal"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Registar</span></a
+                  ><span class="menu-title">Registar & Visualizar</span></RouterLink
                 ><!--end:Menu link-->
               </div>
-              <!--end:Menu item--><!--begin:Menu item-->
+
               <div class="menu-item">
                 <!--begin:Menu link--><a
                   class="menu-link"
                   href="account/settings.html"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Visualizar</span></a
-                ><!--end:Menu link-->
-              </div>
-              <!--end:Menu item--><!--begin:Menu item-->
-              <div class="menu-item">
-                <!--begin:Menu link--><a
-                  class="menu-link"
-                  href="account/settings.html"
-                  ><span class="menu-bullet"
-                    ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Alocar</span></a
+                  ><span class="menu-title">Alocações</span></a
                 ><!--end:Menu link-->
               </div>
             </div>
@@ -467,7 +471,9 @@ export default {
       isBanks: false,
       isLocations: false,
       isExamRooms: false,
-      isTimeTable: false
+      isTimeTable: false,
+      isEmployeeType: false,
+      isEmployee: false
     };
   },
 
@@ -477,13 +483,17 @@ export default {
       isBanks = false,
       isLocations = false,
       isExamRooms = false,
-      isTimeTable = false
+      isTimeTable = false,
+      isEmployeeType = false,
+      isEmployee = false
     ) {
       this.isExames = isExames;
       this.isBanks = isBanks;
       this.isLocations = isLocations;
       this.isExamRooms = isExamRooms;
       this.isTimeTable = isTimeTable;
+      this.isEmployeeType = isEmployeeType;
+      this.isEmployee = isEmployee
     },
     isActive(route) {
       this.isBanks = window.location.pathname === route;
