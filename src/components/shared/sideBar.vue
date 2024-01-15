@@ -349,32 +349,34 @@
             <div class="menu-sub menu-sub-accordion">
               <!--begin:Menu item-->
               <div class="menu-item">
-                <!--begin:Menu link--><a
+                <!--begin:Menu link--><RouterLink
                   class="menu-link"
-                  href="account/overview.html"
+                  @click="
+                    activeMenu(
+                      (isExames = false),
+                      (isBanks = false),
+                      (isLocations = false),
+                      (isExamRooms = false),
+                      (isTimeTable = false),
+                      (isEmployeeType = false),
+                      (isEmployee = false)
+                      (isExam = true)
+                    )
+                  "
+                  :class="{ active: isExam }"
+                  to="/exames"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Registar</span></a
+                  ><span class="menu-title">Registar & Visualizar</span></RouterLink
                 ><!--end:Menu link-->
               </div>
-              <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link--><a
                   class="menu-link"
                   href="account/settings.html"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Visualizar</span></a
-                ><!--end:Menu link-->
-              </div>
-              <!--end:Menu item--><!--begin:Menu item-->
-              <div class="menu-item">
-                <!--begin:Menu link--><a
-                  class="menu-link"
-                  href="account/settings.html"
-                  ><span class="menu-bullet"
-                    ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Alocar</span></a
+                  ><span class="menu-title">Alocações</span></a
                 ><!--end:Menu link-->
               </div>
             </div>
@@ -473,7 +475,8 @@ export default {
       isExamRooms: false,
       isTimeTable: false,
       isEmployeeType: false,
-      isEmployee: false
+      isEmployee: false,
+      isExam: false
     };
   },
 
@@ -485,7 +488,8 @@ export default {
       isExamRooms = false,
       isTimeTable = false,
       isEmployeeType = false,
-      isEmployee = false
+      isEmployee = false,
+      isExam = false
     ) {
       this.isExames = isExames;
       this.isBanks = isBanks;
@@ -494,6 +498,7 @@ export default {
       this.isTimeTable = isTimeTable;
       this.isEmployeeType = isEmployeeType;
       this.isEmployee = isEmployee
+      this.isExam = isExam
     },
     isActive(route) {
       this.isBanks = window.location.pathname === route;

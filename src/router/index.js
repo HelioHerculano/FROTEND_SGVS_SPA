@@ -6,6 +6,7 @@ import LocationExameView from "../views/LocationExameView.vue";
 import ExamRoomView from "../views/ExamRoomView.vue";
 import EmployeeTypeView from "../views/EmployeeTypeView.vue";
 import EmployeeView from "../views/EmployeeView.vue";
+import ExamView from "../views/ExamView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +45,11 @@ const router = createRouter({
       path: "/pessoal",
       name: "EmployeeView",
       component: EmployeeView,
+    },
+    {
+      path: "/exames",
+      name: "ExamView",
+      component: ExamView,
     },
     {
       path: "/about",

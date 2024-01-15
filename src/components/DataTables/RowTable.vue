@@ -24,6 +24,12 @@
       >
 
       <span
+        v-if="column.key == 'date' && item[column.key] == null || column.key == 'start_time' && item[column.key] == null || column.key == 'end_time' && item[column.key] == null"
+        class="badge badge-info"
+        >-----</span
+      >
+
+      <span
         v-if="column.key == 'available' && item.available == 1"
         class="badge badge-light-info"
         >Disponivel</span
@@ -78,8 +84,25 @@
       </button>
 
       <button
+        v-show="this.$props.isExamView && item.time_table.length == 0"
+        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 mb-1"
+        data-bs-toggle="modal"
+        data-bs-target="#kt_modal_time_table"
+        @click="enableAlocacaoTimeExam(item.id)"
+        id="alocacao"
+        :value="item.id"
+      >
+        <i
+          class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
+          ><span class="path1"></span><span class="path2"></span
+          ><span class="path3"></span><span class="path4"></span
+          ><span class="path5"></span><span class="path6"></span
+        ></i>
+      </button>
+
+      <button
         v-if="item.status == 1"
-        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
+        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 mb-1"
         data-bs-toggle="modal"
         data-bs-target="#kt_modal_new_data"
         @click="enableUpdate(item.id)"
@@ -137,11 +160,17 @@ export default {
     isBankView: {
       type: Boolean,
     },
+    isExamView: {
+      type: Boolean,
+    },
   },
   data() {
     return {};
   },
   methods: {
+    async enableAlocacaoTimeExam(id) {
+      this.$emit("enableAlocacaoTimeExam", id);
+    },
     async enableUpdate(id) {
       this.$emit("enableUpdate", id);
     },

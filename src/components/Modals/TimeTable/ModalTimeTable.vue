@@ -3,6 +3,8 @@
     <!--begin::Modal - Add task-->
     <div
       class="modal fade"
+      role="dialog"
+      data-bs-focus="false"
       id="kt_modal_new_data"
       tabindex="-1"
       aria-hidden="true"

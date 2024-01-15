@@ -16,7 +16,7 @@
         <h1
           class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
         >
-          Gestão do pessoal
+          Salas de exames
         </h1>
         <!--end::Title-->
 
@@ -54,7 +54,7 @@
         <PrimaryButton
           v-on:click="enableStore"
           textButton="Registar"
-          datatarget="kt_modal_employee"
+          datatarget="kt_modal_exam"
         ></PrimaryButton>
 
         <!-- <a
@@ -117,61 +117,60 @@
       <!--end::Row-->
       <!-- Filtros -->
       <Filters
-        @getData="getEmployee"
-        v-model:nameFilter="this.nameFilter"
-        v-model:nuitFilter="this.nuitFilter"
-        :isEmployeeView="true"
-        :locations="this.comboBoxLocations.value"
+        @getData="getExam"
+        v-model:blocoFilter="this.blocoFilter"
+        v-model:capacityFilter="this.capacityFilter"
+        v-model:numberRoomFilter="this.numberRoomFilter"
+        :isExamView="true"
+        :locations="this.comboBoxTimetable.value"
       />
       <!-- End-FIlters -->
 
       <DataTable
         :dataLenght="this.dataLength"
         :columns="this.columns"
-        :data="this.employees"
+        :data="this.exams"
         :dataFetched="this.dataFetched"
+        :isExamView="true"
         buttonText="Upload De Salas"
-        tableTitle="Listagem do pessoal"
+        tableTitle="Listagem de exames" 
         @enableUpdate="enableUpdate"
         @remove="remove"
         @active="active"
+        @enableAlocacaoTimeExam="enableAlocacaoTimeExam"
       />
 
-      <ModalEmployee
-        @register="registerEmployee"
-        @update="updateEmployee"
-        @enableStore="enableStore"
+      <ModalExamTimeTable
+        @alocacaoTimeExam="alocacaoTimeExam"
         :title="this.title"
         :btnText="this.btnText"
         :isUpdate="this.isUpdate"
         :indicatorProps="this.indicator"
-        v-model:name="this.name"
-        v-model:surname="this.surname"
-        v-model:first_phone_number="this.first_phone_number"
-        v-model:second_phone_number="this.second_phone_number"
-        v-model:other_provenance="this.other_provenance"
-        v-model:nuit="this.nuit"
-        v-model:bank_account="this.bank_account"
+        v-model:bloco="this.bloco"
+        v-model:capacity="this.capacity"
+        v-model:number_room="this.number_room"
         :errors="this.errors"
         placeholderOne="Bloco da sala..."
         placeholderTwo="Número da sala..."
         placeholderThree="Capacidade da sala..."
         :isExamRoomView="true"
-        :locations="this.comboBoxLocations.value"
-        :typeEmployee="this.comboBoxType.value"
-        :banks="this.comboBoxBank.value"
-        :isValidName="this.isValidName"
-        :isInvalidName="this.isInvalidName"
-        :isValidSurname="this.isValidSurname"
-        :isInvalidSurname="this.isInvalidSurname"
-        :isValidPhoneNumber="this.isValidPhoneNumber"
-        :isInvalidPhoneNumber="this.isInvalidPhoneNumber"
-        :isValidProvenance="this.isValidProvenance"
-        :isInvalidProvenance="this.isInvalidProvenance"
-        :isValidNuit="this.isValidNuit"
-        :isInvalidNuit="this.isInvalidNuit"
-        :isValidBankAccount="this.isValidBankAccount"
-        :isInvalidBankAccount="this.isInvalidBankAccount"
+        :timetables="this.comboBoxTimetable.value"
+      />
+
+      <ModalExam
+        @register="registerExam"
+        @update="updateExamRoom"
+        @enableStore="enableStore"
+        :title="this.title"
+        :btnText="this.btnText"
+        :isUpdate="this.isUpdate"
+        :indicatorProps="this.indicator"
+        v-model:subject="this.subject"
+        :isInvalidSubject="this.isInvalidSubject"
+        :isValidSubject="this.isValidSubject"
+        :errors="this.errors"
+        placeholderOne="Nome da disciplina..."
+
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -186,8 +185,8 @@
       />
 
       <Bootstrap5Pagination
-        :data="this.employees"
-        @pagination-change-page="getEmployee"
+        :data="this.exams"
+        @pagination-change-page="getExam"
         limit="2"
         show-disabled
       >
@@ -205,9 +204,9 @@
 <script>
 import DataTable from "../components/DataTables/DataTable.vue";
 import UploadLocationModal from "../components/Modals/UploadModal.vue";
-import ModalEmployee from "../components/Modals/Employee/ModalEmployee.vue";
 import PrimaryButton from "../components/shared/primaryButton.vue";
-// import ModalLocationsRoom from "../components/Modals/RoomExam/ModalFormRoom.vue";
+import ModalExam from "../components/Modals/Exam/ModalExam.vue";
+import ModalExamTimeTable from "../components/Modals/ExamTimeTable/ModalExamTimeTable.vue";
 import Filters from "../components/FiltersComponent.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
@@ -223,8 +222,8 @@ export default {
     UploadLocationModal,
     Filters,
     Bootstrap5Pagination,
-    ModalEmployee,
-    // ModalLocationsRoom,
+    ModalExamTimeTable,
+    ModalExam,
     PrimaryButton,
   },
 
@@ -233,48 +232,28 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      location_id: "",
-      bank_name_id: "",
-      categoria_id: "",
-      name:"",
-      surname:"",
-      nuit:"",
-      bank_account:"",
-      phone_number:"",
-      first_phone_number:"",
-      second_phone_number:"",
-      other_provenance:"",
+      subject:"",
+      isInvalidSubject:false,
+      isValidSubject:false,
+      idSubject:null,
+      blocoFilter: "",
+      numberRoomFilter: "",
+      capacityFilter: "",
+      availableFilter: "",
+      examLocationFilter: "",
+      statusFilter: "",
       indicator: "",
-      comboBoxLocations: ref([]),
-      comboBoxType: ref([]),
-      comboBoxBank: ref([]),
-      employees: ref([]),
+      comboBoxTimetable: ref([]),
+      exams: ref([]),
       location: ref([]),
       examRoom: null,
       dataFetched: false,
-      isValidName: false,
-      isInvalidName: false,
-      isValidSurname: false,
-      isInvalidSurname: false,
-      isValidPhoneNumber: false,
-      isInvalidPhoneNumber: false,
-      isValidProvenance: false,
-      isInvalidProvenance: false,
-      isValidNuit: false,
-      isInvalidNuit: false,
-      isValidBankAccount: false,
-      isInvalidBankAccount: false,
-      statusFilter:"",
-      nuitFilter:"",
-      nameFilter:"",
-      locationFilter:"",
       errors: ref([]),
       columns: [
-        { name: "Nome", key: "name" },
-        { name: "Nuit", key: "nuit" },
-        { name: "Telefone", key: "phone_number" },
-        { name: "Proveniêcia", key: "origin" },
-        { name: "Alocações", key: "alocacoes" },
+        { name: "Disciplina", key: "subject" },
+        { name: "Data do exame", key: "date" },
+        { name: "Hora de inicio", key: "start_time" },
+        { name: "Hora do termino", key: "end_time" },
         { name: "Estado", key: "status" },
       ],
     };
@@ -287,90 +266,33 @@ export default {
     //   },
 
     validateInput(errors) {
-      if (errors.name)
-        this.isInvalidName = errors.name.length > 0 ? true : false;
+      if (errors.subject)
+        this.isInvalidSubject = errors.subject.length > 0 ? true : false;
       else {
-        this.isInvalidName = false;
-        this.isValidName = true;
-      }
-
-      if (errors.surname)
-        this.isInvalidSurname = errors.surname.length > 0 ? true : false;
-      else {
-        this.isInvalidSurname = false;
-        this.isValidSurname = true;
-      }
-
-      if (errors.phone_number)
-        this.isInvalidPhoneNumber = errors.phone_number.length > 0 ? true : false;
-      else {
-        this.isInvalidPhoneNumber = false;
-        this.isValidPhoneNumber = true;
-      }
-
-      if (errors.origin_id)
-        this.isInvalidProvenance = errors.origin_id.length > 0 ? true : false;
-      else {
-        this.isInvalidProvenance = false;
-        this.isValidProvenance = true;
-      }
-
-      if (errors.nuit)
-        this.isInvalidNuit = errors.nuit.length > 0 ? true : false;
-      else {
-        this.isInvalidNuit = false;
-        this.isValidNuit = true;
-      }
-
-      if (errors.bank_account)
-        this.isInvalidBankAccount = errors.bank_account.length > 0 ? true : false;
-      else {
-        this.isInvalidBankAccount = false;
-        this.isValidBankAccount = true;
+        this.isInvalidSubject = false;
+        this.isValidSubject = true;
       }
     },
 
-    async registerEmployee() {
+
+    async registerExam() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
-      this.location_id =
-        $("#location_id").val() == null ? "" : $("#location_id").val();
-
-      this.bank_name_id =
-        $("#bank_name").val() == null ? "" : $("#bank_name").val();
-
-      this.categoria_id =
-        $("#categoria_id").val() == null ? "" : $("#categoria_id").val();
-
-      // alert(this.location_id)
-      // alert(this.bank_name_id)
-      // alert(this.categoria_id)
-
       let data = {
-        name: this.name,
-        surname: this.surname,
-        phone_number: this.first_phone_number,
-        alt_phone_number: this.second_phone_number,
-        other_origin: this.other_provenance,
-        nuit: this.nuit,
-        bank_account: this.bank_account,
-        bank_id: this.bank_name_id,
-        role_id: this.categoria_id,
-        origin_id: this.location_id,
-        user_id: 1
+        subject: this.subject,
       };
 
       console.log(data);
 
-      const res = await Api.post("/employee", data);
+      const res = await Api.post("/exam", data);
       console.log(res);
 
       if (res.code == 422) {
         this.errors = res.message;
-        console.log(this.errors);
+        // console.log(this.errors);
         this.validateInput(this.errors)
         this.indicator = "";
         SweetAlert.Alert("Erro", "Preecha os campos obrigatorios", "error", "");
@@ -382,10 +304,10 @@ export default {
       if (res.success) {
         SweetAlert.Alert(
           "Sucesso",
-          "Banco registado com sucesso",
+          `${res.message}`,
           "success",
-          "#kt_modal_employee",
-          "kt_modal_employee_form"
+          "#kt_modal_exam",
+          "kt_modal_new_exam_form"
         );
         this.indicator = "";
         document
@@ -393,12 +315,12 @@ export default {
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
-        this.designation = "";
+        this.subject = "";
         this.errors = [];
-        this.getEmployee();
+        this.getExam();
       }
     },
-    async updateEmployee() {
+    async updateExamRoom() {
       // console.log(this.location.data.id)
       this.indicator = "on";
       document
@@ -463,55 +385,112 @@ export default {
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
-        this.designation = "";
+        this.subject = "";
         this.address = "";
         this.errors = [];
-        this.getEmployee();
+        this.getExam();
       }
     },
 
-    async getEmployee(page = 1) {
+    async alocacaoTimeExam() {
+      this.indicator = "on";
+      document
+        .getElementById("kt_modal_data_submit")
+        .setAttribute("disabled", "true");
+
+      let timetable_id = $("#exame_date_id").val()
+
+      let data = {
+        exam_id: this.idSubject,
+        timetable_id: timetable_id
+      };
+
+      console.log(data);
+
+      const res = await Api.post("/examtimetable", data);
+      console.log(res);
+
+      if (res.code == 422) {
+        this.errors = res.message;
+        // console.log(this.errors);
+        this.validateInput(this.errors)
+        this.indicator = "";
+        SweetAlert.Alert("Erro", "Preecha os campos obrigatorios", "error", "");
+        document
+          .getElementById("kt_modal_data_submit")
+          .removeAttribute("disabled");
+      }
+
+      if (res.success) {
+        SweetAlert.Alert(
+          "Sucesso",
+          `${res.message}`,
+          "success",
+          "#kt_modal_time_table",
+          "kt_time_table_form"
+        );
+        this.indicator = "";
+        document
+          .getElementById("kt_modal_data_submit")
+          .removeAttribute("disabled");
+        // Utilits.showLoader()
+        this.abbreviation = "";
+        this.subject = "";
+        this.errors = [];
+        this.getExam();
+
+        $("#exame_date_id").val("").trigger('change')
+      }
+    },
+
+    async getExam(page = 1) {
       this.statusFilter =
         $("#statusFilter").val() == null ? "" : $("#statusFilter").val();
+      this.availableFilter =
+        $("#availableFilter").val() == null ? "" : $("#availableFilter").val();
 
-        this.locationFilter =
+      this.examLocationFilter =
         $("#examLocationFilter").val() == null
           ? ""
           : $("#examLocationFilter").val();
+      this.statusFilter = this.statusFilter == "" ? 1 : this.statusFilter;
 
-      // alert(this.locationFilter)
+      // alert(this.statusFilter)
 
       Utilits.showLoader();
       const res = await Api.get(
-        `/employee?page=${page}&name=${this.nameFilter}
-          &nuit=${this.nuitFilter}
-          &origin_id=${this.locationFilter}
+        `/exam?page=${page}
           &status=${this.statusFilter}`
       );
 
-      this.employees = await res;
+      this.exams = await res;
 
-      this.employees.data.forEach(function (item) {
-        item.origin = item.origin.designation;
+      this.exams.data.forEach(function (item) {
+        if (item.time_table.length > 0){
+          item.end_time = item.time_table[0].end_time;
+          item.date = item.time_table[0].date;
+          item.start_time = item.time_table[0].start_time;
+        }else{
+          item.end_time = null;
+          item.date = null;
+          item.start_time = null;
+        }
       });
-
-      this.employees.data.forEach(function (item) {
-        item.alocacoes = item.exam.length;
-      });
+      console.log(this.exams);
 
       this.dataFetched = true;
 
-      console.log(this.employees.data.length);
+      console.log(this.exams.data.length);
 
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
     },
 
-    async getAllLocation() {
+    async getAllTimeTable() {
       let data = ref([]);
       Utilits.showLoader();
-      const res = await Api.get(`/examLocations/all`);
+      const res = await Api.get(`/timetable/allData`);
 
       this.dataFetched = true;
 
@@ -519,42 +498,13 @@ export default {
         Utilits.hideLoader();
       }
 
-      this.comboBoxLocations.value = await res.data;
+      this.comboBoxTimetable.value = await res.data;
     },
 
-    async getAllEmployeeType() {
-      Utilits.showLoader();
-      const res = await Api.get(`/typeEmployee/allData`);
-
-      this.dataFetched = true;
-
-      if (this.dataFetched) {
-        Utilits.hideLoader();
-      }
-
-      this.comboBoxType.value = await res.data;
-      console.log(this.comboBoxType.value)
-    },
-
-    async getAllBank() {
-      Utilits.showLoader();
-      const res = await Api.get(`/bank/allData`);
-
-      this.dataFetched = true;
-
-      if (this.dataFetched) {
-        Utilits.hideLoader();
-      }
-
-      this.comboBoxBank.value = await res.data;
-      console.log(await res.data)
-      console.log(this.comboBoxBank.value)
-    },
-
-    async getOneLocation(id) {
+    async getTimeByDate(id) {
       Utilits.showLoader();
 
-      const res = await Api.getOne(`/examRoom/${id}`);
+      const res = await Api.getOne(`/timetable/${id}`);
 
       this.examRoom = await res;
       console.log(this.examRoom.value);
@@ -564,7 +514,7 @@ export default {
         Utilits.hideLoader();
       }
       this.capacity = res.data.capacity;
-      this.nuiFilter = res.data.number_room;
+      this.number_room = res.data.number_room;
       this.bloco = res.data.bloco;
       $(`#location_id`).val(res.data.exam_location_id).trigger("change");
       // this.abbreviation = res.data.abbreviation;
@@ -594,7 +544,7 @@ export default {
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getEmployee();
+        this.getExam();
       }
     },
 
@@ -621,8 +571,21 @@ export default {
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getEmployee();
+        this.getExam();
       }
+    },
+
+    enableAlocacaoTimeExam(id) {
+      // alert(id)
+      // this.getTimeByDate(id);
+      this.idSubject = id
+      this.title = "Alocação do horario";
+      this.btnText = "Alocar";
+      this.isUpdate = true;
+      this.errors = [];
+      this.capacity = null;
+      this.number_room = null;
+      this.bloco = null;
     },
 
     enableUpdate(id) {
@@ -639,17 +602,12 @@ export default {
     },
 
     enableStore() {
-      this.getAllLocation();
-      this.getAllEmployeeType();
-      this.getAllBank();
-      this.title = "Registar Pessoal";
+      this.getAllTimeTable();
+      this.title = "Registar Exame";
       this.btnText = "Registar";
       this.isUpdate = false;
       this.errors = [];
-      this.capacity = null;
-      this.number_room = null;
-      this.bloco = null;
-      $(`#location_id`).val("").trigger("change");
+      this.subject = null;
     },
 
     async imporExcelData() {
@@ -698,7 +656,7 @@ export default {
             .getElementById("upload_excel_locais")
             .removeAttribute("disabled");
           this.errors = [];
-          this.getEmployee()
+          this.getExam()
         }
       } catch (error) {
         console.log("Error", error);
@@ -708,17 +666,16 @@ export default {
 
   computed: {
     dataLength() {
-      if (this.employees.data == undefined) {
+      if (this.exams.data == undefined) {
         return 0;
       }
-      return this.employees.data.length;
+      return this.exams.data.length;
     },
   },
 
   created() {
-    this.getEmployee();
-    this.getAllLocation();
-    // this.getAllLocation();
+    this.getExam();
+    this.getAllTimeTable();
     // $(document).ready(function() {
   },
   mounted() {
@@ -726,4 +683,33 @@ export default {
     FileDropZone.initDropzone();
   },
 };
+
+  // $(document).on("change","#exame_date_id",function(){
+  //     let date = $(this).find(":selected").text();
+  //     getTimeByDate(date)
+      
+  // })
+
+  // async function getTimeByDate(date){
+
+  //   Utilits.showLoader();
+
+  //   const res = await Api.get(
+  //       `/timetable/${date}`
+  //     );
+
+  //     console.log(res)
+  //     let option = "<option>---Selecione aqui---</option>";
+
+  //     res.forEach(function(element){
+  //       console.log(element)
+  //       option += `<option>${element.start_time}-${element.end_time}</option>`
+  //       console.log(option) 
+  //     })
+
+  //     $("#exame_time_id").html(option)
+
+  //   Utilits.hideLoader();
+
+  // }
 </script>

@@ -3,12 +3,12 @@
     <!--begin::Modal - New Target-->
     <div
       class="modal fade"
-      id="kt_modal_location"
+      id="kt_modal_time_table"
       tabindex="-1"
       aria-hidden="true"
     >
       <!--begin::Modal dialog-->
-      <div class="modal-dialog modal-dialog-centered mw-950px">
+      <div class="modal-dialog modal-dialog-centered mw-650px">
         <!--begin::Modal content-->
         <div class="modal-content rounded">
           <!--begin::Modal header-->
@@ -30,10 +30,10 @@
           <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
             <!--begin:Form-->
             <form
-              id="kt_modal_location_form"
+              id="kt_time_table_form"
               class="form"
               action="#"
-              @submit.prevent="registerOrUpdate"
+              @submit.prevent="alocacaoTimeExam"
             >
               <!--begin::Heading-->
               <div class="mb-13 text-center">
@@ -59,7 +59,7 @@
                     <label
                       class="d-flex align-items-center fs-6 fw-semibold mb-2"
                     >
-                      <span class="required">Local</span>
+                      <span class="required">Data e Hora</span>
 
                       <span
                         class="ms-1"
@@ -76,22 +76,22 @@
 
                     <!--begin::Select-->
                     <select
-                      id="location_id"
+                      id="exame_date_id"
                       name="currnecy"
                       aria-label="Select a Timezone"
                       data-control="select2"
-                      data-dropdown-parent="#kt_modal_location"
+                      data-dropdown-parent="#kt_modal_time_table"
                       data-placeholder="---Selecione aqui---"
                       class="form-select form-select-solid"
                     >
                       <option value=""></option>
 
                         <option
-                          v-for="(local, index) in this.$props.locations"
+                          v-for="(timetable, index) in this.$props.timetables"
                           :key="index"
-                          :value="local.id"
+                          :value="timetable.id"
                         >
-                          {{ local.designation }}
+                          {{ "Data:"+timetable.date +"   "+ "Hora:"+timetable.start_time +"-"+ timetable.end_time }}
                         </option>
                     </select>
                     <!--end::Select-->
@@ -111,14 +111,14 @@
                 <!--End::col-->
 
                 <!-- Begin:col -->
-                <div class="col">
+                <div class="col" hidden>
                   <!--begin::Input group-->
                   <div class="d-flex flex-column mb-8 fv-row">
                     <!--begin::Label-->
                     <label
                       class="d-flex align-items-center fs-6 fw-semibold mb-2"
                     >
-                      <span class="required">Bloco</span>
+                      <span class="required">Hora</span>
 
                       <span
                         class="ms-1"
@@ -133,14 +133,19 @@
                     </label>
                     <!--end::Label-->
 
-                    <input
-                      type="text"
-                      class="form-control form-control-solid"
-                      :placeholder="this.$props.placeholderOne"
-                      name="address"
-                      :value="this.bloco"
-                      @input="$emit('update:bloco', $event.target.value)"
-                    />
+                    <!--begin::Select-->
+                    <select
+                      id="exame_time_id"
+                      name="currnecy"
+                      aria-label="Select a Timezone"
+                      data-control="select2"
+                      data-dropdown-parent="#kt_modal_time_table"
+                      data-placeholder="---Selecione aqui---"
+                      class="form-select form-select-solid"
+                    >
+                      <option value=""></option>
+                    </select>
+                    <!--end::Select-->
 
                     <div class="fv-plugins-message-container invalid-feedback">
                       <div
@@ -149,102 +154,6 @@
                         data-validator="notEmpty"
                       >
                         {{ this.errorMessageBloco }}
-                      </div>
-                    </div>
-                  </div>
-                  <!--end::Input group-->
-                </div>
-                <!-- End:col -->
-              </div>
-              <!--End::row-->
-
-              <!--Begin::row-->
-              <div class="row">
-                <!--Begin::col-->
-                <div class="col">
-                  <!--begin::Input group-->
-                  <div class="d-flex flex-column mb-8 fv-row">
-                    <!--begin::Label-->
-                    <label
-                      class="d-flex align-items-center fs-6 fw-semibold mb-2"
-                    >
-                      <span class="required">Número da sala</span>
-
-                      <span
-                        class="ms-1"
-                        data-bs-toggle="tooltip"
-                        title="Specify a target name for future usage and reference"
-                      >
-                        <i
-                          class="ki-duotone ki-information-5 text-gray-500 fs-6"
-                          ><span class="path1"></span><span class="path2"></span
-                          ><span class="path3"></span></i
-                      ></span>
-                    </label>
-                    <!--end::Label-->
-
-                    <input
-                      type="text"
-                      class="form-control form-control-solid"
-                      :placeholder="this.$props.placeholderTwo"
-                      name="abbreviation"
-                      :value="this.number_room"
-                      @input="$emit('update:number_room', $event.target.value)"
-                    />
-
-                    <div class="fv-plugins-message-container invalid-feedback">
-                      <div
-                        v-show="this.$props.errors.number_room"
-                        data-field="name"
-                        data-validator="notEmpty"
-                      >
-                        {{ this.errorMessageNumber_room }}
-                      </div>
-                    </div>
-                  </div>
-                  <!--end::Input group-->
-                </div>
-                <!--End::col-->
-
-                <!-- Begin:col -->
-                <div class="col">
-                  <!--begin::Input group-->
-                  <div class="d-flex flex-column mb-8 fv-row">
-                    <!--begin::Label-->
-                    <label
-                      class="d-flex align-items-center fs-6 fw-semibold mb-2"
-                    >
-                      <span class="required">Capacidade</span>
-
-                      <span
-                        class="ms-1"
-                        data-bs-toggle="tooltip"
-                        title="Specify a target name for future usage and reference"
-                      >
-                        <i
-                          class="ki-duotone ki-information-5 text-gray-500 fs-6"
-                          ><span class="path1"></span><span class="path2"></span
-                          ><span class="path3"></span></i
-                      ></span>
-                    </label>
-                    <!--end::Label-->
-
-                    <input
-                      type="text"
-                      class="form-control form-control-solid"
-                      :placeholder="this.$props.placeholderThree"
-                      name="address"
-                      :value="this.capacity"
-                      @input="$emit('update:capacity', $event.target.value)"
-                    />
-
-                    <div class="fv-plugins-message-container invalid-feedback">
-                      <div
-                        v-show="this.$props.errors.capacity"
-                        data-field="name"
-                        data-validator="notEmpty"
-                      >
-                        {{ this.errorMessageCapacity }}
                       </div>
                     </div>
                   </div>
@@ -348,7 +257,7 @@ export default {
       type: Boolean,
     },
 
-    locations: {
+    timetables: {
       type: Array,
     },
   },
@@ -362,12 +271,15 @@ export default {
   },
 
   methods: {
-    async registerOrUpdate() {
-      if (!this.$props.isUpdate) {
-        this.$emit("register");
-      } else {
-        this.$emit("update");
-      }
+    // async getTimeExam(value){
+    //   alert(value)
+    // },
+    async enableAlocacaoExam() {
+        this.$emit("enableAlocacaoExam");
+    },
+
+    async alocacaoTimeExam() {
+        this.$emit("alocacaoTimeExam");
     },
   },
   computed: {

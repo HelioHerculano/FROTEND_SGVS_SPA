@@ -41,11 +41,14 @@
             <!--end::Input group-->
           </div>
 
-          <div class="col-4" v-show="this.$props.isExamRoomView">
+          <div class="col-4" v-show="this.$props.isExamRoomView || this.$props.isEmployeeView">
             <div class="mb-10">
               <!--begin::Label-->
-              <label class="form-label fw-bold fs-6 text-gray-700"
+              <label v-show="this.$props.isExamRoomView" class="form-label fw-bold fs-6 text-gray-700"
                 >Locais</label
+              >
+              <label v-show="this.$props.isEmployeeView" class="form-label fw-bold fs-6 text-gray-700"
+                >Proveniêcia</label
               >
               <!--end::Label-->
 
@@ -128,7 +131,7 @@
             </div>
           </div>
 
-          <div class="col-4" v-show="!this.$props.isExamRoomView && !this.$props.isTimeTableView">
+          <div class="col-4" v-show="!this.$props.isExamRoomView && !this.$props.isTimeTableView && !this.$props.isEmployeeView">
             <!--begin::Input group-->
             <div class="d-flex flex-column mb-8 fv-row">
               <label class="form-label fw-bold fs-6 text-gray-700">Sigla</label>
@@ -139,6 +142,38 @@
                 placeholder="Pesquise pela sigla..."
                 name="abbreviation"
                 @input="$emit('update:abbreviationFilter', $event.target.value)"
+              />
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isEmployeeView">
+            <!--begin::Input group-->
+            <div class="d-flex flex-column mb-8 fv-row">
+              <label class="form-label fw-bold fs-6 text-gray-700">Nome</label>
+
+              <input
+                type="text"
+                class="form-control form-control-solid"
+                placeholder="Pesquise pelo nome..."
+                name="name"
+                @input="$emit('update:nameFilter', $event.target.value)"
+              />
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isEmployeeView">
+            <!--begin::Input group-->
+            <div class="d-flex flex-column mb-8 fv-row">
+              <label class="form-label fw-bold fs-6 text-gray-700">Nuit</label>
+
+              <input
+                type="text"
+                class="form-control form-control-solid"
+                placeholder="Pesquise pelo NUIT..."
+                name="nuit"
+                @input="$emit('update:nuitFilter', $event.target.value)"
               />
             </div>
             <!--end::Input group-->
@@ -284,6 +319,9 @@ export default {
     placeholderDate: {
       type: String,
     },
+    isEmployeeView:{
+      type: Boolean
+    }
   },
   data() {
     return {

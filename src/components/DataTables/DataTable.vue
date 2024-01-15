@@ -104,8 +104,10 @@
                 @enableUpdate="enableUpdate"
                 @remove="remove"
                 @active="active"
+                @enableAlocacaoTimeExam="enableAlocacaoTimeExam"
                 :isLocationExamView="this.$props.isLocationExamView"
                 :isBankView="this.$props.isBankView"
+                :isExamView="this.$props.isExamView"
               />
             </tbody>
             <!--end::Table body-->
@@ -153,6 +155,12 @@ export default {
     },
     buttonText:{
       type: String
+    },
+    isEmployeeView:{
+      type: Boolean
+    },
+    isExamView:{
+      type: Boolean
     }
   },
 
@@ -168,6 +176,9 @@ export default {
   },
 
   methods: {
+    async enableAlocacaoTimeExam(id) {
+      this.$emit("enableAlocacaoTimeExam", id);
+    },
     async enableUpdate(id) {
       this.$emit("enableUpdate", id);
     },
@@ -179,7 +190,6 @@ export default {
     async active(id) {
       this.$emit("active", id);
     },
-
     printPDF() {
       var pdf = new jsPDF({
         orientation: "portrait",

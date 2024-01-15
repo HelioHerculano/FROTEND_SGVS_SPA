@@ -3,7 +3,7 @@
     <!--begin::Modal - New Target-->
     <div
       class="modal fade"
-      id="kt_modal_location"
+      id="kt_modal_employee"
       tabindex="-1"
       aria-hidden="true"
     >
@@ -53,7 +53,7 @@
                 class="collapse show"
               >
                 <!--begin::Form-->
-                <form id="kt_account_profile_details_form" class="form" @submit.prevent="registerOrUpdate">
+                <form id="kt_modal_employee_form" class="form" @submit.prevent="registerOrUpdate">
                   <!--begin::Card body-->
                   <div class="card-body border-top p-9">
                     <!--begin::Input group-->
@@ -163,11 +163,28 @@
                             <input
                               type="text"
                               class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                              
+                              :class="{
+                                'is-invalid': this.$props.isInvalidName,
+                                'is-valid': this.$props.isValidName,
+                              }"
+                              
                               placeholder="Nome proprio"
                               name="name"
                               :value="this.name"
                               @input="$emit('update:name', $event.target.value)"
                             />
+
+                            <div class="fv-plugins-message-container invalid-feedback">
+                              <div
+                                v-show="this.$props.errors.name"
+                                data-field="name"
+                                data-validator="notEmpty"
+                              >
+                                {{ this.errorMessageName }}
+                              </div>
+                            </div>
+
                           </div>
                           <!--end::Col-->
 
@@ -177,10 +194,26 @@
                               type="text"
                               name="lname"
                               class="form-control form-control-lg form-control-solid"
+
+                              :class="{
+                                'is-invalid': this.$props.isInvalidSurname,
+                                'is-valid': this.$props.isValidSurname,
+                              }"
+
                               placeholder="Apelido"
                               :value="this.surname"
                               @input="$emit('update:surname', $event.target.value)"
                             />
+
+                            <div class="fv-plugins-message-container invalid-feedback">
+                              <div
+                                v-show="this.$props.errors.surname"
+                                data-field="name"
+                                data-validator="notEmpty"
+                              >
+                                {{ this.errorMessageSurname }}
+                              </div>
+                            </div>
                           </div>
                           <!--end::Col-->
                         </div>
@@ -220,10 +253,26 @@
                               type="tel"
                               name="phone"
                               class="form-control form-control-lg form-control-solid"
+
+                              :class="{
+                                  'is-invalid': this.$props.isInvalidPhoneNumber,
+                                  'is-valid': this.$props.isValidPhoneNumber,
+                                }"
+
                               placeholder="Principal"
                               :value="this.first_phone_number"
                               @input="$emit('update:first_phone_number', $event.target.value)"
                             />
+
+                            <div class="fv-plugins-message-container invalid-feedback">
+                              <div
+                                v-show="this.$props.errors.phone_number"
+                                data-field="name"
+                                data-validator="notEmpty"
+                              >
+                                {{ this.errorMessagePhoneNumber }}
+                              </div>
+                            </div>
                           </div>
                           <!--end::Col-->
 
@@ -274,8 +323,10 @@
                           name="currnecy"
                           aria-label="Select a Timezone"
                           data-control="select2"
+                          data-dropdown-parent="#kt_modal_employee"
                           data-placeholder="---Selecione aqui---"
                           class="form-select form-select-solid"
+
                           :value="this.provenance"
                           @input="$emit('update:provenance', $event.target.value)"
                         >
@@ -288,8 +339,20 @@
                           >
                             {{ local.designation }}
                           </option>
+                          <option value="100">Outra</option>
+
                         </select>
                         <!--end::Select-->
+
+                        <div class="fv-plugins-message-container invalid-feedback">
+                            <div
+                              v-show="this.$props.errors.origin_id"
+                              data-field="name"
+                              data-validator="notEmpty"
+                            >
+                              {{ this.errorMessageProveniecia }}
+                            </div>
+                          </div>
                       </div>
                       <!--end::Col-->
                     </div>
@@ -332,6 +395,55 @@
                     <!--begin::Input group-->
                     <div class="row mb-6">
                       <!--begin::Label-->
+                      <label class="col-lg-4 col-form-label fw-semibold fs-6">
+                        <span class="required">Nuit</span>
+
+                        <span
+                          class="ms-1"
+                          data-bs-toggle="tooltip"
+                          title="Phone number must be active"
+                        >
+                          <i
+                            class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                            ><span class="path1"></span
+                            ><span class="path2"></span
+                            ><span class="path3"></span></i
+                        ></span>
+                      </label>
+                      <!--end::Label-->
+                          <!--begin::Col-->
+                          <div class="col-lg-8 fv-row">
+                            <input
+                              type="number"
+                              name="nuit"
+                              class="form-control form-control-lg form-control-solid"
+                              :class="{
+                                'is-invalid': this.$props.isInvalidNuit,
+                                'is-valid': this.$props.isValidNuit,
+                              }"
+
+                              placeholder="Informe o NUIT"
+                              :value="this.nuit"
+                              @input="$emit('update:nuit', $event.target.value)"
+                            />
+
+                            <div class="fv-plugins-message-container invalid-feedback">
+                              <div
+                                v-show="this.$props.errors.nuit"
+                                data-field="name"
+                                data-validator="notEmpty"
+                              >
+                                {{ this.errorMessageNuit }}
+                              </div>
+                            </div>
+                        </div>
+                      <!--end::Col-->
+                    </div>
+                    <!--end::Input group-->
+
+                    <!--begin::Input group-->
+                    <div class="row mb-6">
+                      <!--begin::Label-->
                       <label
                         class="col-lg-4 col-form-label required fw-semibold fs-6"
                         >Dados bancarios</label
@@ -344,33 +456,61 @@
                           <div class="col-lg-6 fv-row">
                             <!--begin::Input-->
                             <select
+                              id="bank_name"
                               name="language"
                               aria-label="Select a Language"
                               data-control="select2"
-                              data-placeholder="--Selecione aque--"
+                              data-dropdown-parent="#kt_modal_employee"
+                              data-placeholder="--Selecione o banco aqui--"
                               class="form-select form-select-solid form-select-lg"
                               :value="this.bank"
                               @input="$emit('update:bank', $event.target.value)"
                             >
-                              <option value="">Selecione o banco...</option>
-                              <option value="1">Selecione a categoria...</option>
-                              <option value="2">Selecione a categoria...</option>
-                              <option value="3">Selecione a categoria...</option>
-                              <option value="4">Selecione a categoria...</option>
-                              <option value="5">Selecione a categoria...</option>
+                              <option
+                                v-for="(bank, index) in this.$props.banks"
+                                :key="index"
+                                :value="bank.id"
+                              >
+                                {{ bank.description }}
+                              </option>
                             </select>
                             <!--end::Input-->
+
+                            <div class="fv-plugins-message-container invalid-feedback">
+                              <div
+                                v-show="this.$props.errors.bank_id"
+                                data-field="name"
+                                data-validator="notEmpty"
+                              >
+                                {{ this.errorMessageBank }}
+                              </div>
+                            </div>
                           </div>
+
                           <div class="col-lg-6 fv-row">
                             <input
                               type="tel"
                               name="phone"
                               class="form-control form-control-lg form-control-solid"
+                              :class="{
+                                'is-invalid': this.$props.isInvalidBankAccount,
+                                'is-valid': this.$props.isValidBankAccount,
+                              }"
                               placeholder="Número da conta"
                               :value="this.bank_account"
                               @input="$emit('update:bank_account', $event.target.value)"
                             />
+                            <div class="fv-plugins-message-container invalid-feedback">
+                              <div
+                                v-show="this.$props.errors.bank_account"
+                                data-field="name"
+                                data-validator="notEmpty"
+                              >
+                                {{ this.errorMessageBankAccount }}
+                              </div>
+                            </div>
                           </div>
+
                         </div>
 
                         <!--begin::Hint-->
@@ -396,9 +536,11 @@
                       <!--begin::Col-->
                       <div class="col-lg-8 fv-row">
                         <select
+                          id="categoria_id"
                           name="timezone"
                           aria-label="Select a Timezone"
                           data-control="select2"
+                          data-dropdown-parent="#kt_modal_employee"
                           data-placeholder="--Selecione aque--"
                           class="form-select form-select-solid form-select-lg"
                           :value="this.employee_type"
@@ -410,9 +552,18 @@
                             :value="type.id"
                           >
                             {{ type.description }}
-                          </option>
-                          
+                          </option>                          
                         </select>
+
+                        <div class="fv-plugins-message-container invalid-feedback">
+                            <div
+                              v-show="this.$props.errors.role_id"
+                              data-field="name"
+                              data-validator="notEmpty"
+                            >
+                              {{ this.errorMessageCategoria }}
+                            </div>
+                          </div>
                       </div>
                       <!--end::Col-->
                     </div>
@@ -433,9 +584,18 @@
                     <button
                       type="submit"
                       class="btn btn-primary"
-                      id="kt_account_profile_details_submit"
+                      id="kt_modal_data_submit"
+                      :data-kt-indicator="this.$props.indicatorProps"
                     >
-                      Registar
+                      <span class="indicator-label">
+                          {{ this.$props.btnText }}
+                      </span>
+                        <span class="indicator-progress">
+                          Por favor aguader...
+                          <span
+                            class="spinner-border spinner-border-sm align-middle ms-2"
+                          ></span>
+                        </span>
                     </button>
                   </div>
                   <!--end::Actions-->
@@ -501,6 +661,11 @@ export default {
       type: String,
     },
 
+
+    nuit: {
+      type: String,
+    },
+
     employee_type: {
       type: String,
     },
@@ -540,6 +705,42 @@ export default {
     banks: {
       type: Array,
     },
+    isInvalidName:{
+      type: Boolean
+    },
+    isValidName:{
+      type: Boolean
+    },
+    isInvalidSurname:{
+      type: Boolean
+    },
+    isValidSurname:{
+      type: Boolean
+    },
+    isValidPhoneNumber:{
+      type: Boolean
+    },
+    isInvalidPhoneNumber:{
+      type: Boolean
+    },
+    isInvalidProvenance:{
+      type: Boolean
+    },
+    isValidProvenance:{
+      type: Boolean
+    },
+    isInvalidNuit:{
+      type: Boolean
+    },
+    isValidNuit:{
+      type: Boolean
+    },
+    isInvalidBankAccount:{
+      type: Boolean
+    },
+    isValidBankAccount:{
+      type: Boolean
+    }
   },
 
   data() {
@@ -560,23 +761,42 @@ export default {
     },
   },
   computed: {
-    errorMessageLocation() {
-      if (this.$props.errors.exam_location_id)
-        return this.$props.errors.exam_location_id[0];
+    errorMessageName() {
+      if (this.$props.errors.name)
+        return this.$props.errors.name[0];
       return "";
     },
-    errorMessageBloco() {
-      if (this.$props.errors.bloco) return this.$props.errors.bloco[0];
+    errorMessageSurname() {
+      if (this.$props.errors.surname) return this.$props.errors.surname[0];
       return "";
     },
 
-    errorMessageNumber_room() {
-      if (this.$props.errors.number_room)
-        return this.$props.errors.number_room[0];
+    errorMessageProveniecia() {
+      if (this.$props.errors.origin_id)
+        return this.$props.errors.origin_id[0];
       return "";
     },
-    errorMessageCapacity() {
-      if (this.$props.errors.capacity) return this.$props.errors.capacity[0];
+    errorMessagePhoneNumber() {
+      if (this.$props.errors.phone_number) return this.$props.errors.phone_number[0];
+      return "";
+    },
+    errorMessageBank() {
+      if (this.$props.errors.bank_id) return this.$props.errors.bank_id[0];
+      return "";
+    },
+
+    errorMessageBankAccount() {
+      if (this.$props.errors.bank_account) return this.$props.errors.bank_account[0];
+      return "";
+    },
+
+    errorMessageNuit() {
+      if (this.$props.errors.nuit) return this.$props.errors.nuit[0];
+      return "";
+    },
+
+    errorMessageCategoria() {
+      if (this.$props.errors.role_id) return this.$props.errors.role_id[0];
       return "";
     },
   },

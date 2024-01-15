@@ -468,7 +468,7 @@
           data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
           data-kt-menu-placement="bottom-start"
           class="menu-item menu-lg-down-accordion me-0 me-lg-2"
-        >
+         hidden>
           <!--begin:Menu link--><span class="menu-link"
             ><span class="menu-title">Pages</span
             ><span class="menu-arrow d-lg-none"></span></span
@@ -2092,7 +2092,7 @@
           data-kt-menu-placement="bottom-start"
           class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2"
         >
-          <!--begin:Menu link--><span class="menu-link"
+          <!--begin:Menu link--><span class="menu-link" hidden
             ><span class="menu-title">Apps</span
             ><span class="menu-arrow d-lg-none"></span></span
           ><!--end:Menu link--><!--begin:Menu sub-->
@@ -3158,7 +3158,7 @@
           data-kt-menu-placement="bottom-start"
           class="menu-item menu-lg-down-accordion me-0 me-lg-2"
         >
-          <!--begin:Menu link--><span class="menu-link"
+          <!--begin:Menu link--><span class="menu-link" hidden
             ><span class="menu-title">Layouts</span
             ><span class="menu-arrow d-lg-none"></span></span
           ><!--end:Menu link--><!--begin:Menu sub-->
@@ -3382,7 +3382,7 @@
           data-kt-menu-placement="bottom-start"
           class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2"
         >
-          <!--begin:Menu link--><span class="menu-link"
+          <!--begin:Menu link--><span class="menu-link" hidden
             ><span class="menu-title">Help</span
             ><span class="menu-arrow d-lg-none"></span></span
           ><!--end:Menu link--><!--begin:Menu sub-->
