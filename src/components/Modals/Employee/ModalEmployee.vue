@@ -319,7 +319,7 @@
                       <div class="col-lg-8 fv-row">
                         <!--begin::Select-->
                         <select
-                          id="location_id"
+                          id="provenance_id"
                           name="currnecy"
                           aria-label="Select a Timezone"
                           data-control="select2"

@@ -7,12 +7,21 @@ import ExamRoomView from "../views/ExamRoomView.vue";
 import EmployeeTypeView from "../views/EmployeeTypeView.vue";
 import EmployeeView from "../views/EmployeeView.vue";
 import ExamView from "../views/ExamView.vue";
+import LoginView from "../views/LoginView.vue";
+import AllocationExamView from "../views/AllocationExamView.vue";
+import AllocationEmployeeView from "../views/AllocationEmployeeView.vue";
+import SalaryView from "../views/SalaryView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
+      name: "login",
+      component: HomeView,
+    },
+    {
+      path: "/home",
       name: "home",
       component: HomeView,
     },
@@ -50,6 +59,21 @@ const router = createRouter({
       path: "/exames",
       name: "ExamView",
       component: ExamView,
+    },
+    {
+      path: "/alocacaoExames",
+      name: "AllocationExamView",
+      component: AllocationExamView,
+    },
+    {
+      path: "/alocacaoPessoal",
+      name: "AllocationEmployeeView",
+      component: AllocationEmployeeView,
+    },
+    {
+      path: "/salary",
+      name: "SalaryView",
+      component: SalaryView,
     },
     {
       path: "/about",

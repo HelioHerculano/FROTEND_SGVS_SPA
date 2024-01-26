@@ -231,6 +231,7 @@ export default {
         { name: "Data", key: "date" },
         { name: "Hora de Inicio", key: "start_time" },
         { name: "Hora do fim", key: "end_time" },
+        { name: "Disponibilidade", key: "available" },
         { name: "Estado", key: "status" },
       ],
     };
@@ -238,7 +239,7 @@ export default {
 
   methods: {
     //   changeTextModal(title='',btnText=''){
-    //     this.title = title
+    //     this.title = title           
     //     this.btnText = btnText
     //   },
 
@@ -261,7 +262,7 @@ export default {
         this.isInvalidEndTime = errors.end_time.length > 0 ? true : false;
       else {
         this.isInvalidEndTime = false;
-        this.isValidEndTime = true;
+        this.isValidEndTime = true; 
       }
     },
 
@@ -401,7 +402,7 @@ export default {
       const res = await Api.getOne(`/timetable/${id}`);
 
       this.timetable = await res;
-      console.log(this.bank);
+      console.log(this.timetable);
 
       this.dataFetched = true;
       if (this.dataFetched) {

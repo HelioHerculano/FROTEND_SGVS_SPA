@@ -16,7 +16,7 @@
         <h1
           class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
         >
-          Locais de exames
+          Salas de exames
         </h1>
         <!--end::Title-->
 
@@ -51,11 +51,12 @@
         <!--end::Secondary button-->
 
         <!--begin::Primary button-->
-          <PrimaryButton
-            v-on:click="enableStore"
-            textButton="Registar"
-            datatarget="kt_modal_location"
+        <PrimaryButton
+          v-on:click="enableStore"
+          textButton="Alocar"
+          datatarget="kt_modal_allocation_exam"
         ></PrimaryButton>
+
         <!-- <a
           href="#"
           class="btn btn-sm fw-bold btn-primary"
@@ -116,42 +117,46 @@
       <!--end::Row-->
       <!-- Filtros -->
       <Filters
-        @getData="getLocationExam"
-        v-model:designationFilter="this.designationFilter"
-        v-model:abbreviationFilter="this.abbreviationFilter"
-        :isLocationExamView="true"
+        @getData="getAllocationExam"
+        v-model:blocoFilter="this.blocoFilter"
+        v-model:capacityFilter="this.capacityFilter"
+        v-model:numberRoomFilter="this.numberRoomFilter"
+        :isExamView="true"
+        :locations="this.comboBoxLocations.value"
       />
       <!-- End-FIlters -->
 
       <DataTable
         :dataLenght="this.dataLength"
         :columns="this.columns"
-        :data="this.locations"
+        :data="this.allocations"
         :dataFetched="this.dataFetched"
-        :isLocationExamView="true"
-        buttonText="Upload De Locais"
-        tableTitle="Listagem de locais"
+        :isExamView="true"
+        buttonText="Upload De Salas"
+        tableTitle="Listagem de alocações" 
         @enableUpdate="enableUpdate"
         @remove="remove"
         @active="active"
+        @enableAlocacaoTimeExam="enableAlocacaoTimeExam"
       />
 
-      <ModalLocations
-        @register="registerLocation"
-        @update="updateLocation"
+      
+      <ModalAllocationExam
+        @register="makeAllocation"
+        @update="updateExamRoom"
         @enableStore="enableStore"
         :title="this.title"
         :btnText="this.btnText"
         :isUpdate="this.isUpdate"
         :indicatorProps="this.indicator"
-        v-model:designation="this.designation"
-        v-model:abbreviation="this.abbreviation"
-        v-model:address="this.address"
+        v-model:subject="this.subject"
+        v-model:all_tobe_examined = "this.all_tobe_examined"
+        :isInvalidSubject="this.isInvalidSubject"
+        :isValidSubject="this.isValidSubject"
         :errors="this.errors"
-        placeholderOne="Nome do local..."
-        placeholderTwo="Sigla do local..."
-        placeholderThree="Endereço do local..."
-        :isLocationExamView="true"
+        placeholderOne="Total por serem examinados..."
+        :locations="this.comboBoxLocations.value"
+        :exams="this.comboBoxExam.value"
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -161,13 +166,13 @@
 
       <UploadLocationModal
         @imporExcelData="imporExcelData"
-        title="Upload de locais"
+        title="Upload de salas"
         :indicatorProps="this.indicator"
       />
 
       <Bootstrap5Pagination
-        :data="this.locations"
-        @pagination-change-page="getLocationExam"
+        :data="this.allocations"
+        @pagination-change-page="getAllocationExam"
         limit="2"
         show-disabled
       >
@@ -185,8 +190,8 @@
 <script>
 import DataTable from "../components/DataTables/DataTable.vue";
 import UploadLocationModal from "../components/Modals/UploadModal.vue";
-import ModalLocations from "../components/Modals/LocationExam/ModalFormLocation.vue";
 import PrimaryButton from "../components/shared/primaryButton.vue";
+import ModalAllocationExam from "../components/Modals/AllocationExam/ModalAllocationExam.vue";
 import Filters from "../components/FiltersComponent.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
@@ -202,8 +207,8 @@ export default {
     UploadLocationModal,
     Filters,
     Bootstrap5Pagination,
-    ModalLocations,
-    PrimaryButton
+    ModalAllocationExam,
+    PrimaryButton,
   },
 
   data() {
@@ -211,23 +216,33 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      designation: "",
-      abbreviation: "",
-      address: "",
-      designationFilter: "",
-      abbreviationFilter: "",
+      subject:"",
+      isInvalidSubject:false,
+      isValidSubject:false,
+      idSubject:null,
+      blocoFilter: "",
+      numberRoomFilter: "",
+      capacityFilter: "",
+      availableFilter: "",
+      examLocationFilter: "",
       statusFilter: "",
       indicator: "",
-      locations: ref([]),
+      all_tobe_examined:null,
+      allocationType:null,
+      comboBoxLocations: ref([]),
+      comboBoxExam: ref([]),
+      comboBoxExamRoom: ref([]),
+      allocations: ref([]),
       location: ref([]),
+      examRoom: null,
       dataFetched: false,
+      checkAllRoom: false,
       errors: ref([]),
       columns: [
-        { name: "Nome", key: "designation" },
-        { name: "Sigla", key: "abbreviation" },
-        { name: "Endereço", key: "address" },
-        { name: "Número de salas", key: "exam_room_count" },
-        { name: "Disponibilidade", key: "available" },
+        { name: "Disciplina", key: "subject" },
+        { name: "Local", key: "designation" },
+        { name: "Bloco", key: "bloco" },
+        { name: "Nr. da sala", key: "number_room" },
         { name: "Estado", key: "status" },
       ],
     };
@@ -239,25 +254,53 @@ export default {
     //     this.btnText = btnText
     //   },
 
-    async registerLocation() {
+    validateInput(errors) {
+      if (errors.subject)
+        this.isInvalidSubject = errors.subject.length > 0 ? true : false;
+      else {
+        this.isInvalidSubject = false;
+        this.isValidSubject = true;
+      }
+    },
+
+
+    async makeAllocation() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
+        
+            this.exame_id =
+        $("#exame_id").val() == null ? "" : $("#exame_id").val();
+            this.location_id =
+        $("#location_id").val() == null ? "" : $("#location_id").val();
+
+        this.room_id =
+        $("#room_id").val() == null ? "" : $("#room_id").val();
+
+        this.checkAllRoom = $("#checkAllRoom").val();
+
+        this.allocationType = $('input[name="allocationType"]:checked').val()
+
       let data = {
-        designation: this.designation,
-        abbreviation: this.abbreviation,
-        address: this.address,
-      };
+        exam_location_id: this.location_id,
+        exam_room_id: this.room_id,
+        exam_id: this.exame_id,
+        all_tobe_examined: this.all_tobe_examined,
+        checkAllRoom: this.checkAllRoom == "true" ? true : false,
+        allocationType: this.allocationType
+      };    
 
       console.log(data);
 
-      const res = await Api.post("/examLocation", data);
+      const res = await Api.post("/allocationExamLocation", data);
+      console.log(res);
 
       if (res.code == 422) {
         this.errors = res.message;
-        console.log(this.errors);
+        // console.log(this.errors);
+        this.validateInput(this.errors)
         this.indicator = "";
         SweetAlert.Alert("Erro", "Preecha os campos obrigatorios", "error", "");
         document
@@ -268,10 +311,10 @@ export default {
       if (res.success) {
         SweetAlert.Alert(
           "Sucesso",
-          "Banco registado com sucesso",
+          `${res.message}`,
           "success",
-          "#kt_modal_location",
-          "kt_modal_location_form"
+          "#kt_modal_allocation_exam",
+          "kt_modal_allocation_exam_form"
         );
         this.indicator = "";
         document
@@ -279,26 +322,33 @@ export default {
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
-        this.designation = "";
+        this.subject = "";
         this.errors = [];
-        this.getLocationExam();
+        this.getAllocationExam()
+        this.resetFilds()
       }
     },
-    async updateLocation() {
+    async updateExamRoom() {
       // console.log(this.location.data.id)
       this.indicator = "on";
       document
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
+            this.location_id =
+        $("#location_id").val() == null ? "" : $("#location_id").val();
+
       let data = {
-        designation: this.designation,
-        abbreviation: this.abbreviation,
-        address: this.address,
+        bloco: this.bloco,
+        capacity: this.capacity,
+        number_room: this.number_room,
+        exam_location_id: this.location_id,
       };
 
+      console.log(this.examRoom.data)
+
       console.log(data);
-      const res = await Api.put(`/examLocation/${this.location.data.id}`, data);
+      const res = await Api.put(`/examRoom/${this.examRoom.data.id}`, data);
 
       console.log(res);
       if (res.code == 422) {
@@ -343,73 +393,99 @@ export default {
           .removeAttribute("disabled");
         // Utilits.showLoader()
         this.abbreviation = "";
-        this.designation = "";
+        this.subject = "";
         this.address = "";
         this.errors = [];
-        this.getLocationExam();
+        this.getAllocationExam();
       }
     },
 
-    async getLocationExam(page = 1) {
+    async getAllocationExam(page = 1) {
       this.statusFilter =
         $("#statusFilter").val() == null ? "" : $("#statusFilter").val();
+      this.availableFilter =
+        $("#availableFilter").val() == null ? "" : $("#availableFilter").val();
 
-      // alert(this.statusFilter);
+      this.examLocationFilter =
+        $("#examLocationFilter").val() == null
+          ? ""
+          : $("#examLocationFilter").val();
+      this.statusFilter = this.statusFilter == "" ? 1 : this.statusFilter;
+
+      // alert(this.statusFilter)
 
       Utilits.showLoader();
       const res = await Api.get(
-        `/examLocation?page=${page}&designation=${this.designationFilter}&abbreviation=${this.abbreviationFilter}&status=${this.statusFilter}`
+        `/allocationExamLocation?page=${page}
+          &status=${this.statusFilter}`
       );
 
-      this.locations = await res;
+      this.allocations = await res;
+
+      this.allocations.data.forEach(function (item) {
+        item.subject = item.exam.subject;
+      });
+
+      this.allocations.data.forEach(function (item) {
+        item.designation = item.exam_room.exam_location.designation;
+      });
+
+      this.allocations.data.forEach(function (item) {
+        item.bloco = item.exam_room.bloco;
+      });
+
+      this.allocations.data.forEach(function (item) {
+        item.number_room = item.exam_room.number_room;
+      });
+
+      console.log(this.allocations);
 
       this.dataFetched = true;
 
-      console.log(this.locations.data.length);
+      console.log(this.allocations.data.length);
+
+
 
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
     },
 
-    // async getLocationExam(page = 1){
-    //         Utilits.showLoader()
-    //         const res = await Api.get(`/location?page=${page}`);
-
-    //         this.locations = await res
-
-    //         this.dataFetched = true
-
-    //         console.log(this.locations.data.length)
-
-    //         if(this.dataFetched){
-    //             Utilits.hideLoader()
-    //         }
-    // },
-
-    async getOneLocation(id) {
+    async getAllLocation() {
+      let data = ref([]);
       Utilits.showLoader();
-
-      const res = await Api.getOne(`/examLocation/${id}`);
-
-      this.location = await res;
-      console.log(this.location);
+      const res = await Api.get(`/examLocations/all`);
 
       this.dataFetched = true;
+
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
-      this.designation = res.data.designation;
-      this.abbreviation = res.data.abbreviation;
-      this.address = res.data.address;
+
+      this.comboBoxLocations.value = await res.data;
     },
 
+    async getAllExams() {
+      let data = ref([]);
+      Utilits.showLoader();
+      const res = await Api.get(`/exam/all`);
+
+      this.dataFetched = true;
+
+      if (this.dataFetched) {
+        Utilits.hideLoader();
+      }
+
+      this.comboBoxExam.value = await res.data;
+      console.log(this.comboBoxExam.value)
+    },
+    
     async remove(id) {
       let res;
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende eliminar o local?",
+        title: "Pretende eliminar a sala?",
         showCancelButton: true,
         // confirmButtonColor: '#0CC27E',
         // cancelButtonColor: '#FF586B',
@@ -421,13 +497,13 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.delete(`/examLocation/${id}`);
+          res = await Api.delete(`/examRoom/${id}`);
         }
       });
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getLocationExam();
+        this.getAllocationExam();
       }
     },
 
@@ -436,7 +512,7 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende activar o Local?",
+        title: "Pretende activar a sala?",
         showCancelButton: true,
         // confirmButtonColor: '#0CC27E',
         // cancelButtonColor: '#FF586B',
@@ -448,39 +524,67 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.active(`/examLocation/${id}/active`);
+          res = await Api.active(`/examRoom/${id}/active`);
         }
       });
 
       if (res != undefined && res.success) {
         SweetAlert.Alert("Sucesso", "Banco eliminado com sucesso", "success");
-        this.getLocationExam();
+        this.getAllocationExam();
       }
+    },
+
+    enableAlocacaoTimeExam(id) {
+      // alert(id)
+      // this.getTimeByDate(id);
+      this.idSubject = id
+      this.title = "Alocação do horario";
+      this.btnText = "Alocar";
+      this.isUpdate = true;
+      this.errors = [];
+      this.capacity = null;
+      this.number_room = null;
+      this.bloco = null;
     },
 
     enableUpdate(id) {
       // alert(id);
       this.getOneLocation(id);
 
-      this.title = "Actualizar Local";
+      this.title = "Actualizar Sala";
       this.btnText = "Actualizar";
       this.isUpdate = true;
       this.errors = [];
-      this.designation = null;
-      this.abbreviation = null;
-      this.address = null;
+      this.capacity = null;
+      this.number_room = null;
+      this.bloco = null;
     },
 
+    resetFilds(){
+      this.comboBoxExam = ref([])
+      this.comboBoxLocations = ref([])
+      this.comboBoxExamRoom = ref([])
+      this.all_tobe_examined = null
+      $("#room_id").html("")
+      
+      if($("#checkAllRoom").prop("checked")){
+        $("#checkAllRoom").attr("checked",false)
+        $("#room_id").attr("disabled",false)
+        $("#checkAllRoom").val('false')
+      }
+    },
     enableStore() {
-      this.title = "Registar Local";
-      this.btnText = "Registar";
+      this.getAllLocation();
+      this.getAllExams();
+      this.title = "Alocar exames";
+      this.btnText = "Finalizar";
       this.isUpdate = false;
       this.errors = [];
-      this.designation = null;
-      this.abbreviation = null;
+      this.subject = null;
     },
 
     async imporExcelData() {
+      console.log("uehrheirieu");
       this.indicator = "on";
       document
         .getElementById("upload_excel_locais")
@@ -495,8 +599,10 @@ export default {
       // Adicione o arquivo simulado ao formulário virtual
       virtualForm.append("excel_file", file, file.name);
 
+      // console.log(file);
+
       try {
-        const res = await Api.postFile("/examLocation/import", virtualForm);
+        const res = await Api.postFile("/examRoom/import", virtualForm);
         console.log(res);
         if (res.success) {
           // const id = "#kt_modal_upload_dropzone";
@@ -513,7 +619,7 @@ export default {
 
           SweetAlert.Alert(
             "Sucesso",
-            "Banco registado com sucesso",
+            "Carregamento feito com sucesso",
             "success",
             "#kt_modal_upload",
             "modal_upload_excel"
@@ -523,7 +629,7 @@ export default {
             .getElementById("upload_excel_locais")
             .removeAttribute("disabled");
           this.errors = [];
-          this.getLocationExam()
+          this.getAllocationExam()
         }
       } catch (error) {
         console.log("Error", error);
@@ -533,15 +639,16 @@ export default {
 
   computed: {
     dataLength() {
-      if (this.locations.data == undefined) {
+      if (this.allocations.data == undefined) {
         return 0;
       }
-      return this.locations.data.length;
+      return this.allocations.data.length;
     },
   },
 
   created() {
-    this.getLocationExam();
+    this.getAllocationExam();
+    this.getAllLocation();
     // $(document).ready(function() {
   },
   mounted() {
@@ -549,4 +656,44 @@ export default {
     FileDropZone.initDropzone();
   },
 };
+
+  $(document).on("change","#location_id",function(){
+      let id = $(this).find(":selected").val()
+      getRoomsByLocation(id)
+  })
+
+  async function getRoomsByLocation(id){
+
+    Utilits.showLoader();
+
+    const res = await Api.get(
+        `/examRoom/${id}/location`
+      );
+
+      console.log(res)
+      let option = "";
+
+      res.data.forEach(function(element){
+        // console.log(element)
+        option += `<option value="${element.id}">Bloco: ${element.bloco}- Nr: ${element.number_room}</option>`
+        // console.log(option) 
+      })
+
+      $("#room_id").html(option)
+
+    Utilits.hideLoader();
+
+  }
+
+  $(document).on("change","#checkAllRoom",function(){
+    if($("#checkAllRoom").prop("checked")){
+      $("#room_id").attr("disabled",true)
+      $("#checkAllRoom").val('true')
+      
+      $("#room_id").val([]).change();
+    }else{
+      $("#room_id").attr("disabled",false)
+      $("#checkAllRoom").val('false')
+    }
+  })
 </script>

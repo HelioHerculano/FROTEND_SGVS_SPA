@@ -35,9 +35,9 @@
         >Disponivel</span
       >
       <span
-        v-if="column.key == 'available' && item.available == 0"
+        v-if="column.key == 'available' && item.available == 2"
         class="badge badge-light-danger"
-        >Acupada</span
+        >Acupado(a)</span
       >
 
       <span
@@ -84,7 +84,7 @@
       </button>
 
       <button
-        v-show="this.$props.isExamView && item.time_table.length == 0"
+        v-show=" (item.time_table != null && item.time_table.length == 0) && this.$props.isExamView"
         class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 mb-1"
         data-bs-toggle="modal"
         data-bs-target="#kt_modal_time_table"

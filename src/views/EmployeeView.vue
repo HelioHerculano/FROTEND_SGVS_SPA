@@ -130,11 +130,12 @@
         :columns="this.columns"
         :data="this.employees"
         :dataFetched="this.dataFetched"
-        buttonText="Upload De Salas"
+        buttonText="Upload Do Pessoal"
         tableTitle="Listagem do pessoal"
         @enableUpdate="enableUpdate"
         @remove="remove"
         @active="active"
+        :isEmployeeView="true"
       />
 
       <ModalEmployee
@@ -233,7 +234,7 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      location_id: "",
+      provenance_id: "",
       bank_name_id: "",
       categoria_id: "",
       name:"",
@@ -274,6 +275,7 @@ export default {
         { name: "Nuit", key: "nuit" },
         { name: "Telefone", key: "phone_number" },
         { name: "Proveniêcia", key: "origin" },
+        { name: "Categoria", key: "role" },
         { name: "Alocações", key: "alocacoes" },
         { name: "Estado", key: "status" },
       ],
@@ -285,7 +287,6 @@ export default {
     //     this.title = title
     //     this.btnText = btnText
     //   },
-
     validateInput(errors) {
       if (errors.name)
         this.isInvalidName = errors.name.length > 0 ? true : false;
@@ -336,8 +337,8 @@ export default {
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
-      this.location_id =
-        $("#location_id").val() == null ? "" : $("#location_id").val();
+      this.provenance_id =
+        $("#provenance_id").val() == null ? "" : $("#provenance_id").val();
 
       this.bank_name_id =
         $("#bank_name").val() == null ? "" : $("#bank_name").val();
@@ -345,7 +346,7 @@ export default {
       this.categoria_id =
         $("#categoria_id").val() == null ? "" : $("#categoria_id").val();
 
-      // alert(this.location_id)
+      // alert(this.provenance_id)
       // alert(this.bank_name_id)
       // alert(this.categoria_id)
 
@@ -359,7 +360,7 @@ export default {
         bank_account: this.bank_account,
         bank_id: this.bank_name_id,
         role_id: this.categoria_id,
-        origin_id: this.location_id,
+        origin_id: this.provenance_id,
         user_id: 1
       };
 
@@ -405,14 +406,14 @@ export default {
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
-            this.location_id =
-        $("#location_id").val() == null ? "" : $("#location_id").val();
+            this.provenance_id =
+        $("#provenance_id").val() == null ? "" : $("#provenance_id").val();
 
       let data = {
         bloco: this.bloco,
         capacity: this.capacity,
         number_room: this.number_room,
-        exam_location_id: this.location_id,
+        exam_provenance_id: this.provenance_id,
       };
 
       console.log(this.examRoom.data)
@@ -496,6 +497,10 @@ export default {
       });
 
       this.employees.data.forEach(function (item) {
+        item.role = item.role.description;
+      });
+
+      this.employees.data.forEach(function (item) {
         item.alocacoes = item.exam.length;
       });
 
@@ -566,7 +571,7 @@ export default {
       this.capacity = res.data.capacity;
       this.nuiFilter = res.data.number_room;
       this.bloco = res.data.bloco;
-      $(`#location_id`).val(res.data.exam_location_id).trigger("change");
+      $(`#provenance_id`).val(res.data.exam_provenance_id).trigger("change");
       // this.abbreviation = res.data.abbreviation;
       // this.address = res.data.address;
     },
@@ -649,7 +654,7 @@ export default {
       this.capacity = null;
       this.number_room = null;
       this.bloco = null;
-      $(`#location_id`).val("").trigger("change");
+      $(`#provenance_id`).val("").trigger("change");
     },
 
     async imporExcelData() {
@@ -726,4 +731,6 @@ export default {
     FileDropZone.initDropzone();
   },
 };
+
+
 </script>

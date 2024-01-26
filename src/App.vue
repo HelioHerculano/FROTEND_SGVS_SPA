@@ -25,11 +25,18 @@ import LayOut from "./components/shared/LayOut.vue";
   </header> -->
 
   <LayOut />
+  <!-- <LoginView/> -->
 </template>
 
 <script>
 import Utilits from "./Utilits.js";
+import LoginView from "./views/LoginView.vue";
 export default {
+  data(){
+    return{
+      LoginView
+    }
+  },
   created() {
     Utilits.hideLoader();
   },

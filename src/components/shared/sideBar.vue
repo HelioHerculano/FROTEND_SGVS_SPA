@@ -207,12 +207,26 @@
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
-                <!--begin:Menu link--><a
+                <!--begin:Menu link--><RouterLink
+                @click="
+                    activeMenu(
+                      (isExames = false),
+                      (isBanks = false),
+                      (isLocations = false),
+                      (isExamRooms = false),
+                      (isTimeTable = false),
+                      (isEmployeeType = false),
+                      (isEmployee = false),
+                      (isExam = false),
+                      (isAllocationExam = false),
+                      (isSalary = true)
+                    )"
+                  :class="{ active: isSalary }"
                   class="menu-link"
-                  href="pages/user-profile/documents.html"
+                  to="salary"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Salarios</span></a
+                  ><span class="menu-title">Salarios</span></RouterLink
                 ><!--end:Menu link-->
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
@@ -322,12 +336,29 @@
               </div>
 
               <div class="menu-item">
-                <!--begin:Menu link--><a
+                <!--begin:Menu link--><RouterLink
+
+                  @click="
+                    activeMenu(
+                      (isExames = false),
+                      (isBanks = false),
+                      (isLocations = false),
+                      (isExamRooms = false),
+                      (isTimeTable = false),
+                      (isEmployeeType = false),
+                      (isEmployee = false),
+                      (isExam = false),
+                      (isAllocationExam = false),
+                      (isSalary = false),
+                      (isAllocationEmployee = true)
+                    )"
+                  :class="{ active: isAllocationEmployee }"
+
                   class="menu-link"
-                  href="account/settings.html"
+                  to="/alocacaoPessoal"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Alocações</span></a
+                  ><span class="menu-title">Alocações</span></RouterLink
                 ><!--end:Menu link-->
               </div>
             </div>
@@ -359,8 +390,9 @@
                       (isExamRooms = false),
                       (isTimeTable = false),
                       (isEmployeeType = false),
-                      (isEmployee = false)
-                      (isExam = true)
+                      (isEmployee = false),
+                      (isExam = true),
+                      (isAllocationExam = false)
                     )
                   "
                   :class="{ active: isExam }"
@@ -371,12 +403,27 @@
                 ><!--end:Menu link-->
               </div>
               <div class="menu-item">
-                <!--begin:Menu link--><a
+                <!--begin:Menu link--><RouterLink
                   class="menu-link"
-                  href="account/settings.html"
+                  @click="
+                    activeMenu(
+                      (isExames = false),
+                      (isBanks = false),
+                      (isLocations = false),
+                      (isExamRooms = false),
+                      (isTimeTable = false),
+                      (isEmployeeType = false),
+                      (isEmployee = false),
+                      (isExam = false),
+                      (isAllocationExam = true),
+                    )
+                  "
+                  :class="{ active: isAllocationExam }"
+
+                  to="/alocacaoExames"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Alocações</span></a
+                  ><span class="menu-title">Alocações</span></RouterLink
                 ><!--end:Menu link-->
               </div>
             </div>
@@ -476,7 +523,10 @@ export default {
       isTimeTable: false,
       isEmployeeType: false,
       isEmployee: false,
-      isExam: false
+      isExam: false,
+      isAllocationExam: false,
+      isSalary: false,
+      isAllocationEmployee: false
     };
   },
 
@@ -489,7 +539,10 @@ export default {
       isTimeTable = false,
       isEmployeeType = false,
       isEmployee = false,
-      isExam = false
+      isExam = false,
+      isAllocationExam = false,
+      isSalary = false,
+      isAllocationEmployee = false
     ) {
       this.isExames = isExames;
       this.isBanks = isBanks;
@@ -499,6 +552,9 @@ export default {
       this.isEmployeeType = isEmployeeType;
       this.isEmployee = isEmployee
       this.isExam = isExam
+      this.isAllocationExam = isAllocationExam
+      this.isSalary = isSalary
+      this.isAllocationEmployee = isAllocationEmployee
     },
     isActive(route) {
       this.isBanks = window.location.pathname === route;

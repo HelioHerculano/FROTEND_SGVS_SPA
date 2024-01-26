@@ -26,7 +26,7 @@
           </button> -->
 
           <button
-            v-show="this.$props.isLocationExamView"
+            v-show="this.$props.isLocationExamView || this.$props.isEmployeeView"
             type="button"
             class="btn btn-flex btn-light-primary me-3"
             id="kt_file_manager_new_folder"

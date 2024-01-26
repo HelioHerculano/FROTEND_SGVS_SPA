@@ -76,18 +76,18 @@
                       }"
                       name="date"
                       :value="this.cargo"
-                      @input="$emit('update:date', $event.target.value)"
+                      @input="$emit('update:cargo', $event.target.value)"
                     />
                   </div>
                   <!--end::Input-->
 
                   <div class="fv-plugins-message-container invalid-feedback">
                     <div
-                      v-show="this.$props.errors.date"
+                      v-show="this.$props.errors.description"
                       data-field="name"
                       data-validator="notEmpty"
                     >
-                      {{ this.errorMessageDate }}
+                      {{ this.errorMessageDescription }}
                     </div>
                   </div>
                 </div>
@@ -205,9 +205,9 @@ export default {
       return "";
     },
 
-    errorMessageDate() {
-      if (this.$props.errors.date) {
-        return this.$props.errors.date[0];
+    errorMessageDescription() {
+      if (this.$props.errors.description) {
+        return this.$props.errors.description[0];
       }
       return "";
     },
