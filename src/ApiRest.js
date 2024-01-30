@@ -71,4 +71,17 @@ export default {
 
     return response.json();
   },
+
+  async logout(url = "", accessToken = null) {
+    const response = await fetch(`${BASE_API}` + url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      // body: JSON.stringify(data),
+    });
+
+    return response.json();
+  },
 };

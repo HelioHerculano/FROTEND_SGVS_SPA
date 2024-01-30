@@ -18,11 +18,11 @@ const router = createRouter({
     {
       path: "/",
       name: "login",
-      component: HomeView,
+      component: LoginView,
     },
     {
       path: "/home",
-      name: "home",
+      name: "Home",
       component: HomeView,
     },
     {

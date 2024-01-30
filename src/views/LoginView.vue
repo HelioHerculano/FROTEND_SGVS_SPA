@@ -5,74 +5,72 @@
 <!--begin::Authentication - Sign-in -->
 <div class="d-flex flex-column flex-lg-row flex-column-fluid">    
     <!--begin::Body-->
-    <div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-1">
+    <div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-1" style="background-color: #fff;">
         <!--begin::Form-->
         <div class="d-flex flex-center flex-column flex-lg-row-fluid">
             <!--begin::Wrapper-->
             <div class="w-lg-500px p-10">
                 
 <!--begin::Form-->
-<form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" data-kt-redirect-url="/metronic8/demo1/../demo1/index.html" action="#">
+<form @submit.prevent="login" class="form w-100" novalidate="novalidate" id="kt_sign_in_form" data-kt-redirect-url="/metronic8/demo1/../demo1/index.html" action="#">
     <!--begin::Heading-->
     <div class="text-center mb-11">
         <!--begin::Title-->
         <h1 class="text-dark fw-bolder mb-3">
-            Sign In
+            Autenticação
         </h1>
         <!--end::Title-->
 
         <!--begin::Subtitle-->
-        <div class="text-gray-500 fw-semibold fs-6">
+        <div class="text-gray-500 fw-semibold fs-6" hidden>
             Your Social Campaigns
         </div>
         <!--end::Subtitle--->
     </div>
     <!--begin::Heading-->
 
-    <!--begin::Login options-->
-    <div class="row g-3 mb-9">
-        <!--begin::Col-->
-        <div class="col-md-6">
-            <!--begin::Google link--->
-            <a href="#" class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100">
-                <img alt="Logo" src="src/dist-assets/assets/media/svg/brand-logos/google-icon.svg" class="h-15px me-3"/>   
-                Sign in with Google
-            </a>
-            <!--end::Google link--->
-        </div>
-        <!--end::Col-->
 
-        <!--begin::Col-->
-        <div class="col-md-6">
-            <!--begin::Google link--->
-            <a href="#" class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100">
-                <img alt="Logo" src="src/dist-assets/assets/media/svg/brand-logos/apple-black.svg" class="theme-light-show h-15px me-3"/>
-                <img alt="Logo" src="src/dist-assets/assets/media/svg/brand-logos/apple-black-dark.svg" class="theme-dark-show h-15px me-3"/>     
-                Sign in with Apple
-            </a>
-            <!--end::Google link--->
-        </div>
-        <!--end::Col-->
-    </div>
-    <!--end::Login options-->
 
-    <!--begin::Separator-->
-    <div class="separator separator-content my-14">
-        <span class="w-125px text-gray-500 fw-semibold fs-7">Or with email</span>
-    </div>
-    <!--end::Separator-->
 
     <!--begin::Input group--->
     <div class="fv-row mb-8">
         <!--begin::Email-->
-        <input type="text" placeholder="Email" name="email" autocomplete="off" class="form-control bg-transparent"/> 
+        <input type="text" placeholder="Email" v-model="form.email" name="email" autocomplete="off" class="form-control form-control-lg form-control-solid" 
+        :class="{
+            'is-invalid': this.isInvalidEmail,
+            'is-valid': this.isValidEmail
+        }"
+        /> 
+        <div class="fv-plugins-message-container invalid-feedback">
+        <div
+            v-show="this.errors.email"
+            data-field="name"
+            data-validator="notEmpty"
+            >
+            {{ this.errorMessageEmail }}
+        </div>
+        </div>
         <!--end::Email-->
     </div>
 
     <!--end::Input group--->
     <div class="fv-row mb-3">    
         <!--begin::Password-->
-        <input type="password" placeholder="Password" name="password" autocomplete="off" class="form-control bg-transparent"/>
+        <input type="password" placeholder="Password" v-model="form.password" name="password" autocomplete="off" class="form-control form-control-lg form-control-solid"
+        :class="{
+            'is-invalid': this.isInvalidPassword,
+            'is-valid': this.isValidPassword
+        }"
+        />
+        <div class="fv-plugins-message-container invalid-feedback">
+        <div
+            v-show="this.errors.password"
+            data-field="name"
+            data-validator="notEmpty"
+            >
+            {{ this.errorMessagePassword }}
+        </div>
+        </div>
         <!--end::Password-->
     </div>
     <!--end::Input group--->
@@ -91,16 +89,18 @@
 
     <!--begin::Submit button-->
     <div class="d-grid mb-10">
-        <button type="submit" id="kt_sign_in_submit" class="btn btn-primary">
+        <button type="submit" id="kt_sign_in_submit" class="btn btn-primary" 
+        :data-kt-indicator="this.indicator"
+        >
             
 <!--begin::Indicator label-->
 <span class="indicator-label">
-    Sign In</span>
+    Entrar</span>
 <!--end::Indicator label-->
 
 <!--begin::Indicator progress-->
 <span class="indicator-progress">
-    Please wait...    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+    Porfavor aguarde...    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
 </span>
 <!--end::Indicator progress-->        </button>
     </div>
@@ -111,7 +111,7 @@
         Not a Member yet?
 
         <a href="sign-up.html" class="link-primary">
-            Sign up
+            Entrar
         </a>
     </div>
     <!--end::Sign up-->
@@ -124,73 +124,6 @@
 
         <!--begin::Footer-->  
         <div class="w-lg-500px d-flex flex-stack px-10 mx-auto">
-            <!--begin::Languages-->
-            <div class="me-10">             
-                <!--begin::Toggle-->
-                <button class="btn btn-flex btn-link btn-color-gray-700 btn-active-color-primary rotate fs-base" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-start" data-kt-menu-offset="0px, 0px">
-                    <img  data-kt-element="current-lang-flag" class="w-20px h-20px rounded me-3" src="src/dist-assets/assets/media/flags/united-states.svg" alt=""/>
-                    
-                    <span data-kt-element="current-lang-name" class="me-1">English</span>
-
-                    <i class="ki-duotone ki-down fs-5 text-muted rotate-180 m-0"></i>                </button>
-                <!--end::Toggle-->
-
-                <!--begin::Menu-->
-                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-4 fs-7" data-kt-menu="true" id="kt_auth_lang_menu">
-                                            <!--begin::Menu item-->
-                        <div class="menu-item px-3">
-                            <a href="#" class="menu-link d-flex px-5" data-kt-lang="English">
-                                <span class="symbol symbol-20px me-4">
-                                    <img data-kt-element="lang-flag" class="rounded-1" src="src/dist-assets/assets/media/flags/united-states.svg" alt=""/>
-                                </span>
-                                <span data-kt-element="lang-name">English</span>
-                            </a>
-                        </div>
-                        <!--end::Menu item-->
-                                            <!--begin::Menu item-->
-                        <div class="menu-item px-3">
-                            <a href="#" class="menu-link d-flex px-5" data-kt-lang="Spanish">
-                                <span class="symbol symbol-20px me-4">
-                                    <img data-kt-element="lang-flag" class="rounded-1" src="src/dist-assets/assets/media/flags/spain.svg" alt=""/>
-                                </span>
-                                <span data-kt-element="lang-name">Spanish</span>
-                            </a>
-                        </div>
-                        <!--end::Menu item-->
-                                            <!--begin::Menu item-->
-                        <div class="menu-item px-3">
-                            <a href="#" class="menu-link d-flex px-5" data-kt-lang="German">
-                                <span class="symbol symbol-20px me-4">
-                                    <img data-kt-element="lang-flag" class="rounded-1" src="src/dist-assets/assets/media/flags/germany.svg" alt=""/>
-                                </span>
-                                <span data-kt-element="lang-name">German</span>
-                            </a>
-                        </div>
-                        <!--end::Menu item-->
-                                            <!--begin::Menu item-->
-                        <div class="menu-item px-3">
-                            <a href="#" class="menu-link d-flex px-5" data-kt-lang="Japanese">
-                                <span class="symbol symbol-20px me-4">
-                                    <img data-kt-element="lang-flag" class="rounded-1" src="src/dist-assets/assets/media/flags/japan.svg" alt=""/>
-                                </span>
-                                <span data-kt-element="lang-name">Japanese</span>
-                            </a>
-                        </div>
-                        <!--end::Menu item-->
-                                            <!--begin::Menu item-->
-                        <div class="menu-item px-3">
-                            <a href="#" class="menu-link d-flex px-5" data-kt-lang="French">
-                                <span class="symbol symbol-20px me-4">
-                                    <img data-kt-element="lang-flag" class="rounded-1" src="src/dist-assets/assets/media/flags/france.svg" alt=""/>
-                                </span>
-                                <span data-kt-element="lang-name">French</span>
-                            </a>
-                        </div>
-                        <!--end::Menu item-->
-                                    </div>
-                <!--end::Menu-->           
-            </div>
-            <!--end::Languages--> 
 
             <!--begin::Links-->
             <div class="d-flex fw-semibold text-primary fs-base gap-5">
@@ -248,3 +181,108 @@
                          </div>
 <!--end::Root-->
 </template>
+
+<script>
+import { reactive,ref } from 'vue';
+import {useRouter} from 'vue-router';
+import { AppState } from '@/stores/AppState';
+import { UserStore } from '@/stores/UserStore';
+import { mapState } from 'pinia';
+import Api from "../ApiRest.js";
+import SweetAlert from "../dist-assets/assets/js/custom/SweetAlert/SweetAlert.js";
+
+
+export default{
+   
+    data(){
+        return{
+        appState: AppState(),
+        router: useRouter(),
+        userStore: UserStore(),
+        form: reactive({
+            email:'',
+            password:''
+        }),
+        indicator:"",
+        errors:ref([]),
+        isValidEmail:"",
+        isInvalidEmail:"",
+        isValidPassword:"",
+        isInvalidPassword:"",
+        }
+    },
+    computed:{
+        ...mapState(UserStore,['token']),
+        errorMessageEmail() {
+            if (this.errors.email)
+                return this.errors.email[0];
+            return "";
+        },
+        errorMessagePassword() {
+            if (this.errors.password) return this.errors.password[0];
+            return "";
+        }
+    },
+    
+    methods:{
+        validateInput(errors) {
+            if (errors.email)
+                this.isInvalidEmail = errors.email.length > 0 ? true : false;
+            else {
+                this.isInvalidEmail = false;
+                this.isValidEmail = true;
+            }
+
+            if (errors.password)
+                this.isInvalidPassword = errors.password.length > 0 ? true : false;
+            else {
+                this.isInvalidPassword = false;
+                this.isValidPassword = true;
+            }
+        },
+
+        async login(){
+            this.indicator="on"
+           let data = {
+                email:this.form.email,
+                password:this.form.password
+            }
+
+            console.log(data)
+
+
+            const res = await Api.post("/login", data);
+
+            console.log(res)
+
+            if (res.code == 422 || !res.success) {
+                this.errors = res.message;
+                // console.log(this.errors);
+                this.validateInput(this.errors)
+                this.indicator = "";
+                SweetAlert.Alert("Erro", "Preecha correctamente os campos obrigatorios", "error", "");
+            }
+
+            if (res.success) {
+                this.indicator = "";
+                // Utilits.showLoader()
+                this.userStore.setToken(res.data.token)
+                this.userStore.setUser(JSON.stringify(res.data.user))
+                this.appState.setisLogin(false)
+                // this.router.push({name:'Home'})
+                // Navegue para outra rota e recarregue a página
+                this.$router.replace('/home').then(() => {
+                    window.location.reload();
+                });
+
+                this.form.email = "";
+                this.form.password = "";
+                this.errors = [];
+            }
+        },
+    },
+    mounted(){
+        // alert(this.isLogin)
+    },
+}
+</script>

@@ -1,5 +1,8 @@
 <template>
-  <main>
+  <main v-if="isLogin">
+      <RouterView />
+  </main>
+  <main v-else-if="!isLogin">
     <!--end::Theme mode setup on page load-->
     <!--Begin::Google Tag Manager (noscript) -->
     <noscript
@@ -3597,6 +3600,9 @@
 </template>
 
 <script>
+import {useRouter} from 'vue-router';
+import { AppState } from '@/stores/AppState';
+import { mapState } from 'pinia';
 import sideBar from "./sideBar.vue";
 import headerComponent from "./headerComponent.vue";
 import footerComponent from "./footerComponent.vue";
@@ -3607,6 +3613,28 @@ export default {
     headerComponent,
     footerComponent,
   },
+    computed:{
+        ...mapState(AppState,['isLogin'])
+    },
+  data(){
+    return{
+      // isLogin: true,
+      // appState: AppState(),
+      // router: useRouter()
+    }
+  },
+
+  methods:{
+      // login(){
+      //   this.appState.setisLogin(false)
+      //   this.router.push({name:home})
+      // }
+  },
+
+  created() {
+    // alert(isLogin)
+    // alert('A rota atual é:', window.location.pathname);
+  }
 };
 </script>
 

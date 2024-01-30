@@ -8,7 +8,7 @@ export default {
             icon: `${icon}`,
             buttonsStyling: false,
             showConfirmButton: false,
-            timer: 1500,
+            timer: 2000,
             }).then(function (result) {
         if (result.dismiss) {
             let form = document.getElementById(`${form_id}`);
