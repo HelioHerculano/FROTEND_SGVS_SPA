@@ -196,6 +196,7 @@ import SweetAlert from "../dist-assets/assets/js/custom/SweetAlert/SweetAlert.js
 import Select2 from "../dist-assets/assets/js/select2.js";
 import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
+import { AppState } from "@/stores/AppState";
 
 export default {
   components: {
@@ -227,6 +228,7 @@ export default {
       isValidStartTime: false,
       isInvalidEndTime: false,
       isValidEndTime: false,
+      appState: AppState(),
       columns: [
         { name: "Data", key: "date" },
         { name: "Hora de Inicio", key: "start_time" },
@@ -239,7 +241,7 @@ export default {
 
   methods: {
     //   changeTextModal(title='',btnText=''){
-    //     this.title = title           
+    //     this.title = title
     //     this.btnText = btnText
     //   },
 
@@ -262,7 +264,7 @@ export default {
         this.isInvalidEndTime = errors.end_time.length > 0 ? true : false;
       else {
         this.isInvalidEndTime = false;
-        this.isValidEndTime = true; 
+        this.isValidEndTime = true;
       }
     },
 
@@ -454,7 +456,7 @@ export default {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
           res = await Api.active(`/timetable/${id}/active`);
-          console.log(res)
+          console.log(res);
         }
       });
 
@@ -516,6 +518,7 @@ export default {
   mounted() {
     Select2.createSelect2();
     Utilits.initTime();
+    this.appState.setisLogin(false);
     // Utilits.initDate()
   },
 };

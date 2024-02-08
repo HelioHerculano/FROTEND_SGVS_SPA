@@ -16,7 +16,7 @@
         <h1
           class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
         >
-          Gestão de Remuneração
+          Gestão de cargos
         </h1>
         <!--end::Title-->
 
@@ -122,22 +122,20 @@
       <!-- Filtros -->
       <Filters
         @getData="getData"
-        v-model:yearFilter="this.yearFilter"
-        :employeeTypes="this.employeeTypeCombo.value"
-        :isSalaryView="true"
+        v-model:roleFilter="this.roleFilter"
+        :isRoleView="true"
       />
-      <!--Fim Filtros -->
 
       <DataTable
         :dataLenght="this.dataLength"
         :columns="this.columns"
-        :data="this.employeeType"
+        :data="this.roles"
         :dataFetched="this.dataFetched"
-        tableTitle="Listagem de remunerações"
+        tableTitle="Listagem de cargos"
         @enableUpdate="enableUpdate"
         @remove="remove"
         @active="active"
-        :isBankView="true"
+        :isRoleView="true"
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -145,23 +143,24 @@
         Nenhum registo encontrado.
       </div>
 
-      <ModalSalary
-        @register="registerSalary"
-        @update="updateSalary"
+      <ModalRoles
+        @register="registerRole"
+        @update="updateRole"
         @enableStore="enableStore"
         :title="this.title"
         :btnText="this.btnText"
         :isUpdate="this.isUpdate"
         :indicatorProps="this.indicator"
-        v-model:value="this.value"
+        :isInvalidRule="this.isInvalidRule"
+        :isValidRule="this.isValidRule"
+        v-model:cargo="this.cargo"
         :errors="this.errors"
-        placeholderOne="Valor Remunerado..."
-        :isExamRoomView="true"
-        :employeesType="this.employeeType.value"
+        placeholderOne="Informe o cargo..."
+        :isBankView="true"
       />
 
       <Bootstrap5Pagination
-        :data="this.employeeType"
+        :data="this.roles"
         @pagination-change-page="getData"
         limit="2"
         show-disabled
@@ -180,7 +179,7 @@
 <script>
 import Filters from "../components/FiltersComponent.vue";
 import DataTable from "../components/DataTables/DataTable.vue";
-import ModalSalary from "../components/Modals/Salary/ModalFormSalary.vue";
+import ModalRoles from "../components/Modals/ModalRoles/ModalRoles.vue";
 import PrimaryButton from "../components/shared/primaryButton.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
@@ -193,7 +192,7 @@ import { AppState } from "@/stores/AppState";
 export default {
   components: {
     DataTable,
-    ModalSalary,
+    ModalRoles,
     Bootstrap5Pagination,
     PrimaryButton,
     Filters,
@@ -204,26 +203,19 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      value: "",
-      type_employee_id: "",
       cargo: "",
       indicator: "",
-      yearFilter: "",
-      employeeTypeFilter: "",
+      roleFilter: "",
       rules: ref([]),
-      rule: ref([]),
+      role: ref([]),
       dataFetched: false,
-      employeeType: ref([]),
-      employeeTypeCombo: ref([]),
       errors: ref([]),
-      employeesType: ref([]),
+      roles: ref([]),
       isInvalidRule: false,
       isValidRule: false,
       appState: AppState(),
       columns: [
-        { name: "Remuneração", key: "value" },
-        { name: "Função", key: "employeeType" },
-        { name: "Ano", key: "year" },
+        { name: "Descrição", key: "description" },
         { name: "Estado", key: "status" },
       ],
     };
@@ -244,37 +236,19 @@ export default {
       }
     },
 
-    async getAllEmployeesType() {
-      let data = ref([]);
-      Utilits.showLoader();
-      const res = await Api.get(`/typeEmployee/allData`);
-
-      this.dataFetched = true;
-
-      if (this.dataFetched) {
-        Utilits.hideLoader();
-      }
-
-      this.employeeTypeCombo.value = await res.data;
-    },
-
-    async registerSalary() {
+    async registerRole() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
-      this.type_employee_id =
-        $("#employeeType_id").val() == null ? "" : $("#employeeType_id").val();
-
       let data = {
-        value: this.value,
-        type_employee_id: this.type_employee_id,
+        description: this.cargo,
       };
 
       console.log(data);
 
-      const res = await Api.post("/salary", data);
+      const res = await Api.post("/role", data);
 
       if (res.code == 422) {
         this.errors = res.message;
@@ -306,22 +280,18 @@ export default {
         this.getData();
       }
     },
-    async updateSalary() {
+    async updateRole() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
-      this.type_employee_id =
-        $("#employeeType_id").val() == null ? "" : $("#employeeType_id").val();
-
       let data = {
-        value: this.value,
-        type_employee_id: this.type_employee_id,
+        description: this.cargo,
       };
 
       console.log(data);
-      const res = await Api.put(`/salary/${this.salary.data.id}`, data);
+      const res = await Api.put(`/role/${this.role.data.id}`, data);
 
       console.log(res);
       if (res.code == 422) {
@@ -374,6 +344,7 @@ export default {
 
     async getData(page = 1, statusFilter) {
       Utilits.showLoader();
+      // alert(statusFilter);
 
       if (typeof statusFilter == "undefined") {
         this.statusFilter = 1;
@@ -381,22 +352,13 @@ export default {
         this.statusFilter = statusFilter;
       }
 
-      this.employeeTypeFilter =
-        $("#employeeTypeFilter").val() == null
-          ? ""
-          : $("#employeeTypeFilter").val();
-
-      // alert(this.employeeTypeFilter)
-
       const res = await Api.get(
-        `/salary?page=${page}&status=${this.statusFilter}&year=${this.yearFilter}&type_employee_id=${this.employeeTypeFilter}`
+        `/role?page=${page}&description=${this.roleFilter}&status=${this.statusFilter}`
       );
 
-      this.employeeType = await res;
+      this.roles = await res;
 
-      this.employeeType.data.forEach(function (item) {
-        item.employeeType = item.type_employee.description;
-      });
+      console.log(this.roles);
 
       this.dataFetched = true;
 
@@ -405,23 +367,19 @@ export default {
       }
     },
 
-    async getOneSalary(id) {
+    async getOneRole(id) {
       Utilits.showLoader();
 
-      const res = await Api.getOne(`/salary/${id}`);
+      const res = await Api.getOne(`/role/${id}`);
 
-      this.salary = await res;
-      console.log(this.salary);
+      this.role = await res;
+      console.log(this.role);
 
       this.dataFetched = true;
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
-      this.value = res.data.value;
-      this.type_employee_id = res.data.type_employee_id;
-      $("#employeeType_id")
-        .val(`${res.data.type_employee_id}`)
-        .trigger("change");
+      this.cargo = res.data.description;
     },
 
     async remove(id) {
@@ -429,7 +387,7 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende eliminar o Remuneração?",
+        title: "Pretende eliminar o cargo?",
         showCancelButton: true,
         confirmButtonText: "Sim, pretendo!",
         cancelButtonText: "Não, cancelar!",
@@ -439,16 +397,12 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.delete(`/salary/${id}`);
+          res = await Api.delete(`/role/${id}`);
         }
       });
 
       if (res != undefined && res.success) {
-        SweetAlert.Alert(
-          "Sucesso",
-          "Remuneração eliminada com sucesso",
-          "success"
-        );
+        SweetAlert.Alert("Sucesso", "Cargo eliminado com sucesso", "success");
         this.getData();
       }
     },
@@ -458,7 +412,7 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende activar o Remuneração?",
+        title: "Pretende activar o cargo?",
         showCancelButton: true,
         confirmButtonText: "Sim, pretendo!",
         cancelButtonText: "Não, cancelar!",
@@ -468,58 +422,49 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.active(`/salary/${id}/active`);
+          res = await Api.active(`/role/${id}/active`);
           console.log(res);
         }
       });
 
       if (res != undefined && res.success) {
-        SweetAlert.Alert(
-          "Sucesso",
-          "Remuneração activada com sucesso",
-          "success"
-        );
+        SweetAlert.Alert("Sucesso", "Horário activado com sucesso", "success");
         this.getData();
       }
     },
 
     enableUpdate(id) {
       // alert(id)
-      this.getAllEmployeesType();
-      this.getOneSalary(id);
+      this.getOneRole(id);
 
-      this.title = "Actualizar Remuneração";
+      this.title = "Actualizar Horário";
       this.btnText = "Actualizar";
       this.isUpdate = true;
       this.errors = [];
-      this.description = null;
+      // this.description = null;
     },
 
     enableStore() {
-      this.getAllEmployeesType();
-      this.title = "Registar remuneração";
+      this.title = "Registar Horário";
       this.btnText = "Registar";
       this.isUpdate = false;
       this.errors = [];
-      this.value = null;
-      $("#employeeType_id").val("").trigger("change");
+      this.cargo = null;
+      this.isInvalidEndRule = false;
+      this.isValidEndRule = false;
     },
   },
 
   computed: {
     dataLength() {
-      if (this.employeeType.data == undefined) {
+      if (this.roles.data == undefined) {
         return 0;
       }
-      return this.employeeType.data.length;
+      return this.roles.data.length;
     },
   },
 
   created() {
-    // Obter o ano atual
-    const dataAtual = new Date();
-    this.yearFilter = dataAtual.getFullYear();
-
     this.getData();
     // $(document).ready(function() {
   },
@@ -527,7 +472,6 @@ export default {
     Select2.createSelect2();
     Utilits.initTime();
     this.appState.setisLogin(false);
-    this.getAllEmployeesType();
     // Utilits.initDate()
   },
 };

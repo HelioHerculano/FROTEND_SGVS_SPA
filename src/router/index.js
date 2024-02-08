@@ -4,7 +4,7 @@ import bankView from "../views/BankView.vue";
 import ExamTimeTableView from "../views/ExamTimeTableView.vue";
 import LocationExameView from "../views/LocationExameView.vue";
 import ExamRoomView from "../views/ExamRoomView.vue";
-import EmployeeTypeView from "../views/EmployeeTypeView.vue";
+import RoleView from "../views/RoleView.vue";
 import EmployeeView from "../views/EmployeeView.vue";
 import ExamView from "../views/ExamView.vue";
 import LoginView from "../views/LoginView.vue";
@@ -37,8 +37,8 @@ const router = createRouter({
     },
     {
       path: "/cargos",
-      name: "EmployeeTypeView",
-      component: EmployeeTypeView,
+      name: "RoleView",
+      component: RoleView,
     },
     {
       path: "/LocaisExames",

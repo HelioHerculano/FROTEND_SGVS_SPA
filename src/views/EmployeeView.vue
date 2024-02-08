@@ -217,6 +217,8 @@ import Select2 from "../dist-assets/assets/js/select2.js";
 import FileDropZone from "../dist-assets/assets/js/fileDropZone.js";
 import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
+import { AppState } from '@/stores/AppState';
+
 
 export default {
   components: {
@@ -270,6 +272,7 @@ export default {
       nameFilter:"",
       locationFilter:"",
       errors: ref([]),
+      appState: AppState(),
       columns: [
         { name: "Nome", key: "name" },
         { name: "Nuit", key: "nuit" },
@@ -527,9 +530,9 @@ export default {
       this.comboBoxLocations.value = await res.data;
     },
 
-    async getAllEmployeeType() {
+    async getAllRoles() {
       Utilits.showLoader();
-      const res = await Api.get(`/typeEmployee/allData`);
+      const res = await Api.get(`/role`);
 
       this.dataFetched = true;
 
@@ -645,7 +648,7 @@ export default {
 
     enableStore() {
       this.getAllLocation();
-      this.getAllEmployeeType();
+      this.getAllRoles();
       this.getAllBank();
       this.title = "Registar Pessoal";
       this.btnText = "Registar";
@@ -729,6 +732,7 @@ export default {
   mounted() {
     Select2.createSelect2();
     FileDropZone.initDropzone();
+    this.appState.setisLogin(false)
   },
 };
 

@@ -34,6 +34,15 @@ export default {
       // defaultDate: 'today',
     });
 
+    flatpickr("#init_year_filter", {
+      allowInput: false,
+      mode: "single",
+      dateFormat: "Y",
+      minDate: "1900-01-01", // Optional: Set minimum selectable date
+      maxDate: "today", // Optional: Set maximum selectable date
+      defaultDate: "today",
+    });
+
     flatpickr("#init_time", {
       allowInput: false,
       enableTime: true,

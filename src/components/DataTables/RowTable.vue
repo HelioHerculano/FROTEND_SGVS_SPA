@@ -24,7 +24,11 @@
       >
 
       <span
-        v-if="column.key == 'date' && item[column.key] == null || column.key == 'start_time' && item[column.key] == null || column.key == 'end_time' && item[column.key] == null"
+        v-if="
+          (column.key == 'date' && item[column.key] == null) ||
+          (column.key == 'start_time' && item[column.key] == null) ||
+          (column.key == 'end_time' && item[column.key] == null)
+        "
         class="badge badge-info"
         >-----</span
       >
@@ -84,7 +88,11 @@
       </button>
 
       <button
-        v-show=" (item.time_table != null && item.time_table.length == 0) && this.$props.isExamView"
+        v-show="
+          item.time_table != null &&
+          item.time_table.length == 0 &&
+          this.$props.isExamView
+        "
         class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 mb-1"
         data-bs-toggle="modal"
         data-bs-target="#kt_modal_time_table"
@@ -92,8 +100,7 @@
         id="alocacao"
         :value="item.id"
       >
-        <i
-          class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
+        <i class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
           ><span class="path1"></span><span class="path2"></span
           ><span class="path3"></span><span class="path4"></span
           ><span class="path5"></span><span class="path6"></span
@@ -108,7 +115,7 @@
         @click="enableUpdate(item.id)"
         id="btnEdit"
         :value="item.id"
-        v-show="this.$props.isBankView"
+        v-show="this.$props.isBankView || this.$props.isRoleView"
       >
         <i class="ki-duotone ki-pencil fs-2"
           ><span class="path1"></span><span class="path2"></span
@@ -163,6 +170,9 @@ export default {
     isExamView: {
       type: Boolean,
     },
+    isRoleView: {
+      type: Boolean,
+    },
   },
   data() {
     return {};
@@ -192,7 +202,7 @@ export default {
     },
   },
   // mounted(){
-  //     this.show()
+  //     console.log(this.$props.columns)
   // }
 };
 </script>

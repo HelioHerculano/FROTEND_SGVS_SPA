@@ -26,7 +26,9 @@
           </button> -->
 
           <button
-            v-show="this.$props.isLocationExamView || this.$props.isEmployeeView"
+            v-show="
+              this.$props.isLocationExamView || this.$props.isEmployeeView
+            "
             type="button"
             class="btn btn-flex btn-light-primary me-3"
             id="kt_file_manager_new_folder"
@@ -85,7 +87,7 @@
                 <th class="min-w-100px">#</th>
                 <th
                   class="min-w-100px"
-                  v-for="(column, index) in columns"
+                  v-for="(column, index) in this.$props.columns"
                   :key="index"
                 >
                   {{ column.name }}
@@ -108,6 +110,8 @@
                 :isLocationExamView="this.$props.isLocationExamView"
                 :isBankView="this.$props.isBankView"
                 :isExamView="this.$props.isExamView"
+                :isRoleView="this.$props.isRoleView"
+                :isSalaryView="this.$props.isSalaryView"
               />
             </tbody>
             <!--end::Table body-->
@@ -153,15 +157,21 @@ export default {
     columns: {
       type: Array,
     },
-    buttonText:{
-      type: String
+    buttonText: {
+      type: String,
     },
-    isEmployeeView:{
-      type: Boolean
+    isEmployeeView: {
+      type: Boolean,
     },
-    isExamView:{
-      type: Boolean
-    }
+    isExamView: {
+      type: Boolean,
+    },
+    isRoleView: {
+      type: Boolean,
+    },
+    isSalaryView: {
+      type: Boolean,
+    },
   },
 
   data() {
@@ -225,7 +235,7 @@ export default {
   },
 
   created() {
-    // alert(this.$props.isLocationExamView);
+    console.log(this.$props.columns);
   },
 };
 </script>

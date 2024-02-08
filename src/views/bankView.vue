@@ -189,6 +189,7 @@ import SweetAlert from "../dist-assets/assets/js/custom/SweetAlert/SweetAlert.js
 import Select2 from "../dist-assets/assets/js/select2.js";
 import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
+import { AppState } from "@/stores/AppState";
 
 export default {
   components: {
@@ -214,6 +215,7 @@ export default {
       bank: ref([]),
       dataFetched: false,
       errors: ref([]),
+      appState: AppState(),
       columns: [
         { name: "Nome", key: "description" },
         { name: "Sigla", key: "abbreviation" },
@@ -481,6 +483,7 @@ export default {
   },
   mounted() {
     Select2.createSelect2();
+    this.appState.setisLogin(false);
   },
 };
 </script>

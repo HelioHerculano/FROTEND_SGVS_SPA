@@ -41,13 +41,20 @@
             <!--end::Input group-->
           </div>
 
-          <div class="col-4" v-show="this.$props.isExamRoomView || this.$props.isEmployeeView">
+          <div
+            class="col-4"
+            v-show="this.$props.isExamRoomView || this.$props.isEmployeeView"
+          >
             <div class="mb-10">
               <!--begin::Label-->
-              <label v-show="this.$props.isExamRoomView" class="form-label fw-bold fs-6 text-gray-700"
+              <label
+                v-show="this.$props.isExamRoomView"
+                class="form-label fw-bold fs-6 text-gray-700"
                 >Locais</label
               >
-              <label v-show="this.$props.isEmployeeView" class="form-label fw-bold fs-6 text-gray-700"
+              <label
+                v-show="this.$props.isEmployeeView"
+                class="form-label fw-bold fs-6 text-gray-700"
                 >Proveniêcia</label
               >
               <!--end::Label-->
@@ -131,7 +138,16 @@
             </div>
           </div>
 
-          <div class="col-4" v-show="!this.$props.isExamRoomView && !this.$props.isTimeTableView && !this.$props.isEmployeeView">
+          <div
+            class="col-4"
+            v-show="
+              !this.$props.isExamRoomView &&
+              !this.$props.isTimeTableView &&
+              !this.$props.isEmployeeView &&
+              !this.$props.isRoleView &&
+              !this.$props.isSalaryView
+            "
+          >
             <!--begin::Input group-->
             <div class="d-flex flex-column mb-8 fv-row">
               <label class="form-label fw-bold fs-6 text-gray-700">Sigla</label>
@@ -211,44 +227,118 @@
             <!--end::Input group-->
           </div>
 
-          <div v-show="this.$props.isTimeTableView" :class="{
-            'col-4' : !isTimeTableView,
-            'col-6' : isTimeTableView,
-            }">
-                  <!--begin::Label-->
-                  <label
-                    class="form-label fw-bold fs-6 text-gray-700"
-                  >
-                    Data
-                  </label>
-                  <!--end::Label-->
+          <div
+            v-show="this.$props.isTimeTableView"
+            :class="{
+              'col-4': !isTimeTableView,
+              'col-6': isTimeTableView,
+            }"
+          >
+            <!--begin::Label-->
+            <label class="form-label fw-bold fs-6 text-gray-700"> Data </label>
+            <!--end::Label-->
 
-                  <!--begin::Input-->
-                  <div class="position-relative d-flex align-items-center">
-                    <!--begin::Icon-->
-                    <i
-                      class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
-                      ><span class="path1"></span><span class="path2"></span
-                      ><span class="path3"></span><span class="path4"></span
-                      ><span class="path5"></span><span class="path6"></span
-                    ></i>
-                    <!--end::Icon-->
+            <!--begin::Input-->
+            <div class="position-relative d-flex align-items-center">
+              <!--begin::Icon-->
+              <i class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
+                ><span class="path1"></span><span class="path2"></span
+                ><span class="path3"></span><span class="path4"></span
+                ><span class="path5"></span><span class="path6"></span
+              ></i>
+              <!--end::Icon-->
 
-                    <input
-                      id="init_date_filter"
-                      :placeholder="this.$props.placeholderDate"
-                      class="form-control form-control-solid ps-12"
-                      name="dateExame"
-                      @input="$emit('update:dateFilter', $event.target.value)"
-                    />
-                  </div>
-                  <!--end::Input-->
-                </div>
+              <input
+                id="init_date_filter"
+                :placeholder="this.$props.placeholderDate"
+                class="form-control form-control-solid ps-12"
+                name="dateExame"
+                @input="$emit('update:dateFilter', $event.target.value)"
+              />
+            </div>
+            <!--end::Input-->
+          </div>
 
-          <div :class="{
-            'col-4' : !isTimeTableView,
-            'col-6' : isTimeTableView,
-            }">
+          <div class="col-6" v-show="this.$props.isRoleView">
+            <!--begin::Input group-->
+            <div class="d-flex flex-column mb-8 fv-row">
+              <label class="form-label fw-bold fs-6 text-gray-700">Cargo</label>
+
+              <input
+                type="text"
+                class="form-control form-control-solid"
+                placeholder="Pesquise pelo cargo..."
+                name="role"
+                @input="$emit('update:roleFilter', $event.target.value)"
+              />
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isSalaryView"
+          >
+            <div class="mb-10">
+              <!--begin::Label-->
+              <label class="form-label fw-bold fs-6 text-gray-700"
+                >Função</label
+              >
+              <!--end::Label-->
+
+              <!--begin::Select-->
+              <select
+                id="employeeTypeFilter"
+                name="currnecy"
+                aria-label="Select a Timezone"
+                data-control="select2"
+                data-placeholder="---Selecione aqui---"
+                class="form-select form-select-solid"
+              >
+                <option value=""></option>
+
+                <option
+                  v-for="(employeeType, index) in this.employeeTypes"
+                  :key="index"
+                  :value="employeeType.id"
+                >
+                  {{ employeeType.description }}
+                </option>
+              </select>
+              <!--end::Select-->
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isSalaryView">
+            <!--begin::Label-->
+            <label class="form-label fw-bold fs-6 text-gray-700"> Ano </label>
+            <!--end::Label-->
+
+            <!--begin::Input-->
+            <div class="position-relative d-flex align-items-center">
+              <!--begin::Icon-->
+              <i class="ki-duotone ki-calendar-8 fs-2 position-absolute mx-4"
+                ><span class="path1"></span><span class="path2"></span
+                ><span class="path3"></span><span class="path4"></span
+                ><span class="path5"></span><span class="path6"></span
+              ></i>
+              <!--end::Icon-->
+
+              <input
+                id="init_year_filter"
+                class="form-control form-control-solid ps-12"
+                name="yearFilter"
+                @input="$emit('update:yearFilter', $event.target.value)"
+              />
+            </div>
+            <!--end::Input-->
+          </div>
+
+          <div
+            :class="{
+              'col-4': !isTimeTableView || !isRoleView,
+              'col-6': isTimeTableView || isRoleView,
+            }"
+          >
             <div class="mb-10">
               <!--begin::Label-->
               <label class="form-label fw-bold fs-6 text-gray-700"
@@ -275,7 +365,6 @@
                 >
                   {{ status.description }}
                 </option>
-
               </select>
               <!--end::Select-->
             </div>
@@ -310,8 +399,8 @@ export default {
     isExamRoomView: {
       type: Boolean,
     },
-    isTimeTableView:{
-      type:Boolean,
+    isTimeTableView: {
+      type: Boolean,
     },
     locations: {
       type: Array,
@@ -319,7 +408,16 @@ export default {
     placeholderDate: {
       type: String,
     },
-    isEmployeeView:{
+    isEmployeeView: {
+      type: Boolean,
+    },
+    isRoleView: {
+      type: Boolean,
+    },
+    isSalaryView: {
+      type: Boolean,
+    },
+    employeeTypes:{
       type: Boolean
     }
   },
