@@ -90,7 +90,6 @@
                           name="allocationType"
                           checked="checked"
                           :value="1"
-                          @click="changeForm(1)"
                         />
                       </span>
                       <!--end::Radio-->
@@ -123,7 +122,6 @@
                           type="radio"
                           name="allocationType"
                           :value="2"
-                          @click="changeForm(2)"
                         />
                       </span>
                       <!--end::Radio-->
@@ -139,21 +137,81 @@
                     <!--end::Option-->
                   </div>
                   <!--end::Col-->
-
                 </div>
                 <!--end::Row-->
               </div>
               <!--end::Input group-->
 
               <div class="typeManualDive">
-
                 <!--Begin::row-->
                 <div class="row">
+                  <div class="col">
+                    <!--begin::Input group-->
+                    <div class="d-flex flex-column mb-8 fv-row">
+                      <!--begin::Label-->
+                      <label
+                        class="d-flex align-items-center fs-6 fw-semibold mb-2"
+                      >
+                        <span class="required">Função</span>
+
+                        <span
+                          class="ms-1"
+                          data-bs-toggle="tooltip"
+                          title="Specify a target name for future usage and reference"
+                        >
+                          <i
+                            class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                            ><span class="path1"></span
+                            ><span class="path2"></span
+                            ><span class="path3"></span></i
+                        ></span>
+                      </label>
+                      <!--end::Label-->
+
+                      <!--begin::Select-->
+                      <select
+                        id="employeeType_id"
+                        name="currnecy"
+                        aria-label="Select a Timezone"
+                        data-control="select2"
+                        data-dropdown-parent="#kt_modal_allocation_exam"
+                        data-placeholder="---Selecione aqui---"
+                        class="form-select form-select-solid"
+                      >
+                        <option value=""></option>
+
+                        <option
+                          v-for="(employee_type, index) in this.$props
+                            .employeeType"
+                          :key="index"
+                          :value="employee_type.id"
+                        >
+                          {{ employee_type.description }}
+                        </option>
+                      </select>
+                      <!--end::Select-->
+
+                      <div
+                        class="fv-plugins-message-container invalid-feedback"
+                      >
+                        <div
+                          v-show="this.$props.errors.type_employee_id"
+                          data-field="name"
+                          data-validator="notEmpty"
+                        >
+                          {{ this.errorMessageEmployeeType }}
+                        </div>
+                      </div>
+                    </div>
+                    <!--end::Input group-->
+                  </div>
+
                   <!--Begin::col-->
-                  <div class="col select2-container" 
-                  :class="{
-                    'col-6': this.allocationTypeAutomatic,
-                  }"
+                  <div
+                    class="col select2-container"
+                    :class="{
+                      'col-6': this.allocationTypeAutomatic,
+                    }"
                   >
                     <!--begin::Input group-->
                     <div class="d-flex flex-column mb-8 fv-row">
@@ -170,7 +228,8 @@
                         >
                           <i
                             class="ki-duotone ki-information-5 text-gray-500 fs-6"
-                            ><span class="path1"></span><span class="path2"></span
+                            ><span class="path1"></span
+                            ><span class="path2"></span
                             ><span class="path3"></span></i
                         ></span>
                       </label>
@@ -198,7 +257,9 @@
                       </select>
                       <!--end::Select-->
 
-                      <div class="fv-plugins-message-container invalid-feedback">
+                      <div
+                        class="fv-plugins-message-container invalid-feedback"
+                      >
                         <div
                           v-show="this.$props.errors.exam_id"
                           data-field="name"
@@ -211,53 +272,15 @@
                     <!--end::Input group-->
                   </div>
                   <!--End::col-->
-
-                  <div class="col" v-show="this.allocationTypeAutomatic">
-                    <!--begin::Input group-->
-                    <div class="d-flex flex-column mb-8 fv-row">
-                      <!--begin::Label-->
-                      <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                        <span class="required">Número de examinandos</span>
-
-                        <span
-                          class="ms-1"
-                          data-bs-toggle="tooltip"
-                          title="Specify a target name for future usage and reference"
-                        >
-                          <i class="ki-duotone ki-information-5 text-gray-500 fs-6"
-                            ><span class="path1"></span><span class="path2"></span
-                            ><span class="path3"></span></i
-                        ></span>
-                      </label>
-                      <!--end::Label-->
-
-                      <input
-                        type="number"
-                        class="form-control form-control-solid"
-                        :placeholder="this.$props.placeholderOne"
-                        name="tobe_examined"
-                        :value="this.all_tobe_examined"
-                        @input="$emit('update:all_tobe_examined', $event.target.value)"
-                      />
-
-                      <div class="fv-plugins-message-container invalid-feedback">
-                        <div
-                          v-show="this.$props.errors.all_tobe_examined"
-                          data-field="name"
-                          data-validator="notEmpty"
-                        >
-                          {{ this.errorMessageAllTobeExamined }}
-                        </div>
-                      </div>
-                    </div>
-                    <!--end::Input group-->
-                  </div>
                 </div>
                 <!--End::row-->
 
-
                 <!--Begin::row-->
-                <div class="row" v-show="this.allocationTypeManual">
+                <div
+                  class="row local_field"
+                  v-show="this.allocationTypeManual"
+                  hidden
+                >
                   <!--Begin::col-->
                   <div class="col select2-container">
                     <!--begin::Input group-->
@@ -275,7 +298,8 @@
                         >
                           <i
                             class="ki-duotone ki-information-5 text-gray-500 fs-6"
-                            ><span class="path1"></span><span class="path2"></span
+                            ><span class="path1"></span
+                            ><span class="path2"></span
                             ><span class="path3"></span></i
                         ></span>
                       </label>
@@ -290,6 +314,7 @@
                         data-dropdown-parent="#kt_modal_allocation_exam"
                         data-placeholder="---Selecione aqui---"
                         class="form-select form-select-solid"
+                        disabled
                       >
                         <option value=""></option>
 
@@ -303,7 +328,9 @@
                       </select>
                       <!--end::Select-->
 
-                      <div class="fv-plugins-message-container invalid-feedback">
+                      <div
+                        class="fv-plugins-message-container invalid-feedback"
+                      >
                         <div
                           v-show="this.$props.errors.exam_location_id"
                           data-field="name"
@@ -317,8 +344,8 @@
                   </div>
                   <!--End::col-->
 
-                                  <!--Begin::col-->
-                  <div class="col select2-container">
+                  <!--Begin::col-->
+                  <div class="col select2-container room_field">
                     <!--begin::Input group-->
                     <div class="d-flex flex-column mb-8 fv-row">
                       <!--begin::Label-->
@@ -334,7 +361,8 @@
                         >
                           <i
                             class="ki-duotone ki-information-5 text-gray-500 fs-6"
-                            ><span class="path1"></span><span class="path2"></span
+                            ><span class="path1"></span
+                            ><span class="path2"></span
                             ><span class="path3"></span></i
                         ></span>
                       </label>
@@ -346,30 +374,22 @@
                         name="currnecy"
                         aria-label="Select a Timezone"
                         data-control="select2"
-                        multiple="multiple"
                         data-dropdown-parent="#kt_modal_allocation_exam"
                         data-placeholder="---Selecione aqui---"
                         data-allow-clear="true"
                         class="form-select form-select-solid"
                       >
                         <option value=""></option>
-
                       </select>
                       <!--end::Select-->
-                      
+
                       <div class="fv-plugins-message-container">
-                        <div
-                          data-field="name"
-                          data-validator="notEmpty"
-                        >
-                          <div class="form-check form-check-sm form-check-custom form-check-solid mt-1">
-                              <input class="form-check-input widget-13-check" id="checkAllRoom"  type="checkbox" value="false"/>
-                              &nbsp; Alocar em todas salas
-                          </div>
-                        </div>
+                        <div data-field="name" data-validator="notEmpty"></div>
                       </div>
 
-                      <div class="fv-plugins-message-container invalid-feedback">
+                      <div
+                        class="fv-plugins-message-container invalid-feedback"
+                      >
                         <div
                           v-show="this.$props.errors.exam_room_id"
                           data-field="name"
@@ -382,12 +402,150 @@
                     <!--end::Input group-->
                   </div>
                   <!--End::col-->
+
+                  <!--Begin::col-->
+                  <div class="col select2-container bloco_field" hidden>
+                    <!--begin::Input group-->
+                    <div class="d-flex flex-column mb-8 fv-row">
+                      <!--begin::Label-->
+                      <label
+                        class="d-flex align-items-center fs-6 fw-semibold mb-2"
+                      >
+                        <span class="required">Selecione o bloco</span>
+
+                        <span
+                          class="ms-1"
+                          data-bs-toggle="tooltip"
+                          title="Specify a target name for future usage and reference"
+                        >
+                          <i
+                            class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                            ><span class="path1"></span
+                            ><span class="path2"></span
+                            ><span class="path3"></span></i
+                        ></span>
+                      </label>
+                      <!--end::Label-->
+
+                      <!--begin::Select-->
+                      <select
+                        id="bloco_id"
+                        name="currnecy"
+                        aria-label="Select a Timezone"
+                        data-control="select2"
+                        data-dropdown-parent="#kt_modal_allocation_exam"
+                        data-placeholder="---Selecione aqui---"
+                        data-allow-clear="true"
+                        class="form-select form-select-solid"
+                      >
+                        <option value=""></option>
+                      </select>
+                      <!--end::Select-->
+
+                      <div class="fv-plugins-message-container">
+                        <div data-field="name" data-validator="notEmpty"></div>
+                      </div>
+
+                      <div
+                        class="fv-plugins-message-container invalid-feedback"
+                      >
+                        <div
+                          v-show="this.$props.errors.bloco"
+                          data-field="name"
+                          data-validator="notEmpty"
+                        >
+                          {{ this.errorMessageBloco }}
+                        </div>
+                      </div>
+                    </div>
+                    <!--end::Input group-->
+                  </div>
+                  <!--End::col-->
                 </div>
                 <!--End::row-->
 
-              </div>
+                <div
+                  class="row"
+                  id="pessoal_field"
+                  v-show="this.allocationTypeManual"
+                >
+                  <!--Begin::col-->
+                  <div class="col select2-container">
+                    <!--begin::Input group-->
+                    <div class="d-flex flex-column mb-8 fv-row">
+                      <!--begin::Label-->
+                      <label
+                        class="d-flex align-items-center fs-6 fw-semibold mb-2"
+                      >
+                        <span class="required"
+                          >Selecione a dupla de vigilantes</span
+                        >
 
-              
+                        <span
+                          class="ms-1"
+                          data-bs-toggle="tooltip"
+                          title="Specify a target name for future usage and reference"
+                        >
+                          <i
+                            class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                            ><span class="path1"></span
+                            ><span class="path2"></span
+                            ><span class="path3"></span></i
+                        ></span>
+                      </label>
+                      <!--end::Label-->
+
+                      <!--begin::Select-->
+
+                      <select
+                        id="pessaol_id"
+                        name="currnecy"
+                        aria-label="Select a Timezone"
+                        data-control="select2"
+                        multiple="multiple"
+                        data-dropdown-parent="#kt_modal_allocation_exam"
+                        data-placeholder="---Selecione aqui---"
+                        data-allow-clear="true"
+                        class="form-select form-select-solid"
+                      >
+                        <option value=""></option>
+                      </select>
+
+                      <!--end::Select-->
+
+                      <div
+                        class="fv-plugins-message-container invalid-feedback"
+                      >
+                        <div
+                          v-show="this.$props.errors.dupla_pessoal"
+                          data-field="name"
+                          data-validator="notEmpty"
+                        >
+                          {{ this.errorMessageDuplaPessoal }}
+                        </div>
+                      </div>
+
+                      <div class="fv-plugins-message-container">
+                        <div data-field="name" data-validator="notEmpty">
+                          <div
+                            class="form-check form-check-sm form-check-custom form-check-solid mt-1"
+                          >
+                            <input
+                              class="form-check-input widget-13-check"
+                              id="checkAllRoom"
+                              type="checkbox"
+                              value="false"
+                            />
+                            &nbsp; Desabilitar a alocação em duplas
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!--end::Input group-->
+                  </div>
+                  <!--End::col-->
+                </div>
+              </div>
 
               <!--begin::Actions-->
               <div class="text-center">
@@ -467,23 +625,30 @@ export default {
     isLocationExamView: {
       type: Boolean,
     },
-    
+
     locations: {
       type: Array,
     },
 
     exams: {
       type: Array,
-    },    
+    },
+    employeeType: {
+      type: Array,
+    },
     all_tobe_examined: {
+      type: String,
+    },
+    bloco: {
       type: String,
     },
   },
 
   data() {
     return {
-      allocationTypeManual:true,
-      allocationTypeAutomatic:false,
+      allocationTypeManual: true,
+      allocationTypeAutomatic: false,
+      employeeTypeShowFields: false,
     };
   },
 
@@ -495,15 +660,15 @@ export default {
         this.$emit("update");
       }
     },
-    changeForm(value){
-      if(value == 1){
-        this.allocationTypeManual = true
-        this.allocationTypeAutomatic = false
-      }else if(value == 2){
-        this.allocationTypeAutomatic = true
-        this.allocationTypeManual = false
+    changeForm(value) {
+      if (value == 1) {
+        this.allocationTypeManual = true;
+        this.allocationTypeAutomatic = false;
+      } else if (value == 2) {
+        this.allocationTypeAutomatic = true;
+        this.allocationTypeManual = false;
       }
-    }
+    },
   },
   computed: {
     errorMessageLocation() {
@@ -516,15 +681,105 @@ export default {
       return "";
     },
 
+    errorMessageEmployeeType() {
+      if (this.$props.errors.type_employee_id)
+        return this.$props.errors.type_employee_id[0];
+      return "";
+    },
+
+    errorMessageDuplaPessoal() {
+      if (this.$props.errors.dupla_pessoal)
+        return this.$props.errors.dupla_pessoal[0];
+      return "";
+    },
+
     errorMessageRoom() {
       if (this.$props.errors.exam_room_id)
         return this.$props.errors.exam_room_id[0];
       return "";
     },
     errorMessageAllTobeExamined() {
-      if (this.$props.errors.all_tobe_examined) return this.$props.errors.all_tobe_examined[0];
+      if (this.$props.errors.all_tobe_examined)
+        return this.$props.errors.all_tobe_examined[0];
+      return "";
+    },
+    errorMessageBloco() {
+      if (this.$props.errors.bloco) return this.$props.errors.bloco[0];
       return "";
     },
   },
+
+  // mounted(){
+  //   $("$employeeType_id").on('change', (event) => {
+  //     this.employeeTypeShowFields = $(event.target).val(); // Atualize o valor selecionado
+  //     alert(this.employeeTypeShowFields)
+  //   });
+  // }
 };
+
+$(document).on("change", 'input[name="allocationType"]', function () {
+  if ($(this).val() == 2 && $("#employeeType_id").val() == "") {
+    $("#pessoal_field").prop("hidden", true);
+    $(".local_field").prop("hidden", true);
+    // $(".room_field").prop("hidden", true);
+    // $(".bloco_field").prop("hidden", false);
+  } else if ($(this).val() == 1 && $("#employeeType_id").val() == "") {
+    $("#pessoal_field").prop("hidden", false);
+  } else if ($(this).val() == 2 && $("#employeeType_id").val() == 1) {
+    $(".local_field").prop("hidden", true);
+    $("#pessoal_field").prop("hidden", true);
+  } else if ($(this).val() == 2 && $("#employeeType_id").val() == 2) {
+    // $(".local_field").prop("hidden", false);
+    $("#pessoal_field").prop("hidden", true);
+    // $(".room_field").prop("hidden", true);
+    // $(".bloco_field").prop("hidden", false);
+  } else if ($(this).val() == 1 && $("#employeeType_id").val() == 1) {
+    $(".local_field").prop("hidden", false);
+    $("#pessoal_field").prop("hidden", false);
+    $(".room_field").prop("hidden", false);
+    $(".bloco_field").prop("hidden", true);
+  } else if ($(this).val() == 1 && $("#employeeType_id").val() == 2) {
+    $(".local_field").prop("hidden", false);
+    $("#pessoal_field").prop("hidden", false);
+    $(".room_field").prop("hidden", true);
+    $(".bloco_field").prop("hidden", false);
+  }
+});
+
+$(document).on("change", "#employeeType_id", function () {
+  // alert($(this).val());
+  // alert($('input[name="allocationType"]:checked').val());
+  if (
+    $(this).val() == 1 &&
+    $('input[name="allocationType"]:checked').val() == 1
+  ) {
+    // alert("Aquii");
+    $(".local_field").prop("hidden", false);
+    $(".room_field").prop("hidden", false);
+    $(".bloco_field").prop("hidden", true);
+  }
+  if (
+    $(this).val() == 1 &&
+    $('input[name="allocationType"]:checked').val() == 2
+  ) {
+    // alert("Aquiii");
+    $(".local_field").prop("hidden", true);
+    $(".room_field").prop("hidden", false);
+    // $(".bloco_field").prop("hidden", true);
+  } else if (
+    $(this).val() == 2 &&
+    $('input[name="allocationType"]:checked').val() == 1
+  ) {
+    $(".local_field").prop("hidden", false);
+    $(".room_field").prop("hidden", true);
+    $(".bloco_field").prop("hidden", false);
+  } else if (
+    $(this).val() == 2 &&
+    $('input[name="allocationType"]:checked').val() == 2
+  ) {
+    // $(".local_field").prop("hidden", false);
+    // $(".room_field").prop("hidden", true);
+    // $(".bloco_field").prop("hidden", false);
+  }
+});
 </script>

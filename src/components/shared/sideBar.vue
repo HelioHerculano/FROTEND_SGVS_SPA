@@ -97,6 +97,33 @@
               <!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link-->
+                <RouterLink
+                  @click="activeMenu(                      
+                      (isExames = false),
+                      (isBanks = false),
+                      (isLocations = false),
+                      (isExamRooms = false),
+                      (isTimeTable = false),
+                      (isEmployeeType = false),
+                      (isEmployee = false),
+                      (isExam = false),
+                      (isAllocationExam = false)
+                      (isMainDash = true)
+                      )"
+                  class="menu-link"
+                  :class="{ active: isMainDash }"
+                  to="/home"
+                  ><span class="menu-bullet"
+                    ><span class="bullet bullet-dot"></span></span
+                  ><span class="menu-title">Principal</span>
+                </RouterLink>
+                <!--end:Menu link-->
+              </div>
+              <!--end:Menu item-->
+              <!--begin:Menu item-->
+              <!--begin:Menu item-->
+              <div class="menu-item">
+                <!--begin:Menu link-->
                 <a
                   @click="activeMenu((isExames = true))"
                   class="menu-link"
@@ -184,7 +211,7 @@
               <div class="menu-item">
                 <!--begin:Menu link-->
                 <RouterLink
-                  @click="activeMenu(false,false,false,false,true)"
+                  @click="activeMenu(false, false, false, false, true)"
                   class="menu-link"
                   :class="{ active: isTimeTable }"
                   to="/horarios"
@@ -196,7 +223,7 @@
               <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link--><RouterLink
-                @click="activeMenu(false,false,false,false,false,true)"
+                  @click="activeMenu(false, false, false, false, false, true)"
                   class="menu-link"
                   :class="{ active: isEmployeeType }"
                   to="/cargos"
@@ -208,7 +235,7 @@
               <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
                 <!--begin:Menu link--><RouterLink
-                @click="
+                  @click="
                     activeMenu(
                       (isExames = false),
                       (isBanks = false),
@@ -220,7 +247,8 @@
                       (isExam = false),
                       (isAllocationExam = false),
                       (isSalary = true)
-                    )"
+                    )
+                  "
                   :class="{ active: isSalary }"
                   class="menu-link"
                   to="salary"
@@ -231,12 +259,28 @@
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
               <div class="menu-item">
-                <!--begin:Menu link--><a
+                <!--begin:Menu link--><RouterLink
+                @click="activeMenu(                      
+                            isExames = false,
+                            isBanks = false,
+                            isLocations = false,
+                            isExamRooms = false,
+                            isTimeTable = false,
+                            isEmployeeType = false,
+                            isEmployee = false,
+                            isExam = false,
+                            isAllocationExam = false,
+                            isSalary = false,
+                            isAllocationEmployee = false,
+                            isMainDash = false,
+                            isUsers = true
+                      )"
                   class="menu-link"
-                  href="pages/user-profile/followers.html"
+                  :class="{ active: isUsers }"
+                  to="/usuarios"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Usuários</span></a
+                  ><span class="menu-title">Usuários</span></RouterLink
                 ><!--end:Menu link-->
               </div>
               <!--end:Menu item--><!--begin:Menu item-->
@@ -331,13 +375,14 @@
                   to="/pessoal"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Registar & Visualizar</span></RouterLink
+                  ><span class="menu-title"
+                    >Registar & Visualizar</span
+                  ></RouterLink
                 ><!--end:Menu link-->
               </div>
 
               <div class="menu-item">
                 <!--begin:Menu link--><RouterLink
-
                   @click="
                     activeMenu(
                       (isExames = false),
@@ -351,9 +396,9 @@
                       (isAllocationExam = false),
                       (isSalary = false),
                       (isAllocationEmployee = true)
-                    )"
+                    )
+                  "
                   :class="{ active: isAllocationEmployee }"
-
                   class="menu-link"
                   to="/alocacaoPessoal"
                   ><span class="menu-bullet"
@@ -399,7 +444,9 @@
                   to="/exames"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
-                  ><span class="menu-title">Registar & Visualizar</span></RouterLink
+                  ><span class="menu-title"
+                    >Registar & Visualizar</span
+                  ></RouterLink
                 ><!--end:Menu link-->
               </div>
               <div class="menu-item">
@@ -415,11 +462,10 @@
                       (isEmployeeType = false),
                       (isEmployee = false),
                       (isExam = false),
-                      (isAllocationExam = true),
+                      (isAllocationExam = true)
                     )
                   "
                   :class="{ active: isAllocationExam }"
-
                   to="/alocacaoExames"
                   ><span class="menu-bullet"
                     ><span class="bullet bullet-dot"></span></span
@@ -526,7 +572,9 @@ export default {
       isExam: false,
       isAllocationExam: false,
       isSalary: false,
-      isAllocationEmployee: false
+      isAllocationEmployee: false,
+      isMainDash: false,
+      isUsers: false
     };
   },
 
@@ -542,7 +590,9 @@ export default {
       isExam = false,
       isAllocationExam = false,
       isSalary = false,
-      isAllocationEmployee = false
+      isAllocationEmployee = false,
+      isMainDash = false,
+      isUsers = false
     ) {
       this.isExames = isExames;
       this.isBanks = isBanks;
@@ -550,11 +600,13 @@ export default {
       this.isExamRooms = isExamRooms;
       this.isTimeTable = isTimeTable;
       this.isEmployeeType = isEmployeeType;
-      this.isEmployee = isEmployee
-      this.isExam = isExam
-      this.isAllocationExam = isAllocationExam
-      this.isSalary = isSalary
-      this.isAllocationEmployee = isAllocationEmployee
+      this.isEmployee = isEmployee;
+      this.isExam = isExam;
+      this.isAllocationExam = isAllocationExam;
+      this.isSalary = isSalary;
+      this.isAllocationEmployee = isAllocationEmployee;
+      this.isMainDash = isMainDash;
+      this.isUsers = isUsers;
     },
     isActive(route) {
       this.isBanks = window.location.pathname === route;

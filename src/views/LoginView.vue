@@ -184,21 +184,21 @@
           <!--begin::Image-->
           <img
             class="d-none d-lg-block mx-auto w-275px w-md-50 w-xl-500px mb-10 mb-lg-20"
-            src="src/dist-assets/assets/media/misc/auth-screens.png"
+            src="src/dist-assets/assets/media/misc/Certification-amico.png"
             alt=""
           />
           <!--end::Image-->
 
           <!--begin::Title-->
-          <h1
+          <!-- <h1
             class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7"
           >
             Fast, Efficient and Productive
-          </h1>
+          </h1> -->
           <!--end::Title-->
 
           <!--begin::Text-->
-          <div class="d-none d-lg-block text-white fs-base text-center">
+          <!-- <div class="d-none d-lg-block text-white fs-base text-center">
             In this kind of post,
             <a href="#" class="opacity-75-hover text-warning fw-bold me-1"
               >the blogger</a
@@ -212,7 +212,7 @@
             >
             and their <br />
             work following this is a transcript of the interview.
-          </div>
+          </div> -->
           <!--end::Text-->
         </div>
         <!--end::Content-->

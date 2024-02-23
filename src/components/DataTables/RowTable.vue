@@ -18,7 +18,12 @@
 
     <td v-for="(column, index) in this.$props.columns" :key="index">
       <span
-        v-if="column.key != 'status' && column.key != 'available'"
+        v-if="
+          column.key != 'status' &&
+          column.key != 'available' &&
+          column.key != 'confirmation' &&
+          column.key != 'employee_type'
+        "
         class="text-dark fw-bold text-hover-primary d-block mb-1 fs-6"
         >{{ item[column.key] }}</span
       >
@@ -45,14 +50,46 @@
       >
 
       <span
-        v-if="column.key == 'status' && item.status == 1"
+        v-if="
+          column.key == 'employee_type' && item.employee_type == 'Supervisor'
+        "
+        class="badge badge-light-danger"
+        >Supervisor</span
+      >
+      <span
+        v-if="
+          column.key == 'employee_type' && item.employee_type == 'Vigilante'
+        "
+        class="badge badge-light-info"
+        >Vigilante</span
+      >
+
+      <span
+        v-if="column.key == 'confirmation' && item.confirmation == 1"
         class="badge badge-light-success"
+        >Confirmado</span
+      >
+      <span
+        v-if="column.key == 'confirmation' && item.confirmation == 2"
+        class="badge badge-light-warning"
+        >Pendente</span
+      >
+
+      <span
+        v-if="column.key == 'status' && item.status == 1"
+        class="badge badge-light-info"
         >Activo</span
       >
       <span
         v-if="column.key == 'status' && item.status == 2"
         class="badge badge-light-danger"
         >Inactivo</span
+      >
+
+      <span
+        v-if="column.key == 'number_room' && item.number_room == null"
+        class="badge badge-light-danger"
+        >N/A</span
       >
 
       <!-- <span class="text-muted fw-semibold text-muted d-block fs-7">Code: PH</span> -->
@@ -115,11 +152,31 @@
         @click="enableUpdate(item.id)"
         id="btnEdit"
         :value="item.id"
-        v-show="this.$props.isBankView || this.$props.isRoleView"
+        v-show="
+          this.$props.isBankView ||
+          this.$props.isRoleView ||
+          this.$props.isUserView
+        "
       >
         <i class="ki-duotone ki-pencil fs-2"
           ><span class="path1"></span><span class="path2"></span
         ></i>
+      </button>
+
+      <button
+        v-if="item.status == 1"
+        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 mb-1"
+        data-bs-toggle="modal"
+        data-bs-target="#kt_modal_new_data"
+        @click="enableUpdatePass(item.id)"
+        id="btnEdit"
+        :value="item.id"
+        v-show="this.$props.isUserView"
+      >
+        <i class="ki-duotone ki-key fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
       </button>
 
       <button
@@ -173,6 +230,9 @@ export default {
     isRoleView: {
       type: Boolean,
     },
+    isUserView: {
+      type: Boolean,
+    },
   },
   data() {
     return {};
@@ -184,6 +244,11 @@ export default {
     async enableUpdate(id) {
       this.$emit("enableUpdate", id);
     },
+
+    async enableUpdatePass(id) {
+      this.$emit("enableUpdatePass", id);
+    },
+
     async remove(id) {
       this.$emit("remove", id);
     },

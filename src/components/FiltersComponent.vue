@@ -145,7 +145,8 @@
               !this.$props.isTimeTableView &&
               !this.$props.isEmployeeView &&
               !this.$props.isRoleView &&
-              !this.$props.isSalaryView
+              !this.$props.isSalaryView &&
+              !this.isUserView
             "
           >
             <!--begin::Input group-->
@@ -163,7 +164,10 @@
             <!--end::Input group-->
           </div>
 
-          <div class="col-4" v-show="this.$props.isEmployeeView">
+          <div
+            class="col-4"
+            v-show="this.$props.isEmployeeView || this.$props.isUserView"
+          >
             <!--begin::Input group-->
             <div class="d-flex flex-column mb-8 fv-row">
               <label class="form-label fw-bold fs-6 text-gray-700">Nome</label>
@@ -275,8 +279,39 @@
             <!--end::Input group-->
           </div>
 
-          <div class="col-4" v-show="this.$props.isSalaryView"
-          >
+          <div class="col-4" v-show="this.$props.isUserView">
+            <div class="mb-10">
+              <!--begin::Label-->
+              <label class="form-label fw-bold fs-6 text-gray-700"
+                >Nivel de acesso</label
+              >
+              <!--end::Label-->
+
+              <!--begin::Select-->
+              <select
+                id="accessLevelFilter"
+                name="currnecy"
+                aria-label="Select a Timezone"
+                data-control="select2"
+                data-placeholder="---Selecione aqui---"
+                class="form-select form-select-solid"
+              >
+                <option value=""></option>
+
+                <option
+                  v-for="(accessLevel, index) in this.accessLevels"
+                  :key="index"
+                  :value="accessLevel.id"
+                >
+                  {{ accessLevel.level }}
+                </option>
+              </select>
+              <!--end::Select-->
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isSalaryView">
             <div class="mb-10">
               <!--begin::Label-->
               <label class="form-label fw-bold fs-6 text-gray-700"
@@ -372,6 +407,8 @@
           </div>
         </div>
 
+        
+
         <div class="col-md-12 mb-5" style="text-align: right">
           <button type="submit" class="btn btn-sm fw-bold btn-dark">
             <i class="ki-duotone ki-magnifier fs-2">
@@ -417,9 +454,15 @@ export default {
     isSalaryView: {
       type: Boolean,
     },
-    employeeTypes:{
-      type: Boolean
-    }
+    employeeTypes: {
+      type: Boolean,
+    },
+    accessLevels: {
+      type: Boolean,
+    },
+    isUserView: {
+      type: Boolean,
+    },
   },
   data() {
     return {

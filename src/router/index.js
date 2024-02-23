@@ -11,6 +11,7 @@ import LoginView from "../views/LoginView.vue";
 import AllocationExamView from "../views/AllocationExamView.vue";
 import AllocationEmployeeView from "../views/AllocationEmployeeView.vue";
 import SalaryView from "../views/SalaryView.vue";
+import UserView from "../views/UserView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,6 +75,11 @@ const router = createRouter({
       path: "/salary",
       name: "SalaryView",
       component: SalaryView,
+    },
+    {
+      path: "/usuarios",
+      name: "UserView",
+      component: UserView,
     },
     {
       path: "/about",

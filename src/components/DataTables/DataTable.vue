@@ -104,6 +104,7 @@
                 :data="this.$props.data"
                 :columns="this.$props.columns"
                 @enableUpdate="enableUpdate"
+                @enableUpdatePass="enableUpdatePass"
                 @remove="remove"
                 @active="active"
                 @enableAlocacaoTimeExam="enableAlocacaoTimeExam"
@@ -112,6 +113,7 @@
                 :isExamView="this.$props.isExamView"
                 :isRoleView="this.$props.isRoleView"
                 :isSalaryView="this.$props.isSalaryView"
+                :isUserView="this.$props.isUserView"
               />
             </tbody>
             <!--end::Table body-->
@@ -172,6 +174,10 @@ export default {
     isSalaryView: {
       type: Boolean,
     },
+    isUserView: {
+      type: Boolean,
+    },
+    
   },
 
   data() {
@@ -191,6 +197,10 @@ export default {
     },
     async enableUpdate(id) {
       this.$emit("enableUpdate", id);
+    },
+
+    async enableUpdatePass(id) {
+      this.$emit("enableUpdatePass", id);
     },
 
     async remove(id) {

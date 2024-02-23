@@ -243,6 +243,7 @@ export default {
         { name: "Local", key: "designation" },
         { name: "Bloco", key: "bloco" },
         { name: "Nr. da sala", key: "number_room" },
+        { name: "Capacidade", key: "capacity" },
         { name: "Estado", key: "status" },
       ],
     };
@@ -436,6 +437,10 @@ export default {
 
       this.allocations.data.forEach(function (item) {
         item.number_room = item.exam_room.number_room;
+      });
+
+      this.allocations.data.forEach(function (item) {
+        item.capacity = item.exam_room.capacity;
       });
 
       console.log(this.allocations);

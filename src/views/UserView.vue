@@ -16,7 +16,7 @@
         <h1
           class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
         >
-          Gestão de Remuneração
+          Gestão de Usuários
         </h1>
         <!--end::Title-->
 
@@ -122,22 +122,23 @@
       <!-- Filtros -->
       <Filters
         @getData="getData"
-        v-model:yearFilter="this.yearFilter"
-        :employeeTypes="this.employeeTypeCombo.value"
-        :isSalaryView="true"
+        v-model:nameFilter="this.nameFilter"
+        :accessLevels="this.AccessLevelCombo.value"
+        :isUserView="true"
       />
       <!--Fim Filtros -->
 
       <DataTable
         :dataLenght="this.dataLength"
         :columns="this.columns"
-        :data="this.employeeType"
+        :data="this.users"
         :dataFetched="this.dataFetched"
-        tableTitle="Listagem de remunerações"
+        tableTitle="Listagem de Usuários"
         @enableUpdate="enableUpdate"
+        @enableUpdatePass="enableUpdatePass"
         @remove="remove"
         @active="active"
-        :isBankView="true"
+        :isUserView="true"
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -145,23 +146,31 @@
         Nenhum registo encontrado.
       </div>
 
-      <ModalSalary
-        @register="registerSalary"
-        @update="updateSalary"
+      <ModalUser
+        @register="registerUser"
+        @update="updateUser"
+        @updatePassword="updatePassword"
         @enableStore="enableStore"
         :title="this.title"
         :btnText="this.btnText"
         :isUpdate="this.isUpdate"
+        :isUpdatePass="this.isUpdatePass"
         :indicatorProps="this.indicator"
-        v-model:value="this.value"
+        v-model:name="this.name"
+        v-model:username="this.username"
+        v-model:password="this.password"
+        v-model:c_password="this.c_password"
         :errors="this.errors"
-        placeholderOne="Valor Remunerado..."
+        placeholderOne="Informe o nome..."
+        placeholderTwo="Informe o nome do usuário..."
+        placeholderThree="Informe a senha..."
+        placeholderFour="Informe a mesma senha..."
         :isExamRoomView="true"
-        :employeesType="this.employeeTypeCombo.value"
+        :accessLevels="this.AccessLevelCombo.value"
       />
 
       <Bootstrap5Pagination
-        :data="this.employeeType"
+        :data="this.users"
         @pagination-change-page="getData"
         limit="2"
         show-disabled
@@ -180,7 +189,7 @@
 <script>
 import Filters from "../components/FiltersComponent.vue";
 import DataTable from "../components/DataTables/DataTable.vue";
-import ModalSalary from "../components/Modals/Salary/ModalFormSalary.vue";
+import ModalUser from "../components/Modals/User/ModalFormUser.vue";
 import PrimaryButton from "../components/shared/primaryButton.vue";
 import Api from "../ApiRest.js";
 import Utilits from "../Utilits.js";
@@ -193,7 +202,7 @@ import { AppState } from "@/stores/AppState";
 export default {
   components: {
     DataTable,
-    ModalSalary,
+    ModalUser,
     Bootstrap5Pagination,
     PrimaryButton,
     Filters,
@@ -204,26 +213,32 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      value: "",
-      type_employee_id: "",
+      isUpdatePass: false,
+      name: "",
+      username: "",
+      password: "",
+      c_password: "",
+      accessLevel: "",
+      access_level_id: "",
       cargo: "",
       indicator: "",
-      yearFilter: "",
-      employeeTypeFilter: "",
+      nameFilter: "",
+      accessLevelFilter: "",
       rules: ref([]),
       rule: ref([]),
       dataFetched: false,
-      employeeType: ref([]),
-      employeeTypeCombo: ref([]),
+      users: ref([]),
+      user: "",
+      AccessLevelCombo: ref([]),
       errors: ref([]),
       employeesType: ref([]),
       isInvalidRule: false,
       isValidRule: false,
       appState: AppState(),
       columns: [
-        { name: "Remuneração", key: "value" },
-        { name: "Função", key: "employeeType" },
-        { name: "Ano", key: "year" },
+        { name: "Nome", key: "name" },
+        { name: "Nome do usuário", key: "username" },
+        { name: "Nivel de acesso", key: "access_level" },
         { name: "Estado", key: "status" },
       ],
     };
@@ -244,10 +259,10 @@ export default {
       }
     },
 
-    async getAllEmployeesType() {
+    async getAllAccessLevel() {
       let data = ref([]);
       Utilits.showLoader();
-      const res = await Api.get(`/typeEmployee/allData`);
+      const res = await Api.get(`/accesslevel/all`);
 
       this.dataFetched = true;
 
@@ -255,26 +270,29 @@ export default {
         Utilits.hideLoader();
       }
 
-      this.employeeTypeCombo.value = await res.data;
+      this.AccessLevelCombo.value = await res.data;
     },
 
-    async registerSalary() {
+    async registerUser() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
-      this.type_employee_id =
-        $("#employeeType_id").val() == null ? "" : $("#employeeType_id").val();
+      this.accessLevel =
+        $("#accessLevel_id").val() == null ? "" : $("#accessLevel_id").val();
 
       let data = {
-        value: this.value,
-        type_employee_id: this.type_employee_id,
+        name: this.name,
+        username: this.username,
+        password: this.password,
+        c_password: this.c_password,
+        access_level_id: this.accessLevel,
       };
 
       console.log(data);
 
-      const res = await Api.post("/salary", data);
+      const res = await Api.post("/user", data);
 
       if (res.code == 422) {
         this.errors = res.message;
@@ -306,22 +324,23 @@ export default {
         this.getData();
       }
     },
-    async updateSalary() {
+
+    async updatePassword() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_new_data_submit")
         .setAttribute("disabled", "true");
 
-      this.type_employee_id =
-        $("#employeeType_id").val() == null ? "" : $("#employeeType_id").val();
-
       let data = {
-        value: this.value,
-        type_employee_id: this.type_employee_id,
+        password: this.password,
+        c_password: this.c_password,
       };
 
       console.log(data);
-      const res = await Api.put(`/salary/${this.salary.data.id}`, data);
+      const res = await Api.put(
+        `/user/${this.user.data.id}/updatePassword`,
+        data
+      );
 
       console.log(res);
       if (res.code == 422) {
@@ -355,7 +374,74 @@ export default {
       if (res.success) {
         SweetAlert.Alert(
           "Sucesso",
-          "Banco actualizado com sucesso",
+          `${res.message}`,
+          "success",
+          "#kt_modal_new_data",
+          "kt_modal_new_data"
+        );
+        this.indicator = "";
+        document
+          .getElementById("kt_modal_new_data_submit")
+          .removeAttribute("disabled");
+        // Utilits.showLoader()
+
+        this.description = "";
+        this.errors = [];
+        this.getData();
+      }
+    },
+
+    async updateUser() {
+      this.indicator = "on";
+      document
+        .getElementById("kt_modal_new_data_submit")
+        .setAttribute("disabled", "true");
+
+      this.access_level_id =
+        $("#accessLevel_id").val() == null ? "" : $("#accessLevel_id").val();
+
+      let data = {
+        name: this.name,
+        username: this.username,
+        access_level_id: this.access_level_id,
+      };
+
+      console.log(data);
+      const res = await Api.put(`/user/${this.user.data.id}`, data);
+
+      console.log(res);
+      if (res.code == 422) {
+        // this.errors = res.message;
+        console.log(res.message);
+
+        console.log(typeof res.message);
+
+        if (typeof res.message === "string") {
+          this.indicator = "";
+          SweetAlert.Alert("Erro", `${res.message}`, "warning", "", true);
+        } else {
+          this.errors = res.message;
+          this.indicator = "";
+          SweetAlert.Alert(
+            "Erro",
+            "Preecha os campos obrigatorios",
+            "error",
+            ""
+          );
+          document
+            .getElementById("kt_modal_new_data_submit")
+            .removeAttribute("disabled");
+        }
+
+        document
+          .getElementById("kt_modal_new_data_submit")
+          .removeAttribute("disabled");
+      }
+
+      if (res.success) {
+        SweetAlert.Alert(
+          "Sucesso",
+          `${res.message}`,
           "success",
           "#kt_modal_new_data",
           "kt_modal_new_data"
@@ -381,21 +467,23 @@ export default {
         this.statusFilter = statusFilter;
       }
 
-      this.employeeTypeFilter =
-        $("#employeeTypeFilter").val() == null
+      this.accessLevelFilter =
+        $("#accessLevelFilter").val() == null
           ? ""
-          : $("#employeeTypeFilter").val();
+          : $("#accessLevelFilter").val();
 
-      // alert(this.employeeTypeFilter)
+      // alert(this.accessLevelFilter)
 
       const res = await Api.get(
-        `/salary?page=${page}&status=${this.statusFilter}&year=${this.yearFilter}&type_employee_id=${this.employeeTypeFilter}`
+        `/user?page=${page}&status=${this.statusFilter}&name=${this.nameFilter}&access_level_id=${this.accessLevelFilter}`
       );
 
-      this.employeeType = await res;
+      this.users = await res;
 
-      this.employeeType.data.forEach(function (item) {
-        item.employeeType = item.type_employee.description;
+      console.log(this.users);
+
+      this.users.data.forEach(function (item) {
+        item.access_level = item.access_level.level;
       });
 
       this.dataFetched = true;
@@ -405,23 +493,20 @@ export default {
       }
     },
 
-    async getOneSalary(id) {
+    async getOneUser(id) {
       Utilits.showLoader();
+      const res = await Api.getOne(`/user/${id}`);
 
-      const res = await Api.getOne(`/salary/${id}`);
-
-      this.salary = await res;
-      console.log(this.salary);
+      this.user = await res;
+      console.log(this.user);
 
       this.dataFetched = true;
       if (this.dataFetched) {
         Utilits.hideLoader();
       }
-      this.value = res.data.value;
-      this.type_employee_id = res.data.type_employee_id;
-      $("#employeeType_id")
-        .val(`${res.data.type_employee_id}`)
-        .trigger("change");
+      this.name = res.data.name;
+      this.username = res.data.username;
+      $("#accessLevel_id").val(`${res.data.access_level_id}`).trigger("change");
     },
 
     async remove(id) {
@@ -429,7 +514,7 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende eliminar o Remuneração?",
+        title: "Pretende eliminar o usuário?",
         showCancelButton: true,
         confirmButtonText: "Sim, pretendo!",
         cancelButtonText: "Não, cancelar!",
@@ -439,16 +524,12 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.delete(`/salary/${id}`);
+          res = await Api.delete(`/user/${id}`);
         }
       });
 
       if (res != undefined && res.success) {
-        SweetAlert.Alert(
-          "Sucesso",
-          "Remuneração eliminada com sucesso",
-          "success"
-        );
+        SweetAlert.Alert("Sucesso", "Usuário eliminado com sucesso", "success");
         this.getData();
       }
     },
@@ -458,7 +539,7 @@ export default {
 
       await Swal.fire({
         icon: "warning",
-        title: "Pretende activar o Remuneração?",
+        title: "Pretende activar o usuário?",
         showCancelButton: true,
         confirmButtonText: "Sim, pretendo!",
         cancelButtonText: "Não, cancelar!",
@@ -468,7 +549,7 @@ export default {
       }).then(async function (result) {
         console.log(result.dismiss);
         if (result.dismiss == undefined) {
-          res = await Api.active(`/salary/${id}/active`);
+          res = await Api.active(`/user/${id}/active`);
           console.log(res);
         }
       });
@@ -476,7 +557,7 @@ export default {
       if (res != undefined && res.success) {
         SweetAlert.Alert(
           "Sucesso",
-          "Remuneração activada com sucesso",
+          "usuário activada com sucesso",
           "success"
         );
         this.getData();
@@ -485,33 +566,50 @@ export default {
 
     enableUpdate(id) {
       // alert(id)
-      this.getAllEmployeesType();
-      this.getOneSalary(id);
+      this.getAllAccessLevel();
+      this.getOneUser(id);
 
-      this.title = "Actualizar Remuneração";
+      this.title = "Actualizar usuário";
       this.btnText = "Actualizar";
       this.isUpdate = true;
+      this.isUpdatePass = false;
+      this.errors = [];
+      this.description = null;
+    },
+
+    enableUpdatePass(id) {
+      // alert(id);
+      this.getOneUser(id);
+
+      this.title = "Actualizar senha";
+      this.btnText = "Actualizar";
+      this.isUpdatePass = true;
+      this.isUpdate = false;
       this.errors = [];
       this.description = null;
     },
 
     enableStore() {
-      this.getAllEmployeesType();
-      this.title = "Registar remuneração";
+      this.getAllAccessLevel();
+      this.title = "Registar usuário";
       this.btnText = "Registar";
+      this.isUpdatePass = false;
       this.isUpdate = false;
       this.errors = [];
-      this.value = null;
-      $("#employeeType_id").val("").trigger("change");
+      this.name = null;
+      this.username = null;
+      this.password = null;
+      this.c_password = null;
+      $("#accessLevel_id").val("").trigger("change");
     },
   },
 
   computed: {
     dataLength() {
-      if (this.employeeType.data == undefined) {
+      if (this.users.data == undefined) {
         return 0;
       }
-      return this.employeeType.data.length;
+      return this.users.data.length;
     },
   },
 
@@ -527,7 +625,7 @@ export default {
     Select2.createSelect2();
     Utilits.initTime();
     this.appState.setisLogin(false);
-    this.getAllEmployeesType();
+    this.getAllAccessLevel();
     // Utilits.initDate()
   },
 };
