@@ -141,13 +141,16 @@
 
       <ModalLocationsRoom
         @register="registerExamRoom"
+        @registerNewBlock="registerNewBlock"
         @update="updateExamRoom"
         @enableStore="enableStore"
         :title="this.title"
         :btnText="this.btnText"
         :isUpdate="this.isUpdate"
         :indicatorProps="this.indicator"
+        :inprogressBlock="this.inprogressBlock"
         v-model:bloco="this.bloco"
+        v-model:newblock="this.newbloco"
         v-model:capacity="this.capacity"
         v-model:number_room="this.number_room"
         :errors="this.errors"
@@ -200,6 +203,7 @@ import Select2 from "../dist-assets/assets/js/select2.js";
 import FileDropZone from "../dist-assets/assets/js/fileDropZone.js";
 import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
+import { AppState } from "@/stores/AppState";
 
 export default {
   components: {
@@ -219,8 +223,9 @@ export default {
       isUpdate: false,
       capacity: "",
       bloco: "",
+      newbloco: "",
       number_room: "",
-      location_id: "",
+      exam_location_id: "",
       blocoFilter: "",
       numberRoomFilter: "",
       capacityFilter: "",
@@ -228,12 +233,14 @@ export default {
       examLocationFilter: "",
       statusFilter: "",
       indicator: "",
+      inprogressBlock: "",
       comboBoxLocations: ref([]),
       locations: ref([]),
       location: ref([]),
       examRoom: null,
       dataFetched: false,
       errors: ref([]),
+      appState: AppState(),
       columns: [
         { name: "Local", key: "local" },
         { name: "Bloco", key: "bloco" },
@@ -251,20 +258,75 @@ export default {
     //     this.btnText = btnText
     //   },
 
+    async registerNewBlock() {
+      this.inprogressBlock = "on";
+      document
+        .getElementById("newBlock_submit_id")
+        .setAttribute("disabled", "true");
+
+      this.exam_location_id =
+        $("#exam_location_id").val() == null
+          ? ""
+          : $("#exam_location_id").val();
+
+      let data = {
+        block: this.newbloco,
+        exam_location_id: this.exam_location_id,
+      };
+
+      console.log(data);
+
+      const res = await Api.post("/block", data);
+      console.log(res);
+
+      if (res.code == 422) {
+        this.errors = res.message;
+        console.log(this.errors);
+        this.inprogressBlock = "";
+        SweetAlert.Alert("Erro", "Preecha os campos obrigatorios", "error", "");
+        document
+          .getElementById("newBlock_submit_id")
+          .removeAttribute("disabled");
+      }
+
+      if (res.success) {
+        SweetAlert.Alert(
+          "Sucesso",
+          "Bloco registado com sucesso",
+          "success",
+          "",
+          ""
+        );
+        this.inprogressBlock = "";
+        document
+          .getElementById("newBlock_submit_id")
+          .removeAttribute("disabled");
+        // Utilits.showLoader()
+        this.exam_location_id = "";
+        this.newbloco = "";
+        this.errors = [];
+        // this.getExamRoom();
+      }
+    },
+
     async registerExamRoom() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
-      this.location_id =
-        $("#location_id").val() == null ? "" : $("#location_id").val();
+      this.exam_location_id =
+        $("#exam_location_id").val() == null
+          ? ""
+          : $("#exam_location_id").val();
+
+      this.bloco = $("#block_id").val() == null ? "" : $("#block_id").val();
 
       let data = {
-        bloco: this.bloco,
+        block_id: this.bloco,
         capacity: this.capacity,
         number_room: this.number_room,
-        exam_location_id: this.location_id,
+        exam_location_id: this.exam_location_id,
       };
 
       console.log(data);
@@ -308,17 +370,19 @@ export default {
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
-            this.location_id =
-        $("#location_id").val() == null ? "" : $("#location_id").val();
+      this.exam_location_id =
+        $("#exam_location_id").val() == null
+          ? ""
+          : $("#exam_location_id").val();
 
       let data = {
         bloco: this.bloco,
         capacity: this.capacity,
         number_room: this.number_room,
-        exam_location_id: this.location_id,
+        exam_exam_location_id: this.exam_location_id,
       };
 
-      console.log(this.examRoom.data)
+      console.log(this.examRoom.data);
 
       console.log(data);
       const res = await Api.put(`/examRoom/${this.examRoom.data.id}`, data);
@@ -393,14 +457,18 @@ export default {
           &number_room=${this.numberRoomFilter}
           &capacity=${this.capacityFilter}
           &available=${this.availableFilter}
-          &exam_location_id=${this.examLocationFilter}
+          &exam_exam_location_id=${this.examLocationFilter}
           &status=${this.statusFilter}`
       );
 
       this.locations = await res;
 
       this.locations.data.forEach(function (item) {
-        item.local = item.exam_location.designation;
+        item.local = item.block.exam_location.designation;
+      });
+
+      this.locations.data.forEach(function (item) {
+        item.bloco = item.block.block;
       });
       // console.log(this.locations);
 
@@ -442,7 +510,9 @@ export default {
       this.capacity = res.data.capacity;
       this.number_room = res.data.number_room;
       this.bloco = res.data.bloco;
-      $(`#location_id`).val(res.data.exam_location_id).trigger("change");
+      $(`#exam_location_id`)
+        .val(res.data.exam_exam_location_id)
+        .trigger("change");
       // this.abbreviation = res.data.abbreviation;
       // this.address = res.data.address;
     },
@@ -523,7 +593,7 @@ export default {
       this.capacity = null;
       this.number_room = null;
       this.bloco = null;
-      $(`#location_id`).val("").trigger("change");
+      $(`#exam_location_id`).val("").trigger("change");
     },
 
     async imporExcelData() {
@@ -572,7 +642,7 @@ export default {
             .getElementById("upload_excel_locais")
             .removeAttribute("disabled");
           this.errors = [];
-          this.getExamRoom()
+          this.getExamRoom();
         }
       } catch (error) {
         console.log("Error", error);
@@ -598,6 +668,46 @@ export default {
   mounted() {
     Select2.createSelect2();
     FileDropZone.initDropzone();
+    this.appState.setisLogin(false);
   },
 };
+
+$(document).ready(function () {
+  // Inicialize o Select2
+  $("#block_id").select2();
+});
+
+$(document).on("click", "#refresh_block_id", function () {
+  $("#refresh_block_id").attr("data-kt-indicator", "on");
+
+  document.getElementById("refresh_block_id").setAttribute("disabled", "true");
+
+  let id = $("#exam_location_id").val();
+  getBlocoByLocation(id);
+});
+
+$(document).on("change", "#exam_location_id", function () {
+  getBlocoByLocation($(this).val());
+});
+
+async function getBlocoByLocation(id) {
+  // alert(id)
+  Utilits.showLoader();
+
+  const res = await Api.get(`/block/${id}/all`);
+
+  console.log(res);
+  let option = '<option value=""></option>';
+
+  res.data.forEach(function (element) {
+    // console.log(element)
+    option += `<option value="${element.id}">${element.block}</option>`;
+    // console.log(option)
+  });
+
+  $("#block_id").html(option);
+
+  $("#refresh_block_id").attr("data-kt-indicator", "");
+  Utilits.hideLoader();
+}
 </script>

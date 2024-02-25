@@ -52,7 +52,13 @@
               <!--Begin::row-->
               <div class="row">
                 <!--Begin::col-->
-                <div class="col select2-container">
+                <div
+                  class="select2-container"
+                  :class="{
+                    'col-4': this.isNewBlock,
+                    'col-6': !this.isNewBlock,
+                  }"
+                >
                   <!--begin::Input group-->
                   <div class="d-flex flex-column mb-8 fv-row">
                     <!--begin::Label-->
@@ -76,7 +82,7 @@
 
                     <!--begin::Select-->
                     <select
-                      id="location_id"
+                      id="exam_location_id"
                       name="currnecy"
                       aria-label="Select a Timezone"
                       data-control="select2"
@@ -86,13 +92,13 @@
                     >
                       <option value=""></option>
 
-                        <option
-                          v-for="(local, index) in this.$props.locations"
-                          :key="index"
-                          :value="local.id"
-                        >
-                          {{ local.designation }}
-                        </option>
+                      <option
+                        v-for="(local, index) in this.$props.locations"
+                        :key="index"
+                        :value="local.id"
+                      >
+                        {{ local.designation }}
+                      </option>
                     </select>
                     <!--end::Select-->
 
@@ -111,7 +117,12 @@
                 <!--End::col-->
 
                 <!-- Begin:col -->
-                <div class="col">
+                <div
+                  :class="{
+                    'col-4': this.isNewBlock,
+                    'col-6': !this.isNewBlock,
+                  }"
+                >
                   <!--begin::Input group-->
                   <div class="d-flex flex-column mb-8 fv-row">
                     <!--begin::Label-->
@@ -133,22 +144,182 @@
                     </label>
                     <!--end::Label-->
 
-                    <input
-                      type="text"
-                      class="form-control form-control-solid"
-                      :placeholder="this.$props.placeholderOne"
-                      name="address"
-                      :value="this.bloco"
-                      @input="$emit('update:bloco', $event.target.value)"
-                    />
+                    <!--begin::Solid input group style-->
+                    <div class="input-group input-group-solid flex-nowrap">
+                      <a
+                        href="#"
+                        @click="setNewBlock(true)"
+                        class="btn btn-primary"
+                      >
+                        <i class="ki-duotone ki-archive-tick fs-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </a>
+                      <div class="overflow-hidden flex-grow-1">
+                        <select
+                          id="block_id"
+                          name="currnecy"
+                          aria-label="Select a Timezone"
+                          data-control="select2"
+                          data-dropdown-parent="#kt_modal_location"
+                          data-placeholder="---Selecione aqui---"
+                          class="form-select form-select-solid rounded-start-0 border-start"
+                        >
+                          <option></option>
+                        </select>
+                      </div>
 
+                      <a
+                        v-show="this.isNewBlock"
+                        href="#"
+                        class="btn btn-primary"
+                        data-kt-indicator=""
+                        id="refresh_block_id"
+                      >
+                        <span class="indicator-label">
+                          <i class="ki-duotone ki-loading">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                          </i>
+                        </span>
+                        <span class="indicator-progress">
+                          <span
+                            class="spinner-border spinner-border-sm align-middle ms-2"
+                          ></span>
+                        </span>
+                      </a>
+                    </div>
+                    <!--end::Solid input group style-->
+
+                    <div class="input-group" hidden>
+                      <a href="#" class="btn btn-primary">
+                        <i class="ki-duotone ki-archive-tick fs-2">
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </a>
+
+                      <!--begin::Select-->
+                      <select
+                        id="block_id"
+                        name="currnecy"
+                        aria-label="Select a Timezone"
+                        data-control="select2"
+                        data-dropdown-parent="#kt_modal_location"
+                        data-placeholder="---Selecione aqui---"
+                        class="form-select form-select-solid"
+                      >
+                        <option value=""></option>
+
+                        <option
+                          v-for="(local, index) in this.$props.locations"
+                          :key="index"
+                          :value="local.id"
+                        >
+                          {{ local.designation }}
+                        </option>
+                      </select>
+                      <!--end::Select-->
+
+                      <a href="#" class="btn btn-primary">
+                        <i
+                          style="font-size: 20px"
+                          class="ki-duotone ki-loading"
+                        >
+                          <span class="path1"></span>
+                          <span class="path2"></span>
+                        </i>
+                      </a>
+                    </div>
                     <div class="fv-plugins-message-container invalid-feedback">
                       <div
-                        v-show="this.$props.errors.bloco"
+                        v-show="this.$props.errors.block_id"
                         data-field="name"
                         data-validator="notEmpty"
                       >
                         {{ this.errorMessageBloco }}
+                      </div>
+                    </div>
+                  </div>
+                  <!--end::Input group-->
+                </div>
+                <!-- End:col -->
+
+                <!-- Begin:col -->
+                <div class="col-4" v-show="this.isNewBlock">
+                  <!--begin::Input group-->
+                  <div class="d-flex flex-column mb-8 fv-row">
+                    <!--begin::Label-->
+                    <label
+                      class="d-flex align-items-center fs-6 fw-semibold mb-2"
+                    >
+                      <span class="required">Novo Bloco</span>
+
+                      <span
+                        class="ms-1"
+                        data-bs-toggle="tooltip"
+                        title="Specify a target name for future usage and reference"
+                      >
+                        <i
+                          class="ki-duotone ki-information-5 text-gray-500 fs-6"
+                          ><span class="path1"></span><span class="path2"></span
+                          ><span class="path3"></span></i
+                      ></span>
+                    </label>
+                    <!--end::Label-->
+
+                    <div class="input-group">
+                      <a
+                        href="#"
+                        class="btn btn-danger"
+                        @click="setNewBlock(false)"
+                        id=""
+                      >
+                        <span class="indicator-label">
+                          <i class="ki-duotone ki-abstract-11">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                          </i>
+                        </span>
+                        <span class="indicator-progress">
+                          <span
+                            class="spinner-border spinner-border-sm align-middle ms-2"
+                          ></span>
+                        </span>
+                      </a>
+
+                      <input
+                        type="text"
+                        class="form-control form-control-solid"
+                        placeholder="Novo bloco"
+                        name="address"
+                        :value="this.newblock"
+                        @input="$emit('update:newblock', $event.target.value)"
+                      />
+
+                      <button
+                        class="btn btn-primary"
+                        :data-kt-indicator="this.$props.inprogressBlock"
+                        @click="submitNewBlock"
+                        id="newBlock_submit_id"
+                      >
+                        <span class="indicator-label"> Registar </span>
+                        <span class="indicator-progress">
+                          <span
+                            class="spinner-border spinner-border-sm align-middle ms-2"
+                          ></span>
+                        </span>
+                      </button>
+                    </div>
+
+                    <div class="fv-plugins-message-container invalid-feedback">
+                      <div
+                        v-show="this.$props.errors.block"
+                        data-field="name"
+                        data-validator="notEmpty"
+                      >
+                        {{ this.errorMessageNewblock }}
                       </div>
                     </div>
                   </div>
@@ -300,7 +471,7 @@
 <script>
 // import Api from '../../../ApiRest.js'
 // import Utilits from '../../../Utilits.js'
-// import SweetAlert from '../../../dist-assets/assets/js/custom/SweetAlert/SweetAlert.js'
+// import SweetAlert from "../../../dist-assets/assets/js/custom/SweetAlert/SweetAlert.js";
 
 export default {
   // props:['title','descriptionProps','abbreviationProps','indicatorProps'],
@@ -318,6 +489,9 @@ export default {
       type: String,
     },
     capacity: {
+      type: String,
+    },
+    newblock: {
       type: String,
     },
     number_room: {
@@ -351,6 +525,10 @@ export default {
     locations: {
       type: Array,
     },
+
+    inprogressBlock: {
+      type: String,
+    },
   },
 
   data() {
@@ -358,6 +536,7 @@ export default {
       // description: this.$props.descriptionProps,
       // abbreviation: this.$props.abbreviationProps,
       // indicator: this.indicatorProps
+      isNewBlock: false,
     };
   },
 
@@ -369,6 +548,14 @@ export default {
         this.$emit("update");
       }
     },
+
+    async submitNewBlock() {
+      this.$emit("registerNewBlock");
+    },
+
+    setNewBlock(isNewBlock) {
+      this.isNewBlock = isNewBlock;
+    },
   },
   computed: {
     errorMessageLocation() {
@@ -377,8 +564,7 @@ export default {
       return "";
     },
     errorMessageBloco() {
-      if (this.$props.errors.bloco)
-        return this.$props.errors.bloco[0];
+      if (this.$props.errors.block_id) return this.$props.errors.block_id[0];
       return "";
     },
 
@@ -389,6 +575,10 @@ export default {
     },
     errorMessageCapacity() {
       if (this.$props.errors.capacity) return this.$props.errors.capacity[0];
+      return "";
+    },
+    errorMessageNewblock() {
+      if (this.$props.errors.block) return this.$props.errors.block[0];
       return "";
     },
   },

@@ -51,10 +51,10 @@
         <!--end::Secondary button-->
 
         <!--begin::Primary button-->
-          <PrimaryButton
-            v-on:click="enableStore"
-            textButton="Registar"
-            datatarget="kt_modal_location"
+        <PrimaryButton
+          v-on:click="enableStore"
+          textButton="Registar"
+          datatarget="kt_modal_location"
         ></PrimaryButton>
         <!-- <a
           href="#"
@@ -195,6 +195,7 @@ import Select2 from "../dist-assets/assets/js/select2.js";
 import FileDropZone from "../dist-assets/assets/js/fileDropZone.js";
 import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
+import { AppState } from "@/stores/AppState";
 
 export default {
   components: {
@@ -203,7 +204,7 @@ export default {
     Filters,
     Bootstrap5Pagination,
     ModalLocations,
-    PrimaryButton
+    PrimaryButton,
   },
 
   data() {
@@ -222,6 +223,7 @@ export default {
       location: ref([]),
       dataFetched: false,
       errors: ref([]),
+      appState: AppState(),
       columns: [
         { name: "Nome", key: "designation" },
         { name: "Sigla", key: "abbreviation" },
@@ -523,7 +525,7 @@ export default {
             .getElementById("upload_excel_locais")
             .removeAttribute("disabled");
           this.errors = [];
-          this.getLocationExam()
+          this.getLocationExam();
         }
       } catch (error) {
         console.log("Error", error);
@@ -547,6 +549,7 @@ export default {
   mounted() {
     Select2.createSelect2();
     FileDropZone.initDropzone();
+    this.appState.setisLogin(false);
   },
 };
 </script>
