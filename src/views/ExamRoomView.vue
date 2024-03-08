@@ -123,6 +123,7 @@
         v-model:numberRoomFilter="this.numberRoomFilter"
         :isExamRoomView="true"
         :locations="this.comboBoxLocations.value"
+        :blocks="this.comboBoxBlocks.value"
       />
       <!-- End-FIlters -->
 
@@ -144,6 +145,7 @@
         @registerNewBlock="registerNewBlock"
         @update="updateExamRoom"
         @enableStore="enableStore"
+        @getBlocoByLocation="getBlocoByLocation"
         :title="this.title"
         :btnText="this.btnText"
         :isUpdate="this.isUpdate"
@@ -159,6 +161,7 @@
         placeholderThree="Capacidade da sala..."
         :isExamRoomView="true"
         :locations="this.comboBoxLocations.value"
+        :blocks="this.comboBoxBlocks.value"
       />
 
       <div v-if="this.dataLength == 0" class="alert alert-info" role="alert">
@@ -235,6 +238,7 @@ export default {
       indicator: "",
       inprogressBlock: "",
       comboBoxLocations: ref([]),
+      comboBoxBlocks: ref([]),
       locations: ref([]),
       location: ref([]),
       examRoom: null,
@@ -375,11 +379,13 @@ export default {
           ? ""
           : $("#exam_location_id").val();
 
+      this.bloco = $("#block_id").val() == null ? "" : $("#block_id").val();
+
       let data = {
-        bloco: this.bloco,
+        block_id: this.bloco,
         capacity: this.capacity,
         number_room: this.number_room,
-        exam_exam_location_id: this.exam_location_id,
+        exam_location_id: this.exam_location_id,
       };
 
       console.log(this.examRoom.data);
@@ -457,7 +463,7 @@ export default {
           &number_room=${this.numberRoomFilter}
           &capacity=${this.capacityFilter}
           &available=${this.availableFilter}
-          &exam_exam_location_id=${this.examLocationFilter}
+          &exam_location_id=${this.examLocationFilter}
           &status=${this.statusFilter}`
       );
 
@@ -481,6 +487,35 @@ export default {
       }
     },
 
+    async getBlocoByLocation(id, block_id = null) {
+      // alert(id);
+      this.comboBoxBlocks = [];
+      Utilits.showLoader();
+
+      if (typeof id == "undefined") {
+        $("#refresh_block_id").attr("data-kt-indicator", "on");
+        id = $("#exam_location_id").val();
+        if (Number(id) == 0) {
+          this.errors["exam_location_id"] = ['O campo "Local" é obrigatorio'];
+        } else {
+          this.errors = [];
+        }
+      }
+      // alert(isNaN(id))
+      if (Number(id) != 0) {
+        const res = await Api.get(`/block/${id}/all`);
+        this.comboBoxBlocks.value = await res.data;
+      }
+
+      $("#refresh_block_id").attr("data-kt-indicator", "");
+
+      if (block_id != null) {
+        $(`#block_id`).val(block_id).trigger("change");
+      }
+
+      Utilits.hideLoader();
+    },
+
     async getAllLocation() {
       let data = ref([]);
       Utilits.showLoader();
@@ -495,7 +530,7 @@ export default {
       this.comboBoxLocations.value = await res.data;
     },
 
-    async getOneLocation(id) {
+    async getOneExamRoom(id) {
       Utilits.showLoader();
 
       const res = await Api.getOne(`/examRoom/${id}`);
@@ -511,10 +546,13 @@ export default {
       this.number_room = res.data.number_room;
       this.bloco = res.data.bloco;
       $(`#exam_location_id`)
-        .val(res.data.exam_exam_location_id)
+        .val(res.data.block.exam_location.id)
         .trigger("change");
-      // this.abbreviation = res.data.abbreviation;
-      // this.address = res.data.address;
+
+      this.getBlocoByLocation(
+        res.data.block.exam_location.id,
+        res.data.block.id
+      );
     },
 
     async remove(id) {
@@ -573,7 +611,7 @@ export default {
 
     enableUpdate(id) {
       // alert(id);
-      this.getOneLocation(id);
+      this.getOneExamRoom(id);
 
       this.title = "Actualizar Sala";
       this.btnText = "Actualizar";
@@ -594,6 +632,11 @@ export default {
       this.number_room = null;
       this.bloco = null;
       $(`#exam_location_id`).val("").trigger("change");
+    },
+
+    handleLocationSelectChange(event) {
+      // Aqui você pode chamar a função getBlocoByLocation com o valor selecionado
+      this.getBlocoByLocation(event.target.value, null);
     },
 
     async imporExcelData() {
@@ -669,6 +712,9 @@ export default {
     Select2.createSelect2();
     FileDropZone.initDropzone();
     this.appState.setisLogin(false);
+    $("#block_id").select2();
+    $("#exam_location_id").on("change", this.handleLocationSelectChange);
+    $("#examLocationFilter").on("change", this.handleLocationSelectChange);
   },
 };
 
@@ -677,37 +723,35 @@ $(document).ready(function () {
   $("#block_id").select2();
 });
 
-$(document).on("click", "#refresh_block_id", function () {
-  $("#refresh_block_id").attr("data-kt-indicator", "on");
+// $(document).on("click", "#refresh_block_id", function () {
+//   $("#refresh_block_id").attr("data-kt-indicator", "on");
 
-  document.getElementById("refresh_block_id").setAttribute("disabled", "true");
+//   document.getElementById("refresh_block_id").setAttribute("disabled", "true");
 
-  let id = $("#exam_location_id").val();
-  getBlocoByLocation(id);
-});
+//   let id = $("#exam_location_id").val();
+//   // getBlocoByLocation(id);
+// });
 
-$(document).on("change", "#exam_location_id", function () {
-  getBlocoByLocation($(this).val());
-});
+// $(document).on("change", "#exam_location_id", function () {
+//   getBlocoByLocation($(this).val());
+// });
 
-async function getBlocoByLocation(id) {
-  // alert(id)
-  Utilits.showLoader();
+// async function getBlocoByLocation(id) {
+//   // alert(id);
+//   Utilits.showLoader();
 
-  const res = await Api.get(`/block/${id}/all`);
+//   const res = await Api.get(`/block/${id}/all`);
 
-  console.log(res);
-  let option = '<option value=""></option>';
+//   console.log(res);
+//   let option = '<option value=""></option>';
 
-  res.data.forEach(function (element) {
-    // console.log(element)
-    option += `<option value="${element.id}">${element.block}</option>`;
-    // console.log(option)
-  });
+//   res.data.forEach(function (element) {
+//     option += `<option value="${element.id}">${element.block}</option>`;
+//   });
 
-  $("#block_id").html(option);
+//   $("#block_id").html(option);
 
-  $("#refresh_block_id").attr("data-kt-indicator", "");
-  Utilits.hideLoader();
-}
+//   $("#refresh_block_id").attr("data-kt-indicator", "");
+//   Utilits.hideLoader();
+// }
 </script>

@@ -91,13 +91,34 @@
             <div class="d-flex flex-column mb-8 fv-row">
               <label class="form-label fw-bold fs-6 text-gray-700">Bloco</label>
 
-              <input
+              <select
+                id="blockFilter"
+                name="currnecy"
+                aria-label="Select a Timezone"
+                data-control="select2"
+                data-placeholder="---Selecione aqui---"
+                class="form-select form-select-solid"
+              >
+                <option value=""></option>
+
+                <option
+                  v-for="(block, index) in this.$props.blocks"
+                  :key="index"
+                  :value="block.id"
+                >
+                  {{ block.block }}
+                </option>
+
+              </select>
+              <!--end::Select-->
+
+              <!-- <input
                 type="text"
                 class="form-control form-control-solid"
                 placeholder="Pesquise pelo bloco..."
                 name="bloco"
                 @input="$emit('update:blocoFilter', $event.target.value)"
-              />
+              /> -->
               <!--end::Input group-->
             </div>
           </div>
@@ -440,6 +461,9 @@ export default {
       type: Boolean,
     },
     locations: {
+      type: Array,
+    },
+    blocks: {
       type: Array,
     },
     placeholderDate: {

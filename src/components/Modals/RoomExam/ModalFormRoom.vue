@@ -166,7 +166,15 @@
                           data-placeholder="---Selecione aqui---"
                           class="form-select form-select-solid rounded-start-0 border-start"
                         >
-                          <option></option>
+                          <option value=""></option>
+
+                          <option
+                            v-for="(block, index) in this.$props.blocks"
+                            :key="index"
+                            :value="block.id"
+                          >
+                            {{ block.block }}
+                          </option>
                         </select>
                       </div>
 
@@ -176,6 +184,7 @@
                         class="btn btn-primary"
                         data-kt-indicator=""
                         id="refresh_block_id"
+                        @click="refreshBlocks"
                       >
                         <span class="indicator-label">
                           <i class="ki-duotone ki-loading">
@@ -526,6 +535,10 @@ export default {
       type: Array,
     },
 
+    blocks: {
+      type: Array,
+    },
+
     inprogressBlock: {
       type: String,
     },
@@ -551,6 +564,10 @@ export default {
 
     async submitNewBlock() {
       this.$emit("registerNewBlock");
+    },
+
+    async refreshBlocks() {
+      this.$emit("getBlocoByLocation");
     },
 
     setNewBlock(isNewBlock) {

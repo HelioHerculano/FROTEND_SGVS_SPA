@@ -133,14 +133,13 @@
         :dataFetched="this.dataFetched"
         :isExamView="true"
         buttonText="Upload De Salas"
-        tableTitle="Listagem de alocações" 
+        tableTitle="Listagem de alocações"
         @enableUpdate="enableUpdate"
         @remove="remove"
         @active="active"
         @enableAlocacaoTimeExam="enableAlocacaoTimeExam"
       />
 
-      
       <ModalAllocationExam
         @register="makeAllocation"
         @update="updateExamRoom"
@@ -150,7 +149,7 @@
         :isUpdate="this.isUpdate"
         :indicatorProps="this.indicator"
         v-model:subject="this.subject"
-        v-model:all_tobe_examined = "this.all_tobe_examined"
+        v-model:all_tobe_examined="this.all_tobe_examined"
         :isInvalidSubject="this.isInvalidSubject"
         :isValidSubject="this.isValidSubject"
         :errors="this.errors"
@@ -200,6 +199,7 @@ import Select2 from "../dist-assets/assets/js/select2.js";
 import FileDropZone from "../dist-assets/assets/js/fileDropZone.js";
 import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
+import { AppState } from "@/stores/AppState";
 
 export default {
   components: {
@@ -216,10 +216,10 @@ export default {
       title: "",
       btnText: "",
       isUpdate: false,
-      subject:"",
-      isInvalidSubject:false,
-      isValidSubject:false,
-      idSubject:null,
+      subject: "",
+      isInvalidSubject: false,
+      isValidSubject: false,
+      idSubject: null,
       blocoFilter: "",
       numberRoomFilter: "",
       capacityFilter: "",
@@ -227,8 +227,8 @@ export default {
       examLocationFilter: "",
       statusFilter: "",
       indicator: "",
-      all_tobe_examined:null,
-      allocationType:null,
+      all_tobe_examined: null,
+      allocationType: null,
       comboBoxLocations: ref([]),
       comboBoxExam: ref([]),
       comboBoxExamRoom: ref([]),
@@ -238,6 +238,7 @@ export default {
       dataFetched: false,
       checkAllRoom: false,
       errors: ref([]),
+      appState: AppState(),
       columns: [
         { name: "Disciplina", key: "subject" },
         { name: "Local", key: "designation" },
@@ -264,25 +265,21 @@ export default {
       }
     },
 
-
     async makeAllocation() {
       this.indicator = "on";
       document
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
-        
-            this.exame_id =
-        $("#exame_id").val() == null ? "" : $("#exame_id").val();
-            this.location_id =
+      this.exame_id = $("#exame_id").val() == null ? "" : $("#exame_id").val();
+      this.location_id =
         $("#location_id").val() == null ? "" : $("#location_id").val();
 
-        this.room_id =
-        $("#room_id").val() == null ? "" : $("#room_id").val();
+      this.room_id = $("#room_id").val() == null ? "" : $("#room_id").val();
 
-        this.checkAllRoom = $("#checkAllRoom").val();
+      this.checkAllRoom = $("#checkAllRoom").val();
 
-        this.allocationType = $('input[name="allocationType"]:checked').val()
+      this.allocationType = $('input[name="allocationType"]:checked').val();
 
       let data = {
         exam_location_id: this.location_id,
@@ -290,8 +287,8 @@ export default {
         exam_id: this.exame_id,
         all_tobe_examined: this.all_tobe_examined,
         checkAllRoom: this.checkAllRoom == "true" ? true : false,
-        allocationType: this.allocationType
-      };    
+        allocationType: this.allocationType,
+      };
 
       console.log(data);
 
@@ -301,7 +298,7 @@ export default {
       if (res.code == 422) {
         this.errors = res.message;
         // console.log(this.errors);
-        this.validateInput(this.errors)
+        this.validateInput(this.errors);
         this.indicator = "";
         SweetAlert.Alert("Erro", "Preecha os campos obrigatorios", "error", "");
         document
@@ -325,8 +322,8 @@ export default {
         this.abbreviation = "";
         this.subject = "";
         this.errors = [];
-        this.getAllocationExam()
-        this.resetFilds()
+        this.getAllocationExam();
+        this.resetFilds();
       }
     },
     async updateExamRoom() {
@@ -336,7 +333,7 @@ export default {
         .getElementById("kt_modal_data_submit")
         .setAttribute("disabled", "true");
 
-            this.location_id =
+      this.location_id =
         $("#location_id").val() == null ? "" : $("#location_id").val();
 
       let data = {
@@ -346,7 +343,7 @@ export default {
         exam_location_id: this.location_id,
       };
 
-      console.log(this.examRoom.data)
+      console.log(this.examRoom.data);
 
       console.log(data);
       const res = await Api.put(`/examRoom/${this.examRoom.data.id}`, data);
@@ -428,11 +425,11 @@ export default {
       });
 
       this.allocations.data.forEach(function (item) {
-        item.designation = item.exam_room.exam_location.designation;
+        item.designation = item.exam_room.block.exam_location.designation;
       });
 
       this.allocations.data.forEach(function (item) {
-        item.bloco = item.exam_room.bloco;
+        item.bloco = item.exam_room.block.block;
       });
 
       this.allocations.data.forEach(function (item) {
@@ -448,8 +445,6 @@ export default {
       this.dataFetched = true;
 
       console.log(this.allocations.data.length);
-
-
 
       if (this.dataFetched) {
         Utilits.hideLoader();
@@ -482,9 +477,9 @@ export default {
       }
 
       this.comboBoxExam.value = await res.data;
-      console.log(this.comboBoxExam.value)
+      console.log(this.comboBoxExam.value);
     },
-    
+
     async remove(id) {
       let res;
 
@@ -542,7 +537,7 @@ export default {
     enableAlocacaoTimeExam(id) {
       // alert(id)
       // this.getTimeByDate(id);
-      this.idSubject = id
+      this.idSubject = id;
       this.title = "Alocação do horario";
       this.btnText = "Alocar";
       this.isUpdate = true;
@@ -565,17 +560,17 @@ export default {
       this.bloco = null;
     },
 
-    resetFilds(){
-      this.comboBoxExam = ref([])
-      this.comboBoxLocations = ref([])
-      this.comboBoxExamRoom = ref([])
-      this.all_tobe_examined = null
-      $("#room_id").html("")
-      
-      if($("#checkAllRoom").prop("checked")){
-        $("#checkAllRoom").attr("checked",false)
-        $("#room_id").attr("disabled",false)
-        $("#checkAllRoom").val('false')
+    resetFilds() {
+      this.comboBoxExam = ref([]);
+      this.comboBoxLocations = ref([]);
+      this.comboBoxExamRoom = ref([]);
+      this.all_tobe_examined = null;
+      $("#room_id").html("");
+
+      if ($("#checkAllRoom").prop("checked")) {
+        $("#checkAllRoom").attr("checked", false);
+        $("#room_id").attr("disabled", false);
+        $("#checkAllRoom").val("false");
       }
     },
     enableStore() {
@@ -634,7 +629,7 @@ export default {
             .getElementById("upload_excel_locais")
             .removeAttribute("disabled");
           this.errors = [];
-          this.getAllocationExam()
+          this.getAllocationExam();
         }
       } catch (error) {
         console.log("Error", error);
@@ -659,46 +654,41 @@ export default {
   mounted() {
     Select2.createSelect2();
     FileDropZone.initDropzone();
+    this.appState.setisLogin(false);
   },
 };
 
-  $(document).on("change","#location_id",function(){
-      let id = $(this).find(":selected").val()
-      getRoomsByLocation(id)
-  })
+$(document).on("change", "#location_id", function () {
+  let id = $(this).find(":selected").val();
+  getRoomsByLocation(id);
+});
 
-  async function getRoomsByLocation(id){
+async function getRoomsByLocation(id) {
+  Utilits.showLoader();
 
-    Utilits.showLoader();
+  const res = await Api.get(`/examRoom/${id}/location`);
 
-    const res = await Api.get(
-        `/examRoom/${id}/location`
-      );
+  console.log(res);
+  let option = "<option value=''></option>";
 
-      console.log(res)
-      let option = "";
+  res.data.forEach(function (element) {
+    option += `<option value="${element.id}">Bloco: ${element.block.block} - Nr: ${element.block.block}</option>`;
+  });
 
-      res.data.forEach(function(element){
-        // console.log(element)
-        option += `<option value="${element.id}">Bloco: ${element.bloco}- Nr: ${element.number_room}</option>`
-        // console.log(option) 
-      })
+  $("#room_id").html(option);
 
-      $("#room_id").html(option)
+  Utilits.hideLoader();
+}
 
-    Utilits.hideLoader();
+$(document).on("change", "#checkAllRoom", function () {
+  if ($("#checkAllRoom").prop("checked")) {
+    $("#room_id").attr("disabled", true);
+    $("#checkAllRoom").val("true");
 
+    $("#room_id").val([]).change();
+  } else {
+    $("#room_id").attr("disabled", false);
+    $("#checkAllRoom").val("false");
   }
-
-  $(document).on("change","#checkAllRoom",function(){
-    if($("#checkAllRoom").prop("checked")){
-      $("#room_id").attr("disabled",true)
-      $("#checkAllRoom").val('true')
-      
-      $("#room_id").val([]).change();
-    }else{
-      $("#room_id").attr("disabled",false)
-      $("#checkAllRoom").val('false')
-    }
-  })
+});
 </script>

@@ -228,7 +228,7 @@ export default {
         { name: "Nome", key: "designation" },
         { name: "Sigla", key: "abbreviation" },
         { name: "Endereço", key: "address" },
-        { name: "Número de salas", key: "exam_room_count" },
+        { name: "Número de salas", key: "total_rooms" },
         { name: "Disponibilidade", key: "available" },
         { name: "Estado", key: "status" },
       ],
@@ -367,7 +367,7 @@ export default {
 
       this.dataFetched = true;
 
-      console.log(this.locations.data.length);
+      console.log(this.locations);
 
       if (this.dataFetched) {
         Utilits.hideLoader();
