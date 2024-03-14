@@ -277,12 +277,15 @@ export default {
 
       this.room_id = $("#room_id").val() == null ? "" : $("#room_id").val();
 
+      this.block_id = $("#block_id").val() == null ? "" : $("#block_id").val();
+
       this.checkAllRoom = $("#checkAllRoom").val();
 
       this.allocationType = $('input[name="allocationType"]:checked').val();
 
       let data = {
         exam_location_id: this.location_id,
+        block_id: this.block_id,
         exam_room_id: this.room_id,
         exam_id: this.exame_id,
         all_tobe_examined: this.all_tobe_examined,
@@ -583,6 +586,81 @@ export default {
       this.subject = null;
     },
 
+    handleLocationSelectChange(event) {
+      // Aqui você pode chamar a função getBlocoByLocation com o valor selecionado
+      this.getBockByLocation(event.target.value);
+      this.getRoomsByLocation(event.target.value);
+    },
+
+    handleCheckAllRoomChange(event) {
+      if ($("#checkAllRoom").prop("checked")) {
+          $("#room_id").attr("disabled", true);
+          $("#checkAllRoom").val("true");
+
+          $("#room_id").val([]).change();
+        } else {
+          $("#room_id").attr("disabled", false);
+          $("#checkAllRoom").val("false");
+        }
+    },
+
+    handleRoomChange(event){
+      this.getRoomByBlock(event.target.value);
+    },
+
+        async  getRoomsByLocation(id) {
+        Utilits.showLoader();
+
+            const res = await Api.get(`/examRoom/${id}/location`);  
+
+            console.log(res);
+            let option = "<option value=''></option>";
+
+            res.data.forEach(function (element) {
+              option += `<option value="${element.id}"> Nr: ${element.number_room}</option>`;
+            });
+
+            $("#room_id").html(option);
+
+            Utilits.hideLoader();
+          },
+
+        async getBockByLocation(id) {
+          Utilits.showLoader();
+
+          const res = await Api.get(`/block/${id}/all`);
+
+          console.log(res);
+          let option = "<option value=''></option>";
+
+          res.data.forEach(function (element) {
+            console.log(element);
+            option += `<option value="${element.id}">${element.block}</option>`;
+          });
+
+          $("#block_id").html(option);
+
+          Utilits.hideLoader();
+        },
+
+        async getRoomByBlock(id) {
+          Utilits.showLoader();
+
+          const res = await Api.get(`/examRoom/${id}/block`);
+
+          console.log(res);
+          let option = "<option value=''></option>";
+
+          res.data.forEach(function (element) {
+            console.log(element);
+            option += `<option value="${element.id}">${element.number_room}</option>`;
+          });
+
+          $("#room_id").html(option);
+
+          Utilits.hideLoader();
+        },
+
     async imporExcelData() {
       console.log("uehrheirieu");
       this.indicator = "on";
@@ -635,6 +713,7 @@ export default {
         console.log("Error", error);
       }
     },
+
   },
 
   computed: {
@@ -655,40 +734,29 @@ export default {
     Select2.createSelect2();
     FileDropZone.initDropzone();
     this.appState.setisLogin(false);
+    $("#location_id").on("change", this.handleLocationSelectChange);
+    $("#checkAllRoom").on("change", this.handleCheckAllRoomChange);
+    $("#block_id").on("change", this.handleRoomChange);
   },
 };
 
-$(document).on("change", "#location_id", function () {
-  let id = $(this).find(":selected").val();
-  getRoomsByLocation(id);
-});
+// $(document).on("change", "#location_id", function () {
+//   let id = $(this).find(":selected").val();
+//   getBockByLocation(id);
+//   getRoomsByLocation(id);
+// });
 
-async function getRoomsByLocation(id) {
-  Utilits.showLoader();
 
-  const res = await Api.get(`/examRoom/${id}/location`);
 
-  console.log(res);
-  let option = "<option value=''></option>";
+// $(document).on("change", "#checkAllRoom", function () {
+//   if ($("#checkAllRoom").prop("checked")) {
+//     $("#room_id").attr("disabled", true);
+//     $("#checkAllRoom").val("true");
 
-  res.data.forEach(function (element) {
-    option += `<option value="${element.id}">Bloco: ${element.block.block} - Nr: ${element.block.block}</option>`;
-  });
-
-  $("#room_id").html(option);
-
-  Utilits.hideLoader();
-}
-
-$(document).on("change", "#checkAllRoom", function () {
-  if ($("#checkAllRoom").prop("checked")) {
-    $("#room_id").attr("disabled", true);
-    $("#checkAllRoom").val("true");
-
-    $("#room_id").val([]).change();
-  } else {
-    $("#room_id").attr("disabled", false);
-    $("#checkAllRoom").val("false");
-  }
-});
+//     $("#room_id").val([]).change();
+//   } else {
+//     $("#room_id").attr("disabled", false);
+//     $("#checkAllRoom").val("false");
+//   }
+// });
 </script>

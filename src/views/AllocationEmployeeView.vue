@@ -16,7 +16,7 @@
         <h1
           class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
         >
-          Salas de exames
+          Alocação do pessoal
         </h1>
         <!--end::Title-->
 
@@ -118,11 +118,11 @@
       <!-- Filtros -->
       <Filters
         @getData="getAllocationEmployee"
-        v-model:blocoFilter="this.blocoFilter"
-        v-model:capacityFilter="this.capacityFilter"
-        v-model:numberRoomFilter="this.numberRoomFilter"
-        :isExamView="true"
-        :locations="this.comboBoxLocations.value"
+        v-model:nameFilter="this.nameFilter"
+        v-model:yearFilter="this.yearFilter"
+        :isAllocationEmployeeView="true"
+        :employeeType="this.comboBoxEmployeeType.value"
+        :exams="this.comboBoxExam.value"
       />
       <!-- End-FIlters -->
 
@@ -221,11 +221,8 @@ export default {
       isInvalidSubject: false,
       isValidSubject: false,
       idSubject: null,
-      blocoFilter: "",
-      numberRoomFilter: "",
-      capacityFilter: "",
-      availableFilter: "",
-      examLocationFilter: "",
+      nameFilter: "",
+      yearFilter:"",
       statusFilter: "",
       indicator: "",
       all_tobe_examined: null,
@@ -300,7 +297,7 @@ export default {
       this.employee_id =
         $("#pessaol_id").val() == null ? "" : $("#pessaol_id").val();
 
-      this.bloco = $("#bloco_id").val() == null ? "" : $("#bloco_id").val();
+      this.block_id = $("#bloco_id").val() == null ? "" : $("#bloco_id").val();
 
       this.dupla_pessoal = this.employee_id.toString().split(",");
 
@@ -322,7 +319,7 @@ export default {
         // second_employee: this.second_employee,
         dupla_pessoal: this.dupla_pessoal,
         allocationType: this.allocationType,
-        bloco: this.bloco,
+        block_id: this.block_id,
         // all_tobe_examined: this.all_tobe_examined,
         // checkAllRoom: this.checkAllRoom == "true" ? true : false,
       };
@@ -352,7 +349,7 @@ export default {
       }
 
       if (res.success) {
-        SweetAlert.Alert(
+        SweetAlert.AlertWithoutConfirmation(
           "Sucesso",
           `${res.data}`,
           "success",
@@ -453,14 +450,33 @@ export default {
         $("#examLocationFilter").val() == null
           ? ""
           : $("#examLocationFilter").val();
-      this.statusFilter = this.statusFilter == "" ? 1 : this.statusFilter;
+
+      this.typeEmployeeFilter =
+        $("#typeEmployeeFilter").val() == null
+          ? 1
+          : $("#typeEmployeeFilter").val();
+
+      this.confirmationFilter =
+        $("#confirmationFilter").val() == null
+          ? 2
+          : $("#confirmationFilter").val();
+
+      this.exameFilter =
+        $("#exameFilter").val() == null
+          ? ""
+          : $("#exameFilter").val();
 
       // alert(this.statusFilter)
 
       Utilits.showLoader();
       const res = await Api.get(
         `/allocationEmployeeExam?page=${page}
-          &status=${this.statusFilter}`
+          &status=${this.statusFilter}
+          &name=${this.nameFilter}
+          &type_employee_id=${this.typeEmployeeFilter}
+          &confirmation=${this.confirmationFilter}
+          &exam_id=${this.exameFilter}
+          &year=${this.yearFilter}`
       );
 
       this.allocations = await res;
@@ -479,7 +495,7 @@ export default {
 
       this.allocations.data.forEach(function (item) {
         if (item.exam_room != null) {
-          item.designation = item.exam_room.exam_location.designation;
+          item.designation = item.exam_room.block.exam_location.designation;
         } else {
           item.designation = item.exam_location.designation;
         }
@@ -487,7 +503,9 @@ export default {
 
       this.allocations.data.forEach(function (item) {
         if (item.exam_room != null) {
-          item.bloco = item.exam_room.bloco;
+          item.bloco = item.exam_room.block.block;
+        } else {
+          item.bloco = item.block.block;
         }
       });
 
@@ -523,6 +541,20 @@ export default {
 
       this.comboBoxLocations.value = await res.data;
     },
+
+    // async getAllT() {
+    //   let data = ref([]);
+    //   Utilits.showLoader();
+    //   const res = await Api.get(`/examLocations/all`);
+
+    //   this.dataFetched = true;
+
+    //   if (this.dataFetched) {
+    //     Utilits.hideLoader();
+    //   }
+
+    //   this.comboBoxLocations.value = await res.data;
+    // },
 
     async getAllEmployeeType() {
       let data = ref([]);
@@ -634,6 +666,115 @@ export default {
       this.bloco = null;
     },
 
+    handleLocationSelectChange(event) {
+      this.getBlocoByLocation(event.target.value);
+
+      let id = $("#location_id").find(":selected").val();
+      let location = $("#location_id").find(":selected").text();
+      if (id == "") {
+        id = NaN;
+      } else {
+        id = Number(id);
+      }
+      console.log(id);
+      console.log(!isNaN(id));
+      if (!isNaN(id)) {
+        this.getRoomsByLocation(id);
+        this.getAllEmployee(location, id);
+      }
+    },
+
+    async getBlocoByLocation(id) {
+      // alert(id)
+      Utilits.showLoader();
+
+      const res = await Api.get(`/examRoom/${id}/blocos`);
+
+      console.log(res);
+      let option = '<option value=""></option>';
+
+      res.data.forEach(function (element, index) {
+        // console.log(element)
+        option += `<option value="${element.id}">${element.block}</option>`;
+        // console.log(option)
+      });
+
+      $("#bloco_id").html(option);
+
+      Utilits.hideLoader();
+    },
+
+    async getRoomsByLocation(id) {
+      Utilits.showLoader();
+
+      const res = await Api.get(`/examRoom/${id}/location`);
+
+      console.log(res);
+      let option = '<option value=""></option>';
+
+      res.data.forEach(function (element) {
+        // console.log(element)
+        option += `<option value="${element.id}">${element.number_room}</option>`;
+        // console.log(option)
+      });
+
+      $("#room_id").html(option);
+
+      Utilits.hideLoader();
+    },
+
+    async getAllEmployee(location, id) {
+      // alert(location);
+      var exam_id = $("#exame_id").find(":selected").val();
+      Utilits.showLoader();
+
+      const res = await Api.get(
+        `/employeeWhereDoesntHaveExam?exam_id=${exam_id}`
+      );
+
+      console.log(res);
+      let activeOption = "";
+      let otherOption = "";
+      let options = '<option value=""></option>';
+
+      res.data.forEach(function (element) {
+        // console.log(element)
+        if (element.origin_id == id) {
+          activeOption += `<option value="${element.id}"
+            data-kt-rich-content-subcontent="${element.role.description}"
+            data-kt-rich-content-icon="src/dist-assets/assets/media/svg/avatars/blank.svg"
+      >${element.name}</option>`;
+        } else {
+          otherOption += `<option value="${element.id}"
+            data-kt-rich-content-subcontent="${element.role.description}"
+            data-kt-rich-content-icon="src/dist-assets/assets/media/svg/avatars/blank.svg"
+      >${element.name}</option>`;
+        }
+      });
+
+      options +=
+        `<optgroup id="active_group_id" label="${location}">
+            ${activeOption}
+    </optgroup>` +
+        `<optgroup id="other_group_id" label="Pessoal com outra proviniencia">
+            ${otherOption}
+  </optgroup>`;
+
+      $("#pessaol_id").html("");
+      $("#pessaol_id").html(options);
+
+      $("#pessaol_id").select2().trigger("change");
+
+      $("#pessaol_id").select2({
+        placeholder: "Select an option",
+        minimumResultsForSearch: Infinity,
+        templateSelection: optionFormat,
+        templateResult: optionFormat,
+      });
+
+      Utilits.hideLoader();
+    },
+
     resetFilds() {
       this.comboBoxExam = ref([]);
       this.comboBoxLocations = ref([]);
@@ -661,6 +802,8 @@ export default {
       $("#exame_id").val("").trigger("change");
       $("#employeeType_id").val("").trigger("change");
       $("#location_id").val("").trigger("change");
+      $(".local_field").prop("hidden", true);
+      $("#location_id").prop("disabled", true);
     },
 
     async imporExcelData() {
@@ -728,13 +871,19 @@ export default {
 
   created() {
     this.getAllocationEmployee();
+    this.getAllEmployeeType();
     this.getAllLocation();
+    this.getAllExams();
     // $(document).ready(function() {
   },
   mounted() {
     Select2.createSelect2();
     FileDropZone.initDropzone();
     this.appState.setisLogin(false);
+    Utilits.initTime();
+
+    $("#location_id").on("change", this.handleLocationSelectChange);
+
     // Init Select2 --- more info: https://select2.org/
     $("#kt_docs_select2_rich_content").select2({
       placeholder: "Select an option",
@@ -752,111 +901,103 @@ export default {
   },
 };
 
-var exam_id;
+// var exam_id;
 $(document).on("change", "#exame_id", function () {
-  exam_id = $(this).find(":selected").val();
+  // exam_id = $(this).find(":selected").val();
   let option = '<option value=""></option>';
-
-  // option += `<optgroup id="active_group_id" label="">
-  //     <option value=""></option>
-  //   </optgroup>
-  //   <optgroup id="other_group_id" label="">
-  //     <option value=""></option>
-  //   </optgroup>`;
-
-  // $("#pessaol_id").html("");
-  // $("#active_group_id").html(option);
   $("#pessaol_id").html(option);
   $("#pessaol_id").select2().trigger("change");
 
   $("#room_id").html("");
-  $("#location_id").prop("disabled", false);
+  if ($(this).val() != "") {
+    $("#location_id").prop("disabled", false);
+  }
   // $("#location_id").val("").trigger("change");
 });
 
-$(document).on("change", "#location_id", function () {
-  let id = $(this).find(":selected").val();
-  let location = $(this).find(":selected").text();
-  if (id == "") {
-    id = NaN;
-  } else {
-    id = Number(id);
-  }
-  console.log(id);
-  console.log(!isNaN(id));
-  if (!isNaN(id)) {
-    getRoomsByLocation(id);
-    getAllEmployee(location, id);
-  }
-});
+// $(document).on("change", "#location_id", function () {
+//   let id = $(this).find(":selected").val();
+//   let location = $(this).find(":selected").text();
+//   if (id == "") {
+//     id = NaN;
+//   } else {
+//     id = Number(id);
+//   }
+//   console.log(id);
+//   console.log(!isNaN(id));
+//   if (!isNaN(id)) {
+//     getRoomsByLocation(id);
+//     getAllEmployee(location, id);
+//   }
+// });
 
-async function getRoomsByLocation(id) {
-  Utilits.showLoader();
+// async function getRoomsByLocation(id) {
+//   Utilits.showLoader();
 
-  const res = await Api.get(`/examRoom/${id}/location`);
+//   const res = await Api.get(`/examRoom/${id}/location`);
 
-  console.log(res);
-  let option = '<option value=""></option>';
+//   console.log(res);
+//   let option = '<option value=""></option>';
 
-  res.data.forEach(function (element) {
-    // console.log(element)
-    option += `<option value="${element.id}">Bloco: ${element.bloco}- Nr: ${element.number_room}</option>`;
-    // console.log(option)
-  });
+//   res.data.forEach(function (element) {
+//     // console.log(element)
+//     option += `<option value="${element.id}">Bloco: ${element.bloco}- Nr: ${element.number_room}</option>`;
+//     // console.log(option)
+//   });
 
-  $("#room_id").html(option);
+//   $("#room_id").html(option);
 
-  Utilits.hideLoader();
-}
+//   Utilits.hideLoader();
+// }
 
-async function getAllEmployee(location, id) {
-  // alert(location);
-  Utilits.showLoader();
+// async function getAllEmployee(location, id) {
+//   // alert(location);
+//   Utilits.showLoader();
 
-  const res = await Api.get(`/employeeWhereDoesntHaveExam?exam_id=${exam_id}`);
+//   const res = await Api.get(`/employeeWhereDoesntHaveExam?exam_id=${exam_id}`);
 
-  console.log(res);
-  let activeOption = "";
-  let otherOption = "";
-  let options = '<option value=""></option>';
+//   console.log(res);
+//   let activeOption = "";
+//   let otherOption = "";
+//   let options = '<option value=""></option>';
 
-  res.data.forEach(function (element) {
-    // console.log(element)
-    if (element.origin_id == id) {
-      activeOption += `<option value="${element.id}"
-            data-kt-rich-content-subcontent="${element.role.description}"
-            data-kt-rich-content-icon="src/dist-assets/assets/media/svg/avatars/blank.svg"
-      >${element.name}</option>`;
-    } else {
-      otherOption += `<option value="${element.id}"
-            data-kt-rich-content-subcontent="${element.role.description}"
-            data-kt-rich-content-icon="src/dist-assets/assets/media/svg/avatars/blank.svg"
-      >${element.name}</option>`;
-    }
-  });
+//   res.data.forEach(function (element) {
+//     // console.log(element)
+//     if (element.origin_id == id) {
+//       activeOption += `<option value="${element.id}"
+//             data-kt-rich-content-subcontent="${element.role.description}"
+//             data-kt-rich-content-icon="src/dist-assets/assets/media/svg/avatars/blank.svg"
+//       >${element.name}</option>`;
+//     } else {
+//       otherOption += `<option value="${element.id}"
+//             data-kt-rich-content-subcontent="${element.role.description}"
+//             data-kt-rich-content-icon="src/dist-assets/assets/media/svg/avatars/blank.svg"
+//       >${element.name}</option>`;
+//     }
+//   });
 
-  options +=
-    `<optgroup id="active_group_id" label="${location}">
-            ${activeOption}
-    </optgroup>` +
-    `<optgroup id="other_group_id" label="Pessoal com outra proviniencia">
-            ${otherOption}
-  </optgroup>`;
+//   options +=
+//     `<optgroup id="active_group_id" label="${location}">
+//             ${activeOption}
+//     </optgroup>` +
+//     `<optgroup id="other_group_id" label="Pessoal com outra proviniencia">
+//             ${otherOption}
+//   </optgroup>`;
 
-  $("#pessaol_id").html("");
-  $("#pessaol_id").html(options);
+//   $("#pessaol_id").html("");
+//   $("#pessaol_id").html(options);
 
-  $("#pessaol_id").select2().trigger("change");
+//   $("#pessaol_id").select2().trigger("change");
 
-  $("#pessaol_id").select2({
-    placeholder: "Select an option",
-    minimumResultsForSearch: Infinity,
-    templateSelection: optionFormat,
-    templateResult: optionFormat,
-  });
+//   $("#pessaol_id").select2({
+//     placeholder: "Select an option",
+//     minimumResultsForSearch: Infinity,
+//     templateSelection: optionFormat,
+//     templateResult: optionFormat,
+//   });
 
-  Utilits.hideLoader();
-}
+//   Utilits.hideLoader();
+// }
 
 $(document).on("change", "#checkAllRoom", function () {
   if ($("#checkAllRoom").prop("checked")) {
@@ -870,29 +1011,29 @@ $(document).on("change", "#checkAllRoom", function () {
   }
 });
 
-$(document).on("change", "#location_id", function () {
-  getBlocoByLocation($(this).val());
-});
+// $(document).on("change", "#location_id", function () {
+//   getBlocoByLocation($(this).val());
+// });
 
-async function getBlocoByLocation(id) {
-  // alert(id)
-  Utilits.showLoader();
+// async function getBlocoByLocation(id) {
+//   // alert(id)
+//   Utilits.showLoader();
 
-  const res = await Api.get(`/examRoom/${id}/blocos`);
+//   const res = await Api.get(`/examRoom/${id}/blocos`);
 
-  console.log(res);
-  let option = '<option value=""></option>';
+//   console.log(res);
+//   let option = '<option value=""></option>';
 
-  res.data.forEach(function (element, index) {
-    // console.log(element)
-    option += `<option value="${element.bloco}">${element.bloco}</option>`;
-    // console.log(option)
-  });
+//   res.data.forEach(function (element, index) {
+//     // console.log(element)
+//     option += `<option value="${element.bloco}">${element.bloco}</option>`;
+//     // console.log(option)
+//   });
 
-  $("#bloco_id").html(option);
+//   $("#bloco_id").html(option);
 
-  Utilits.hideLoader();
-}
+//   Utilits.hideLoader();
+// }
 
 // $(document).on("change", "#employeeType_id", function () {
 //   // alert($(this).val());

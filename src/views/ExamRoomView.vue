@@ -204,6 +204,7 @@ import Utilits from "../Utilits.js";
 import SweetAlert from "../dist-assets/assets/js/custom/SweetAlert/SweetAlert.js";
 import Select2 from "../dist-assets/assets/js/select2.js";
 import FileDropZone from "../dist-assets/assets/js/fileDropZone.js";
+import KTDatatablesExample from "../dist-assets/assets/js/datable.js";
 import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
 import { AppState } from "@/stores/AppState";
@@ -712,16 +713,17 @@ export default {
     Select2.createSelect2();
     FileDropZone.initDropzone();
     this.appState.setisLogin(false);
+    // KTDatatablesExample.init();
     $("#block_id").select2();
     $("#exam_location_id").on("change", this.handleLocationSelectChange);
     $("#examLocationFilter").on("change", this.handleLocationSelectChange);
   },
 };
 
-$(document).ready(function () {
-  // Inicialize o Select2
-  $("#block_id").select2();
-});
+// $(document).ready(function () {
+//   // Inicialize o Select2
+//   $("#block_id").select2();
+// });
 
 // $(document).on("click", "#refresh_block_id", function () {
 //   $("#refresh_block_id").attr("data-kt-indicator", "on");

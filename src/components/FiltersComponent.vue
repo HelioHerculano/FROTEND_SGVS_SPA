@@ -108,7 +108,6 @@
                 >
                   {{ block.block }}
                 </option>
-
               </select>
               <!--end::Select-->
 
@@ -167,7 +166,8 @@
               !this.$props.isEmployeeView &&
               !this.$props.isRoleView &&
               !this.$props.isSalaryView &&
-              !this.isUserView
+              !this.isUserView &&
+              !this.$props.isAllocationEmployeeView
             "
           >
             <!--begin::Input group-->
@@ -187,7 +187,11 @@
 
           <div
             class="col-4"
-            v-show="this.$props.isEmployeeView || this.$props.isUserView"
+            v-show="
+              this.$props.isEmployeeView ||
+              this.$props.isUserView ||
+              this.$props.isAllocationEmployeeView
+            "
           >
             <!--begin::Input group-->
             <div class="d-flex flex-column mb-8 fv-row">
@@ -200,6 +204,99 @@
                 name="name"
                 @input="$emit('update:nameFilter', $event.target.value)"
               />
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isAllocationEmployeeView">
+            <div class="mb-10">
+              <!--begin::Label-->
+              <label class="form-label fw-bold fs-6 text-gray-700"
+                >Função</label
+              >
+              <!--end::Label-->
+
+              <!--begin::Select-->
+              <select
+                id="typeEmployeeFilter"
+                name="currnecy"
+                aria-label="Select a Timezone"
+                data-control="select2"
+                data-placeholder="---Selecione aqui---"
+                class="form-select form-select-solid"
+              >
+                <option value=""></option>
+                <option
+                  v-for="(typeEmployee, index) in this.$props.employeeType"
+                  :key="index"
+                  :value="typeEmployee.id"
+                  :selected="typeEmployee.id == 1"
+                >
+                  {{ typeEmployee.description }}
+                </option>
+              </select>
+              <!--end::Select-->
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isAllocationEmployeeView">
+            <div class="mb-10">
+              <!--begin::Label-->
+              <label class="form-label fw-bold fs-6 text-gray-700">Exame</label>
+              <!--end::Label-->
+
+              <!--begin::Select-->
+              <select
+                id="exameFilter"
+                name="currnecy"
+                aria-label="Select a Timezone"
+                data-control="select2"
+                data-placeholder="---Selecione aqui---"
+                class="form-select form-select-solid"
+              >
+                <option value=""></option>
+                <option
+                  v-for="(exams, index) in this.$props.exams"
+                  :key="index"
+                  :value="exams.id"
+                >
+                  {{ exams.subject }}
+                </option>
+              </select>
+              <!--end::Select-->
+            </div>
+            <!--end::Input group-->
+          </div>
+
+          <div class="col-4" v-show="this.$props.isAllocationEmployeeView">
+            <div class="mb-10">
+              <!--begin::Label-->
+              <label class="form-label fw-bold fs-6 text-gray-700"
+                >Confirmação</label
+              >
+              <!--end::Label-->
+
+              <!--begin::Select-->
+              <select
+                id="confirmationFilter"
+                name="currnecy"
+                aria-label="Select a Timezone"
+                data-control="select2"
+                data-placeholder="---Selecione aqui---"
+                class="form-select form-select-solid"
+              >
+                <option value=""></option>
+                <option
+                  v-for="(confir, index) in this.confirmation"
+                  :key="index"
+                  :value="confir.key"
+                  :selected="confir.key == 2"
+                >
+                  {{ confir.description }}
+                </option>
+              </select>
+              <!--end::Select-->
             </div>
             <!--end::Input group-->
           </div>
@@ -364,7 +461,12 @@
             <!--end::Input group-->
           </div>
 
-          <div class="col-4" v-show="this.$props.isSalaryView">
+          <div
+            class="col-4"
+            v-show="
+              this.$props.isSalaryView || this.$props.isAllocationEmployeeView
+            "
+          >
             <!--begin::Label-->
             <label class="form-label fw-bold fs-6 text-gray-700"> Ano </label>
             <!--end::Label-->
@@ -428,8 +530,6 @@
           </div>
         </div>
 
-        
-
         <div class="col-md-12 mb-5" style="text-align: right">
           <button type="submit" class="btn btn-sm fw-bold btn-dark">
             <i class="ki-duotone ki-magnifier fs-2">
@@ -466,6 +566,12 @@ export default {
     blocks: {
       type: Array,
     },
+    employeeType: {
+      type: Array,
+    },
+    exams: {
+      type: Array,
+    },
     placeholderDate: {
       type: String,
     },
@@ -487,6 +593,9 @@ export default {
     isUserView: {
       type: Boolean,
     },
+    isAllocationEmployeeView: {
+      type: Boolean,
+    },
   },
   data() {
     return {
@@ -494,6 +603,11 @@ export default {
       available: [
         { key: 1, description: "Disponivel" },
         { key: 2, description: "Indisponivel" },
+      ],
+      confirmation: [
+        { key: 1, description: "Confirmada" },
+        { key: 2, description: "Pendente" },
+        { key: 3, description: "Não confirmado" },
       ],
       status: [
         { key: 1, description: "Activo" },

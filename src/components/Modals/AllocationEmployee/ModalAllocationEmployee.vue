@@ -742,8 +742,8 @@ $(document).on("change", 'input[name="allocationType"]', function () {
     $(".local_field").prop("hidden", false);
     $("#pessoal_field").prop("hidden", false);
     $(".room_field").prop("hidden", true);
-    $(".bloco_field").prop("hidden", false);
   }
+  $(".bloco_field").prop("hidden", false);
 });
 
 $(document).on("change", "#employeeType_id", function () {

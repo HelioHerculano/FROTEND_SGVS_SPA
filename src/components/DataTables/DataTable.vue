@@ -63,10 +63,12 @@
       <!--begin::Body-->
       <div class="card-body py-3">
         <!--begin::Table container-->
-        <div class="table-responsive" ref="content">
+        <div class="table-responsive">
           <!--begin::Table-->
           <table
             class="table table-row-bordered table-row-gray-100 align-middle gs-0 gy-3"
+            ref="content"
+            id="main-table"
           >
             <!--begin::Table head-->
             <thead v-if="this.$props.dataLenght > 0">
@@ -131,6 +133,7 @@
 <script>
 import RowTable from "./RowTable.vue";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 // import Api from '../../../ApiRest.js'
 // import Utilits from '../../../Utilits.js'
 // import { Bootstrap5Pagination } from 'laravel-vue-pagination';
@@ -177,7 +180,6 @@ export default {
     isUserView: {
       type: Boolean,
     },
-    
   },
 
   data() {
@@ -213,34 +215,21 @@ export default {
     printPDF() {
       var pdf = new jsPDF({
         orientation: "portrait",
-        unit: "mm",
-        format: "a4",
+        unit: "in",
+        format: "letter",
       });
 
-      const tabela = this.$refs.content.innerHTML;
-      //   console.log("`" + tabela + "`");
-      const html = `<table ref="content" border="2">
-          <thead border="2">
-            <th>Nome</th>
-            <th>Contacto</th>
-          </thead>
-          <tbody border="2">
-            <tr border="2">
-              <td>Helio</td>
-              <td>820912823</td>
-            </tr>
-          </tbody>
-        </table>'`;
-      //   pdf.html("`" + tabela + "`", {
-      pdf.html(tabela, {
-        callback: function (pdf) {
-          pdf.save("relatorio.pdf");
-        },
-        // width: 400,
-      });
-      //   pdf.autoPrint({ html: tabela });
-      //   pdf.text("Hello Word", 10, 10);
-      //   pdf.save("teste.pdf");
+      pdf.setFontSize(16).text("Meu documento", 0.5, 1.0);
+
+      pdf.setLineWidth(0.01).line(0.5, 1.1, 8.0, 1.1);
+
+      // var imgData = 'src/dist-assets/assets/media/logos/custom-1.png'; // Coloque aqui os dados da imagem
+
+      // Adicionar a imagem ao PDF
+      // pdf.addImage(imgData, 'PNG', 10, 10, 50, 50);
+
+      autoTable(pdf, { html: "#main-table", startY: 2 });
+      pdf.save("documento.pdf");
     },
   },
 
